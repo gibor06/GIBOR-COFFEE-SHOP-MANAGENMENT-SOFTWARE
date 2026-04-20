@@ -83,3 +83,5 @@ desktop.ini
 
 # Keep source and required project assets
 !.gitignore
+
+.agents
