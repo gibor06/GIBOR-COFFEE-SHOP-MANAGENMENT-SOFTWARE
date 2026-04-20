@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="450"
+             d:DesignHeight="550"
              d:DesignWidth="900">
     <Grid>
         <Grid.RowDefinitions>
@@ -101,10 +101,11 @@
                 <TextBlock Text="Ghi chú sử dụng"
                            FontWeight="SemiBold" />
                 <TextBlock Margin="0,8,0,0"
-                           Text="• PDF được tạo theo định dạng báo cáo phục vụ demo/quản trị." />
-                <TextBlock Text="• File Excel được xuất ở dạng CSV UTF-8, mở trực tiếp bằng Excel." />
-                <TextBlock Text="• Nếu máy không hỗ trợ in trực tiếp, hệ thống sẽ tạo file hóa đơn để in thủ công." />
-                <TextBlock Text="• Mọi thao tác xuất/in đều được ghi nhật ký thao tác." />
+                           Text="• Chọn PDF khi cần in đúng mẫu hoặc gửi file cho người khác." />
+                <TextBlock Text="• Chọn Excel khi cần kiểm tra, lọc hoặc chỉnh sửa dữ liệu sau khi xuất." />
+                <TextBlock Text="• Nếu máy không in được ngay, hệ thống vẫn cho xuất file để in sau." />
+                <TextBlock Text="• Trước khi in chính thức, nên xem lại số liệu và bố cục file đã xuất." />
+                <TextBlock Text="• Hệ thống có lưu lại lịch sử thao tác xuất và in để tiện đối chiếu khi cần." />
             </StackPanel>
         </Border>
     </Grid>

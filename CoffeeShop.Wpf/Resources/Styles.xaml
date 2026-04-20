@@ -292,11 +292,14 @@
     <Style TargetType="Button" BasedOn="{StaticResource ButtonSecondary}" />
 
     <!-- DataGrid -->
+    <!-- DataGrid -->
     <Style x:Key="DataGridStandard" TargetType="DataGrid">
         <Setter Property="AutoGenerateColumns" Value="False" />
         <Setter Property="CanUserAddRows" Value="False" />
         <Setter Property="CanUserDeleteRows" Value="False" />
         <Setter Property="CanUserResizeRows" Value="False" />
+        <Setter Property="CanUserResizeColumns" Value="True" />
+        <Setter Property="CanUserReorderColumns" Value="False" />
         <Setter Property="HeadersVisibility" Value="Column" />
         <Setter Property="GridLinesVisibility" Value="Horizontal" />
         <Setter Property="HorizontalGridLinesBrush" Value="#FFE9DDCF" />
@@ -306,13 +309,22 @@
         <Setter Property="AlternationCount" Value="2" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="RowHeight" Value="36" />
-        <Setter Property="ColumnHeaderHeight" Value="38" />
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        <Setter Property="RowHeight" Value="42" />
+        <Setter Property="MinRowHeight" Value="40" />
+        <Setter Property="ColumnHeaderHeight" Value="44" />
         <Setter Property="IsReadOnly" Value="True" />
         <Setter Property="SelectionUnit" Value="FullRow" />
         <Setter Property="SelectionMode" Value="Single" />
-        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
-        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+        <Setter Property="EnableRowVirtualization" Value="True" />
+        <Setter Property="EnableColumnVirtualization" Value="True" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
     <Style TargetType="DataGrid" BasedOn="{StaticResource DataGridStandard}" />
@@ -321,13 +333,17 @@
         <Setter Property="Background" Value="{DynamicResource DataGridHeaderBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Padding" Value="10,8" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
         <Setter Property="BorderThickness" Value="0,0,0,1" />
     </Style>
 
     <Style TargetType="DataGridRow">
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource DataGridRowHoverBrush}" />
@@ -339,14 +355,30 @@
     </Style>
 
     <Style TargetType="DataGridCell">
-        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Padding" Value="12,8" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    </Style>
+
+    <Style x:Key="LeftAlignedCellText" TargetType="TextBlock">
+        <Setter Property="TextAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="CenterAlignedCellText" TargetType="TextBlock">
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
     <Style x:Key="RightAlignedCellText" TargetType="TextBlock">
         <Setter Property="TextAlignment" Value="Right" />
         <Setter Property="HorizontalAlignment" Value="Right" />
         <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
     <!-- Tabs -->
@@ -434,5 +466,54 @@
     <!-- Scrolling -->
     <Style TargetType="ScrollViewer">
         <Setter Property="PanningMode" Value="Both" />
+    </Style>
+
+    <Style x:Key="HintTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderBrush" Value="#D0D5DD" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="#101828" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6">
+                        <Grid>
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                      Margin="{TemplateBinding Padding}" />
+
+                            <TextBlock x:Name="Watermark"
+                                   Margin="{TemplateBinding Padding}"
+                                   Foreground="#98A2B3"
+                                   Text="{TemplateBinding Tag}"
+                                   IsHitTestVisible="False"
+                                   VerticalAlignment="Center"
+                                   Visibility="Collapsed" />
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="Watermark"
+                                Property="Visibility"
+                                Value="Visible" />
+                        </Trigger>
+
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Watermark"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.7" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

@@ -315,16 +315,16 @@ public sealed class MainShellViewModel : BaseViewModel
     {
         return code switch
         {
-            "Dashboard" => "Theo dõi và kiểm soát tình hình quán.",
-            "HoaDonNhap" => "Lập phiếu nhập nhanh, kiểm tra tổng tiền và đảm bảo dữ liệu kho chính xác.",
-            "HoaDonBan" => "Tạo hóa đơn bán theo bàn, áp khuyến mãi và thanh toán rõ ràng.",
-            "ThongKe" => "Phân tích doanh thu theo ngày và theo sản phẩm trong một màn hình.",
-            "BaoCao" => "Tổng hợp dữ liệu báo cáo để trình bày và xuất file thuận tiện khi demo.",
-            "QuanLyBan" => "Theo dõi trạng thái bàn và thao tác phục vụ theo thời gian thực.",
-            "AuditLog" => "Kiểm tra lịch sử thao tác để truy vết thay đổi trong hệ thống.",
-            "QuanLyTaiKhoan" => "Tạo tài khoản mới, gán vai trò, khóa hoặc mở khóa tài khoản theo phân quyền.",
-            "DoiMatKhau" => "Thay đổi mật khẩu cá nhân để bảo mật tài khoản.",
-            _ => "Thao tác nhanh, dữ liệu rõ ràng và đúng phân quyền theo vai trò người dùng."
+            "Dashboard" => "Theo dõi nhanh tình hình hoạt động trong ngày và các chỉ số cần chú ý.",
+            "HoaDonNhap" => "Lập phiếu nhập, kiểm tra số lượng, đơn giá và cập nhật tồn kho.",
+            "HoaDonBan" => "Tạo hóa đơn bán, chọn món, tính tiền và lưu giao dịch bán hàng.",
+            "ThongKe" => "Xem doanh thu, số lượng bán và kết quả kinh doanh theo thời gian.",
+            "BaoCao" => "Tổng hợp số liệu để đối chiếu, in báo cáo và phục vụ demo.",
+            "QuanLyBan" => "Theo dõi trạng thái bàn và hỗ trợ sắp xếp phục vụ tại quán.",
+            "AuditLog" => "Xem lại lịch sử thao tác để kiểm tra và đối chiếu khi cần.",
+            "QuanLyTaiKhoan" => "Quản lý tài khoản người dùng, phân vai trò và trạng thái hoạt động.",
+            "DoiMatKhau" => "Đổi mật khẩu đăng nhập để bảo vệ tài khoản cá nhân.",
+            _ => ""
         };
     }
 }

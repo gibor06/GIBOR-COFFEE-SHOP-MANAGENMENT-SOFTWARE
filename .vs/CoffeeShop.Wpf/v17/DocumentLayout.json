@@ -3,8 +3,32 @@
   "WorkspaceRootPath": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\views\\hoadonnhapview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\views\\hoadonnhapview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\views\\exportprintview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\views\\exportprintview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\views\\hoadonbanview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\views\\hoadonbanview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\resources\\styles.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\resources\\styles.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\views\\dashboardview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\views\\dashboardview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\views\\doimatkhauview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\views\\doimatkhauview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\views\\danhmucview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\views\\danhmucview.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,13 +43,85 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\MainWindow.xaml",
-              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\MainWindow.xaml",
-              "RelativeToolTip": "CoffeeShop.Wpf\\MainWindow.xaml",
+              "Title": "HoaDonNhapView.xaml",
+              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\HoaDonNhapView.xaml",
+              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\Views\\HoaDonNhapView.xaml",
+              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\HoaDonNhapView.xaml",
+              "RelativeToolTip": "CoffeeShop.Wpf\\Views\\HoaDonNhapView.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-20T01:20:06.047Z",
+              "WhenOpened": "2026-04-20T04:28:57.497Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Styles.xaml",
+              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Resources\\Styles.xaml",
+              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\Resources\\Styles.xaml",
+              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Resources\\Styles.xaml",
+              "RelativeToolTip": "CoffeeShop.Wpf\\Resources\\Styles.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-20T04:03:01.909Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "HoaDonBanView.xaml",
+              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\HoaDonBanView.xaml",
+              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\Views\\HoaDonBanView.xaml",
+              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\HoaDonBanView.xaml",
+              "RelativeToolTip": "CoffeeShop.Wpf\\Views\\HoaDonBanView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-20T03:40:12.75Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ExportPrintView.xaml",
+              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\ExportPrintView.xaml",
+              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\Views\\ExportPrintView.xaml",
+              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\ExportPrintView.xaml",
+              "RelativeToolTip": "CoffeeShop.Wpf\\Views\\ExportPrintView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-20T03:29:00.974Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DoiMatKhauView.xaml",
+              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\DoiMatKhauView.xaml",
+              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\Views\\DoiMatKhauView.xaml",
+              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\DoiMatKhauView.xaml",
+              "RelativeToolTip": "CoffeeShop.Wpf\\Views\\DoiMatKhauView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-20T03:25:56.756Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DashboardView.xaml",
+              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\DashboardView.xaml",
+              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\Views\\DashboardView.xaml",
+              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\DashboardView.xaml",
+              "RelativeToolTip": "CoffeeShop.Wpf\\Views\\DashboardView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-20T03:14:08.722Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DanhMucView.xaml",
+              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\DanhMucView.xaml",
+              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\Views\\DanhMucView.xaml",
+              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\Views\\DanhMucView.xaml",
+              "RelativeToolTip": "CoffeeShop.Wpf\\Views\\DanhMucView.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-20T03:05:55.645Z",
               "EditorCaption": ""
             }
           ]

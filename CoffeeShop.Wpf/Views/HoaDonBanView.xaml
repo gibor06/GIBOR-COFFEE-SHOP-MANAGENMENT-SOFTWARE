@@ -6,7 +6,8 @@
              mc:Ignorable="d"
              d:DesignHeight="780"
              d:DesignWidth="1220">
-    <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="12" />
@@ -238,5 +239,7 @@
                 </DataGrid>
             </Grid>
         </Border>
-    </Grid>
+        </Grid>
+
+    </ScrollViewer>
 </UserControl>

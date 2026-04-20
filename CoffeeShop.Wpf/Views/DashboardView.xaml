@@ -8,7 +8,7 @@
              d:DesignWidth="1200">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  
+                  HorizontalScrollBarVisibility="Auto"
                   >
         <Grid>
             <Grid.RowDefinitions>
@@ -16,7 +16,7 @@
                 <RowDefinition Height="12" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="12" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="300" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
@@ -79,7 +79,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="4" Style="{StaticResource CardPanelMuted}">
+                <Border Grid.Column="6" Style="{StaticResource CardPanelMuted}">
                     <StackPanel>
                         <TextBlock Style="{StaticResource CaptionText}" Text="Sản phẩm đang kinh doanh" />
                         <TextBlock Margin="0,6,0,0"
@@ -92,7 +92,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="6" Style="{StaticResource CardPanelMuted}">
+                <Border Grid.Column="4" Style="{StaticResource CardPanelMuted}">
                     <StackPanel>
                         <TextBlock Style="{StaticResource CaptionText}" Text="Món sắp hết hàng" />
                         <TextBlock Margin="0,6,0,0"
@@ -100,23 +100,17 @@
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource DangerBrush}"
                                    Text="{Binding SoSanPhamSapHet}" />
-                        <Border Margin="0,8,0,0"
-                                Style="{StaticResource StatusBadgeWarning}">
-                            <TextBlock Text="Cần kiểm tra nhập kho"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource WarningBrush}" />
-                        </Border>
                     </StackPanel>
                 </Border>
             </Grid>
 
             <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.65*" />
+                    <ColumnDefinition Width="400" />
                     <ColumnDefinition Width="12" />
-                    <ColumnDefinition Width="1.1*" />
+                    <ColumnDefinition Width="400" />
                     <ColumnDefinition Width="12" />
-                    <ColumnDefinition Width="1.1*" />
+                    <ColumnDefinition Width="400" />
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" Style="{StaticResource CardPanel}">
@@ -168,7 +162,9 @@
 
                         <TextBlock Style="{StaticResource CardTitleText}" Text="Top bán chạy hôm nay" />
 
-                        <DataGrid Grid.Row="2" ItemsSource="{Binding TopSanPhamHomNay}">
+                        <DataGrid Grid.Row="2" ItemsSource="{Binding TopSanPhamHomNay}"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Mã" Binding="{Binding MonId}" Width="72" />
                                 <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenMon}" Width="*" />
@@ -197,7 +193,10 @@
 
                         <TextBlock Style="{StaticResource CardTitleText}" Text="Tồn kho thấp" />
 
-                        <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSachTonKhoThap}">
+                        <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSachTonKhoThap}"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  >
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Mã" Binding="{Binding MonId}" Width="72" />
                                 <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenMon}" Width="*" />

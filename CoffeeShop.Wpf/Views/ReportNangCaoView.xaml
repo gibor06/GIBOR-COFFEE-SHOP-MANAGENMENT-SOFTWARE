@@ -9,7 +9,10 @@
     <DataGrid ItemsSource="{Binding BaoCaoNangCaoRows}"
               AutoGenerateColumns="False"
               IsReadOnly="True"
-              CanUserAddRows="False">
+              CanUserAddRows="False"
+              ScrollViewer.VerticalScrollBarVisibility="Auto"
+              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+              >
         <DataGrid.Columns>
             <DataGridTextColumn Header="Mã món" Binding="{Binding MonId}" Width="90" />
             <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenMon}" Width="2*" />

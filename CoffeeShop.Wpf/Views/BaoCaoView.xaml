@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:views="clr-namespace:CoffeeShop.Wpf.Views"
              mc:Ignorable="d"
-             d:DesignHeight="780"
+             d:DesignHeight="880"
              d:DesignWidth="1220">
     <Grid>
         <Grid.RowDefinitions>
@@ -86,17 +86,6 @@
                 </StackPanel>
             </Border>
         </Grid>
-
-        <Border Grid.Row="4" Style="{StaticResource CardPanelMuted}">
-            <WrapPanel>
-                <Border Style="{StaticResource StatusBadgeSuccess}">
-                    <TextBlock Foreground="{DynamicResource SuccessBrush}" FontWeight="SemiBold" Text="Báo cáo dữ liệu chính xác" />
-                </Border>
-                <Border Margin="8,0,0,0" Style="{StaticResource StatusBadgeWarning}">
-                    <TextBlock Foreground="{DynamicResource WarningBrush}" FontWeight="SemiBold" Text="Kiểm tra theo khoảng ngày trước khi xuất" />
-                </Border>
-            </WrapPanel>
-        </Border>
 
         <Border Grid.Row="6" Style="{StaticResource CardPanel}">
             <TabControl>

@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:infra="clr-namespace:CoffeeShop.Wpf.Infrastructure"
              mc:Ignorable="d"
-             d:DesignHeight="420"
+             d:DesignHeight="460"
              d:DesignWidth="760">
     <Grid>
         <Border Style="{StaticResource CardPanel}"

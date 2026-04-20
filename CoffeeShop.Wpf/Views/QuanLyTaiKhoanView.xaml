@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:infra="clr-namespace:CoffeeShop.Wpf.Infrastructure"
              mc:Ignorable="d"
-             d:DesignHeight="500"
+             d:DesignHeight="800"
              d:DesignWidth="980">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />

@@ -6,13 +6,15 @@
              mc:Ignorable="d"
              d:DesignHeight="760"
              d:DesignWidth="1200">
+    
+   
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="12" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="12" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="350" />
         </Grid.RowDefinitions>
 
         <Border Style="{StaticResource CardPanel}">

@@ -96,7 +96,6 @@
                              ItemContainerStyle="{StaticResource SidebarMenuItemStyle}"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                             ScrollViewer.CanContentScroll="True"
                              VirtualizingStackPanel.IsVirtualizing="True"
                              VirtualizingStackPanel.VirtualizationMode="Recycling">
                         <ListBox.ItemTemplate>
