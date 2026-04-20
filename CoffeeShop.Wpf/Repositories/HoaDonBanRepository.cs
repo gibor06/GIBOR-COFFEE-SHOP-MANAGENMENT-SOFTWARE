@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Infrastructure;
+using CoffeeShop.Wpf.Infrastructure;
 using CoffeeShop.Wpf.Models;
 using Microsoft.Data.SqlClient;
 
@@ -29,7 +29,14 @@ INSERT INTO dbo.HoaDonBan
     KhachHangId,
     KhuyenMaiId,
     SoTienGiam,
-    DiemCong
+    DiemCong,
+    HinhThucThanhToan,
+    TrangThaiThanhToan,
+    TienKhachDua,
+    TienThoiLai,
+    MaGiaoDich,
+    GhiChuThanhToan,
+    GhiChuHoaDon
 )
 VALUES
 (
@@ -42,7 +49,14 @@ VALUES
     @KhachHangId,
     @KhuyenMaiId,
     @SoTienGiam,
-    @DiemCong
+    @DiemCong,
+    @HinhThucThanhToan,
+    @TrangThaiThanhToan,
+    @TienKhachDua,
+    @TienThoiLai,
+    @MaGiaoDich,
+    @GhiChuThanhToan,
+    @GhiChuHoaDon
 );
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
@@ -57,6 +71,19 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
             insertHoaDonBanCommand.Parameters.AddWithValue("@KhuyenMaiId", (object?)hoaDonBan.KhuyenMaiId ?? DBNull.Value);
             insertHoaDonBanCommand.Parameters.AddWithValue("@SoTienGiam", hoaDonBan.SoTienGiam);
             insertHoaDonBanCommand.Parameters.AddWithValue("@DiemCong", hoaDonBan.DiemCong);
+            // Thanh toán nâng cao
+            insertHoaDonBanCommand.Parameters.AddWithValue("@HinhThucThanhToan",
+                string.IsNullOrWhiteSpace(hoaDonBan.HinhThucThanhToan) ? "Tiền mặt" : hoaDonBan.HinhThucThanhToan);
+            insertHoaDonBanCommand.Parameters.AddWithValue("@TrangThaiThanhToan",
+                string.IsNullOrWhiteSpace(hoaDonBan.TrangThaiThanhToan) ? "Đã thanh toán" : hoaDonBan.TrangThaiThanhToan);
+            insertHoaDonBanCommand.Parameters.AddWithValue("@TienKhachDua", (object?)hoaDonBan.TienKhachDua ?? DBNull.Value);
+            insertHoaDonBanCommand.Parameters.AddWithValue("@TienThoiLai", (object?)hoaDonBan.TienThoiLai ?? DBNull.Value);
+            insertHoaDonBanCommand.Parameters.AddWithValue("@MaGiaoDich",
+                string.IsNullOrWhiteSpace(hoaDonBan.MaGiaoDich) ? DBNull.Value : hoaDonBan.MaGiaoDich.Trim());
+            insertHoaDonBanCommand.Parameters.AddWithValue("@GhiChuThanhToan",
+                string.IsNullOrWhiteSpace(hoaDonBan.GhiChuThanhToan) ? DBNull.Value : hoaDonBan.GhiChuThanhToan.Trim());
+            insertHoaDonBanCommand.Parameters.AddWithValue("@GhiChuHoaDon",
+                string.IsNullOrWhiteSpace(hoaDonBan.GhiChuHoaDon) ? DBNull.Value : hoaDonBan.GhiChuHoaDon.Trim());
 
             var newHoaDonBanId = Convert.ToInt32(await insertHoaDonBanCommand.ExecuteScalarAsync(cancellationToken));
 

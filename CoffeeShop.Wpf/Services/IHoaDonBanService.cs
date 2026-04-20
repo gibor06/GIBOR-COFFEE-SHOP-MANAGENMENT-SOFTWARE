@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Models;
+using CoffeeShop.Wpf.Models;
 
 namespace CoffeeShop.Wpf.Services;
 
@@ -12,6 +12,11 @@ public interface IHoaDonBanService
         IReadOnlyList<HoaDonBanChiTietInputModel> chiTietInputs,
         int? khachHangId = null,
         int? khuyenMaiId = null,
+        string hinhThucThanhToan = "Tiền mặt",
+        decimal? tienKhachDua = null,
+        string? maGiaoDich = null,
+        string? ghiChuThanhToan = null,
+        string? ghiChuHoaDon = null,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<HoaDonBan>> GetByDateRangeAsync(

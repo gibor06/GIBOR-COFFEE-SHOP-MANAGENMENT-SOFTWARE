@@ -16,10 +16,21 @@ public interface ILichSuHoaDonService
         int? createdByUserId,
         int? banId,
         int? caLamViecId,
+        string? tenKhachHang = null,
+        string? soDienThoai = null,
+        string? hinhThucThanhToan = null,
+        string? trangThaiThanhToan = null,
         CancellationToken cancellationToken = default);
 
     Task<ServiceResult<IReadOnlyList<LichSuHoaDonChiTietDong>>> GetChiTietHoaDonAsync(
         int hoaDonBanId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>Hủy hóa đơn (cập nhật trạng thái, lưu lý do, không xóa)</summary>
+    Task<ServiceResult> HuyHoaDonAsync(
+        int hoaDonBanId,
+        string lyDoHuy,
+        string? nguoiHuy,
         CancellationToken cancellationToken = default);
 }
 

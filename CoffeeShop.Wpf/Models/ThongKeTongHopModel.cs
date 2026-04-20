@@ -1,4 +1,4 @@
-﻿namespace CoffeeShop.Wpf.Models;
+namespace CoffeeShop.Wpf.Models;
 
 public sealed class ThongKeTongHopModel
 {
@@ -7,6 +7,9 @@ public sealed class ThongKeTongHopModel
     public IReadOnlyList<HoaDonBanTimKiemDong> DanhSachHoaDon { get; init; } = [];
 
     public IReadOnlyList<ThongKeTopSanPhamDong> TopSanPhamBanChay { get; init; } = [];
+
+    /// <summary>Doanh thu theo hình thức thanh toán</summary>
+    public IReadOnlyList<ThongKeDoanhThuTheoHTTT> DoanhThuTheoHTTT { get; init; } = [];
 
     public int TongSoHoaDon { get; init; }
 

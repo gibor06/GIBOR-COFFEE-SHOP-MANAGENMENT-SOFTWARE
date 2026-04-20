@@ -33,6 +33,10 @@ public sealed class LichSuHoaDonService : ILichSuHoaDonService
         int? createdByUserId,
         int? banId,
         int? caLamViecId,
+        string? tenKhachHang = null,
+        string? soDienThoai = null,
+        string? hinhThucThanhToan = null,
+        string? trangThaiThanhToan = null,
         CancellationToken cancellationToken = default)
     {
         if (fromDate.Date > toDate.Date)
@@ -47,6 +51,10 @@ public sealed class LichSuHoaDonService : ILichSuHoaDonService
             createdByUserId,
             banId,
             caLamViecId,
+            tenKhachHang,
+            soDienThoai,
+            hinhThucThanhToan,
+            trangThaiThanhToan,
             cancellationToken);
 
         return ServiceResult<IReadOnlyList<LichSuHoaDonDong>>.Success(data, "Tìm kiếm hóa đơn thành công.");
@@ -63,6 +71,35 @@ public sealed class LichSuHoaDonService : ILichSuHoaDonService
 
         var data = await _lichSuHoaDonRepository.GetChiTietHoaDonAsync(hoaDonBanId, cancellationToken);
         return ServiceResult<IReadOnlyList<LichSuHoaDonChiTietDong>>.Success(data, "Tải chi tiết hóa đơn thành công.");
+    }
+
+    /// <summary>
+    /// Hủy hóa đơn: validate rồi gọi repository cập nhật trạng thái.
+    /// Không xóa dữ liệu.
+    /// </summary>
+    public async Task<ServiceResult> HuyHoaDonAsync(
+        int hoaDonBanId,
+        string lyDoHuy,
+        string? nguoiHuy,
+        CancellationToken cancellationToken = default)
+    {
+        if (hoaDonBanId <= 0)
+        {
+            return ServiceResult.Fail("Mã hóa đơn không hợp lệ.");
+        }
+
+        if (string.IsNullOrWhiteSpace(lyDoHuy))
+        {
+            return ServiceResult.Fail("Vui lòng nhập lý do hủy hóa đơn.");
+        }
+
+        var success = await _lichSuHoaDonRepository.HuyHoaDonAsync(hoaDonBanId, lyDoHuy, nguoiHuy, cancellationToken);
+        if (!success)
+        {
+            return ServiceResult.Fail("Không thể hủy hóa đơn. Hóa đơn có thể đã bị hủy trước đó.");
+        }
+
+        return ServiceResult.Success("Hủy hóa đơn thành công.");
     }
 }
 

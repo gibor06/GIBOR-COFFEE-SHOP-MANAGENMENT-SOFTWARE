@@ -1,4 +1,4 @@
-﻿namespace CoffeeShop.Wpf.Models;
+namespace CoffeeShop.Wpf.Models;
 
 public sealed class HoaDonBan
 {
@@ -25,5 +25,39 @@ public sealed class HoaDonBan
     public decimal SoTienGiam { get; set; }
 
     public int DiemCong { get; set; }
+
+    // === Thông tin thanh toán nâng cao ===
+
+    /// <summary>Hình thức thanh toán: Tiền mặt, Chuyển khoản, Thẻ, Ví điện tử</summary>
+    public string HinhThucThanhToan { get; set; } = "Tiền mặt";
+
+    /// <summary>Trạng thái thanh toán: Đã thanh toán, Chưa thanh toán, Đã hủy</summary>
+    public string TrangThaiThanhToan { get; set; } = "Đã thanh toán";
+
+    /// <summary>Tiền khách đưa (chỉ áp dụng khi thanh toán tiền mặt)</summary>
+    public decimal? TienKhachDua { get; set; }
+
+    /// <summary>Tiền thối lại = TienKhachDua - ThanhToan</summary>
+    public decimal? TienThoiLai { get; set; }
+
+    /// <summary>Mã giao dịch (chuyển khoản, thẻ, ví điện tử)</summary>
+    public string? MaGiaoDich { get; set; }
+
+    /// <summary>Ghi chú thanh toán</summary>
+    public string? GhiChuThanhToan { get; set; }
+
+    /// <summary>Ghi chú hóa đơn</summary>
+    public string? GhiChuHoaDon { get; set; }
+
+    // === Thông tin hủy hóa đơn ===
+
+    /// <summary>Lý do hủy hóa đơn</summary>
+    public string? LyDoHuy { get; set; }
+
+    /// <summary>Tên người thực hiện hủy</summary>
+    public string? NguoiHuy { get; set; }
+
+    /// <summary>Ngày hủy hóa đơn</summary>
+    public DateTime? NgayHuy { get; set; }
 }
 

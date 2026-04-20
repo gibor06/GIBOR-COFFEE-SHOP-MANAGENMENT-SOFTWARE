@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Models;
+using CoffeeShop.Wpf.Models;
 using CoffeeShop.Wpf.Repositories;
 
 namespace CoffeeShop.Wpf.Services;
@@ -31,6 +31,9 @@ public sealed class HoaDonBanService : IHoaDonBanService
         _khachHangService = khachHangService;
     }
 
+    // Danh sách hình thức thanh toán hợp lệ
+    private static readonly string[] HinhThucThanhToanHopLe = ["Tiền mặt", "Chuyển khoản", "Thẻ", "Ví điện tử"];
+
     public async Task<ServiceResult<HoaDonBan>> CreateAsync(
         int createdByUserId,
         decimal giamGia,
@@ -39,6 +42,11 @@ public sealed class HoaDonBanService : IHoaDonBanService
         IReadOnlyList<HoaDonBanChiTietInputModel> chiTietInputs,
         int? khachHangId = null,
         int? khuyenMaiId = null,
+        string hinhThucThanhToan = "Tiền mặt",
+        decimal? tienKhachDua = null,
+        string? maGiaoDich = null,
+        string? ghiChuThanhToan = null,
+        string? ghiChuHoaDon = null,
         CancellationToken cancellationToken = default)
     {
         if (createdByUserId <= 0)
@@ -70,6 +78,11 @@ public sealed class HoaDonBanService : IHoaDonBanService
         if (string.Equals(ban.TrangThaiBan, TrangThaiBanConst.TamKhoa, StringComparison.OrdinalIgnoreCase))
         {
             return ServiceResult<HoaDonBan>.Fail("Bàn đang ở trạng thái tạm khóa.");
+        }
+
+        if (!string.Equals(ban.TrangThaiBan, TrangThaiBanConst.Trong, StringComparison.OrdinalIgnoreCase))
+        {
+            return ServiceResult<HoaDonBan>.Fail("Bàn đang phục vụ hoặc chờ thanh toán, không thể tạo hóa đơn mới.");
         }
 
         var caDangMo = await _caLamViecRepository.GetCaDangMoAsync(createdByUserId, cancellationToken);
@@ -131,6 +144,17 @@ public sealed class HoaDonBanService : IHoaDonBanService
             return ServiceResult<HoaDonBan>.Fail("Giảm giá không được lớn hơn tổng tiền.");
         }
 
+        // === Validate hình thức thanh toán ===
+        if (string.IsNullOrWhiteSpace(hinhThucThanhToan))
+        {
+            return ServiceResult<HoaDonBan>.Fail("Vui lòng chọn hình thức thanh toán.");
+        }
+
+        if (!HinhThucThanhToanHopLe.Contains(hinhThucThanhToan))
+        {
+            return ServiceResult<HoaDonBan>.Fail($"Hình thức thanh toán '{hinhThucThanhToan}' không hợp lệ.");
+        }
+
         if (khachHangId.HasValue && khachHangId.Value > 0)
         {
             var khachHang = await _khachHangService.GetByIdAsync(khachHangId.Value, cancellationToken);
@@ -159,6 +183,19 @@ public sealed class HoaDonBanService : IHoaDonBanService
         }
 
         var thanhToanSauGiam = tongTien - tongGiamGia;
+
+        // === Validate tiền khách đưa cho tiền mặt ===
+        decimal? tienThoiLai = null;
+        if (string.Equals(hinhThucThanhToan, "Tiền mặt", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!tienKhachDua.HasValue || tienKhachDua.Value < thanhToanSauGiam)
+            {
+                return ServiceResult<HoaDonBan>.Fail(
+                    $"Tiền khách đưa ({tienKhachDua?.ToString("N0") ?? "0"}) không đủ. Cần ít nhất {thanhToanSauGiam:N0} đ.");
+            }
+            tienThoiLai = tienKhachDua.Value - thanhToanSauGiam;
+        }
+
         var diemCong = (khachHangId.HasValue && khachHangId.Value > 0)
             ? TinhDiemTichLuy(thanhToanSauGiam)
             : 0;
@@ -174,7 +211,15 @@ public sealed class HoaDonBanService : IHoaDonBanService
             KhachHangId = khachHangId > 0 ? khachHangId : null,
             KhuyenMaiId = apDungKhuyenMai.Data.KhuyenMaiId,
             SoTienGiam = soTienGiamKhuyenMai,
-            DiemCong = diemCong
+            DiemCong = diemCong,
+            // Thanh toán nâng cao
+            HinhThucThanhToan = hinhThucThanhToan,
+            TrangThaiThanhToan = "Đã thanh toán",
+            TienKhachDua = tienKhachDua,
+            TienThoiLai = tienThoiLai,
+            MaGiaoDich = maGiaoDich,
+            GhiChuThanhToan = ghiChuThanhToan,
+            GhiChuHoaDon = ghiChuHoaDon
         };
 
         var chiTietHoaDonBans = chiTietInputs

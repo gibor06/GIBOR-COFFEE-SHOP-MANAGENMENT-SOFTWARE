@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CoffeeShop.Wpf.Views.HoaDonBanView"
+<UserControl x:Class="CoffeeShop.Wpf.Views.HoaDonBanView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -129,7 +129,62 @@
                     <TextBlock Margin="0,6,0,0"
                                Text="{Binding DiemCongDuKien, StringFormat=Điểm cộng dự kiến: {0}}" />
 
+                    <!-- Hình thức thanh toán -->
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Hình thức thanh toán" />
+                        <ComboBox ItemsSource="{Binding DanhSachHinhThucThanhToan}"
+                                  SelectedItem="{Binding HinhThucThanhToanDuocChon, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <!-- Tiền khách đưa (chỉ hiện khi tiền mặt) -->
+                    <StackPanel Margin="0,8,0,0">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsThanhToanTienMat}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Tiền khách đưa" />
+                        <TextBox Text="{Binding TienKhachDuaText, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Margin="0,4,0,0"
+                                   FontWeight="SemiBold"
+                                   Text="{Binding TienThoiLai, StringFormat=Tiền thối: {0:N0} đ}" />
+                    </StackPanel>
+
+                    <!-- Mã giao dịch (chỉ hiện khi không phải tiền mặt) -->
+                    <StackPanel Margin="0,8,0,0">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsThanhToanTienMat}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Mã giao dịch" />
+                        <TextBox Text="{Binding MaGiaoDich, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <!-- Ghi chú thanh toán -->
+                    <StackPanel Margin="0,8,0,0">
+                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Ghi chú thanh toán" />
+                        <TextBox Text="{Binding GhiChuThanhToan, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <!-- Ghi chú hóa đơn -->
+                    <StackPanel Margin="0,8,0,0">
+                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Ghi chú hóa đơn" />
+                        <TextBox Text="{Binding GhiChuHoaDon, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
                     <Button Content="Lưu hóa đơn"
+                            Margin="0,10,0,0"
                             Style="{StaticResource ButtonPrimary}"
                             Command="{Binding LuuHoaDonCommand}" />
                     <Button Content="Làm mới"

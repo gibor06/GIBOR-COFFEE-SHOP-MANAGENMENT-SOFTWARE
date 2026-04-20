@@ -9,9 +9,15 @@ namespace CoffeeShop.Wpf.ViewModels;
 public sealed class LichSuHoaDonViewModel : BaseViewModel
 {
     private readonly ILichSuHoaDonService _lichSuHoaDonService;
+    private readonly IExportPrintService _exportPrintService;
+    private readonly IDialogService _dialogService;
+    private readonly SessionService _sessionService;
+
     private readonly RelayCommand _timKiemCommand;
     private readonly RelayCommand _xemChiTietCommand;
     private readonly RelayCommand _lamMoiCommand;
+    private readonly RelayCommand _inHoaDonCommand;
+    private readonly RelayCommand _huyHoaDonCommand;
 
     private DateTime _fromDate = DateTime.Today.AddDays(-7);
     private DateTime _toDate = DateTime.Today;
@@ -19,14 +25,26 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
     private string _maNhanVien = string.Empty;
     private string _maBan = string.Empty;
     private string _maCaLamViec = string.Empty;
+    private string _tenKhachHang = string.Empty;
+    private string _soDienThoai = string.Empty;
+    private string? _hinhThucThanhToanFilter;
+    private string? _trangThaiThanhToanFilter;
     private LichSuHoaDonDong? _selectedHoaDon;
+    private string _lyDoHuy = string.Empty;
     private string _errorMessage = string.Empty;
     private string _successMessage = string.Empty;
     private bool _isBusy;
 
-    public LichSuHoaDonViewModel(ILichSuHoaDonService lichSuHoaDonService)
+    public LichSuHoaDonViewModel(
+        ILichSuHoaDonService lichSuHoaDonService,
+        IExportPrintService exportPrintService,
+        IDialogService dialogService,
+        SessionService sessionService)
     {
         _lichSuHoaDonService = lichSuHoaDonService;
+        _exportPrintService = exportPrintService;
+        _dialogService = dialogService;
+        _sessionService = sessionService;
 
         DanhSachHoaDon = new ObservableCollection<LichSuHoaDonDong>();
         ChiTietHoaDon = new ObservableCollection<LichSuHoaDonChiTietDong>();
@@ -34,6 +52,8 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
         _timKiemCommand = new RelayCommand(ExecuteTimKiem, () => !IsBusy);
         _xemChiTietCommand = new RelayCommand(ExecuteXemChiTiet, () => !IsBusy && SelectedHoaDon is not null);
         _lamMoiCommand = new RelayCommand(ExecuteLamMoi, () => !IsBusy);
+        _inHoaDonCommand = new RelayCommand(ExecuteInHoaDon, () => !IsBusy && SelectedHoaDon is not null);
+        _huyHoaDonCommand = new RelayCommand(ExecuteHuyHoaDon, () => !IsBusy && SelectedHoaDon is not null);
     }
 
     public ObservableCollection<LichSuHoaDonDong> DanhSachHoaDon { get; }
@@ -76,6 +96,42 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
         set => SetProperty(ref _maCaLamViec, value);
     }
 
+    /// <summary>Filter theo tên khách hàng</summary>
+    public string TenKhachHang
+    {
+        get => _tenKhachHang;
+        set => SetProperty(ref _tenKhachHang, value);
+    }
+
+    /// <summary>Filter theo số điện thoại</summary>
+    public string SoDienThoai
+    {
+        get => _soDienThoai;
+        set => SetProperty(ref _soDienThoai, value);
+    }
+
+    /// <summary>Filter theo hình thức thanh toán</summary>
+    public string? HinhThucThanhToanFilter
+    {
+        get => _hinhThucThanhToanFilter;
+        set => SetProperty(ref _hinhThucThanhToanFilter, value);
+    }
+
+    /// <summary>Filter theo trạng thái thanh toán</summary>
+    public string? TrangThaiThanhToanFilter
+    {
+        get => _trangThaiThanhToanFilter;
+        set => SetProperty(ref _trangThaiThanhToanFilter, value);
+    }
+
+    /// <summary>Danh sách HTTT cho ComboBox filter</summary>
+    public IReadOnlyList<string> DanhSachHinhThucThanhToan { get; } =
+        ["", "Tiền mặt", "Chuyển khoản", "Thẻ", "Ví điện tử"];
+
+    /// <summary>Danh sách trạng thái cho ComboBox filter</summary>
+    public IReadOnlyList<string> DanhSachTrangThaiThanhToan { get; } =
+        ["", "Đã thanh toán", "Chưa thanh toán", "Đã hủy"];
+
     public LichSuHoaDonDong? SelectedHoaDon
     {
         get => _selectedHoaDon;
@@ -84,8 +140,17 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
             if (SetProperty(ref _selectedHoaDon, value))
             {
                 _xemChiTietCommand.RaiseCanExecuteChanged();
+                _inHoaDonCommand.RaiseCanExecuteChanged();
+                _huyHoaDonCommand.RaiseCanExecuteChanged();
             }
         }
+    }
+
+    /// <summary>Lý do hủy hóa đơn (binding từ UI)</summary>
+    public string LyDoHuy
+    {
+        get => _lyDoHuy;
+        set => SetProperty(ref _lyDoHuy, value);
     }
 
     public string ErrorMessage
@@ -110,6 +175,8 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
                 _timKiemCommand.RaiseCanExecuteChanged();
                 _xemChiTietCommand.RaiseCanExecuteChanged();
                 _lamMoiCommand.RaiseCanExecuteChanged();
+                _inHoaDonCommand.RaiseCanExecuteChanged();
+                _huyHoaDonCommand.RaiseCanExecuteChanged();
             }
         }
     }
@@ -117,6 +184,8 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
     public ICommand TimKiemCommand => _timKiemCommand;
     public ICommand XemChiTietCommand => _xemChiTietCommand;
     public ICommand LamMoiCommand => _lamMoiCommand;
+    public ICommand InHoaDonCommand => _inHoaDonCommand;
+    public ICommand HuyHoaDonCommand => _huyHoaDonCommand;
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -141,9 +210,24 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
         MaNhanVien = string.Empty;
         MaBan = string.Empty;
         MaCaLamViec = string.Empty;
+        TenKhachHang = string.Empty;
+        SoDienThoai = string.Empty;
+        HinhThucThanhToanFilter = null;
+        TrangThaiThanhToanFilter = null;
+        LyDoHuy = string.Empty;
         SelectedHoaDon = null;
         ChiTietHoaDon.Clear();
         await TimKiemAsync();
+    }
+
+    private async void ExecuteInHoaDon()
+    {
+        await InHoaDonAsync();
+    }
+
+    private async void ExecuteHuyHoaDon()
+    {
+        await HuyHoaDonAsync();
     }
 
     private async Task TimKiemAsync(CancellationToken cancellationToken = default)
@@ -171,6 +255,10 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
                 nhanVienId,
                 banId,
                 caId,
+                string.IsNullOrWhiteSpace(TenKhachHang) ? null : TenKhachHang.Trim(),
+                string.IsNullOrWhiteSpace(SoDienThoai) ? null : SoDienThoai.Trim(),
+                string.IsNullOrWhiteSpace(HinhThucThanhToanFilter) ? null : HinhThucThanhToanFilter,
+                string.IsNullOrWhiteSpace(TrangThaiThanhToanFilter) ? null : TrangThaiThanhToanFilter,
                 cancellationToken);
 
             if (!result.IsSuccess || result.Data is null)
@@ -236,6 +324,112 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
         }
     }
 
+    /// <summary>In hóa đơn đang chọn trong danh sách lịch sử</summary>
+    private async Task InHoaDonAsync(CancellationToken cancellationToken = default)
+    {
+        if (IsBusy || SelectedHoaDon is null)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+
+        try
+        {
+            var nguoiDungId = _sessionService.CurrentUser?.UserId;
+            var result = await _exportPrintService.InHoaDonBanAsync(
+                SelectedHoaDon.HoaDonBanId,
+                null,
+                nguoiDungId,
+                cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                ErrorMessage = result.Message;
+                return;
+            }
+
+            SuccessMessage = $"In hóa đơn #{SelectedHoaDon.HoaDonBanId} thành công. File: {result.Data}";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Không thể in hóa đơn: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>Hủy hóa đơn đang chọn: xác nhận, nhập lý do, hoàn kho + trừ điểm</summary>
+    private async Task HuyHoaDonAsync(CancellationToken cancellationToken = default)
+    {
+        if (IsBusy || SelectedHoaDon is null)
+        {
+            return;
+        }
+
+        // Kiểm tra hóa đơn đã hủy
+        if (string.Equals(SelectedHoaDon.TrangThaiThanhToan, "Đã hủy", StringComparison.OrdinalIgnoreCase))
+        {
+            ErrorMessage = "Hóa đơn này đã được hủy trước đó.";
+            return;
+        }
+
+        // Kiểm tra lý do
+        if (string.IsNullOrWhiteSpace(LyDoHuy))
+        {
+            ErrorMessage = "Vui lòng nhập lý do hủy hóa đơn.";
+            return;
+        }
+
+        // Xác nhận
+        var confirmed = _dialogService.ShowConfirmation(
+            $"Bạn có chắc muốn hủy hóa đơn #{SelectedHoaDon.HoaDonBanId}?\n\nLý do: {LyDoHuy.Trim()}\n\nThao tác sẽ hoàn tồn kho và trừ điểm khách hàng (nếu có).",
+            "Xác nhận hủy hóa đơn");
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+
+        try
+        {
+            var nguoiHuy = _sessionService.CurrentUser?.DisplayName ?? "N/A";
+            var result = await _lichSuHoaDonService.HuyHoaDonAsync(
+                SelectedHoaDon.HoaDonBanId,
+                LyDoHuy.Trim(),
+                nguoiHuy,
+                cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                ErrorMessage = result.Message;
+                return;
+            }
+
+            SuccessMessage = $"Hủy hóa đơn #{SelectedHoaDon.HoaDonBanId} thành công. Đã hoàn tồn kho và trừ điểm.";
+            LyDoHuy = string.Empty;
+
+            // Tải lại danh sách
+            await TimKiemAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Không thể hủy hóa đơn: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
     private static int? ParseNullableInt(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
@@ -246,4 +440,3 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
         return int.TryParse(input.Trim(), out var value) ? value : null;
     }
 }
-

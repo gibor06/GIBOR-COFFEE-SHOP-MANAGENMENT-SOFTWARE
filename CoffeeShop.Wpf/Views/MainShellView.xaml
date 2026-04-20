@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CoffeeShop.Wpf.Views.MainShellView"
+<UserControl x:Class="CoffeeShop.Wpf.Views.MainShellView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -93,7 +93,12 @@
                              Style="{StaticResource SidebarListBox}"
                              ItemsSource="{Binding Source={StaticResource GroupedMenuItems}}"
                              SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}"
-                             ItemContainerStyle="{StaticResource SidebarMenuItemStyle}">
+                             ItemContainerStyle="{StaticResource SidebarMenuItemStyle}"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.CanContentScroll="True"
+                             VirtualizingStackPanel.IsVirtualizing="True"
+                             VirtualizingStackPanel.VirtualizationMode="Recycling">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding DisplayName}" Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=Foreground}" />
@@ -149,7 +154,11 @@
                     Padding="0"
                     Background="Transparent"
                     BorderThickness="0">
-                <ContentControl Content="{Binding CurrentContentViewModel}" />
+                <!-- ScrollViewer cho vùng nội dung: cuộn khi cửa sổ nhỏ -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ContentControl Content="{Binding CurrentContentViewModel}" />
+                </ScrollViewer>
             </Border>
         </Grid>
     </Grid>

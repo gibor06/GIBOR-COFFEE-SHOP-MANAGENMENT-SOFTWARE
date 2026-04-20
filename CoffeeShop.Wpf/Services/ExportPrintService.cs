@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -272,6 +272,11 @@ public sealed class ExportPrintService : IExportPrintService
         lines.Add($"Nhân viên: {model.TenNhanVien}");
         lines.Add($"Bàn/Khu vực: {(string.IsNullOrWhiteSpace(model.TenBan) ? "N/A" : model.TenBan)} / {(string.IsNullOrWhiteSpace(model.TenKhuVuc) ? "N/A" : model.TenKhuVuc)}");
         lines.Add($"Ca làm việc: {(model.CaLamViecId.HasValue ? model.CaLamViecId.Value.ToString() : "N/A")}");
+        lines.Add($"Khách hàng: {(string.IsNullOrWhiteSpace(model.TenKhachHang) ? "Khách lẻ" : model.TenKhachHang)}");
+        if (!string.IsNullOrWhiteSpace(model.SoDienThoaiKhachHang))
+        {
+            lines.Add($"SĐT khách hàng: {model.SoDienThoaiKhachHang}");
+        }
         lines.Add(string.Empty);
         lines.Add("Chi tiết:");
 
@@ -282,6 +287,36 @@ public sealed class ExportPrintService : IExportPrintService
         lines.Add($"Tổng tiền: {model.TongTien:N0}");
         lines.Add($"Giảm giá: {model.GiamGia:N0}");
         lines.Add($"Thanh toán: {model.ThanhToan:N0}");
+        lines.Add($"Hình thức: {model.HinhThucThanhToan}");
+        lines.Add($"Trạng thái: {model.TrangThaiThanhToan}");
+
+        if (model.TienKhachDua.HasValue)
+        {
+            lines.Add($"Tiền khách đưa: {model.TienKhachDua.Value:N0}");
+        }
+
+        if (model.TienThoiLai.HasValue)
+        {
+            lines.Add($"Tiền thối: {model.TienThoiLai.Value:N0}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.MaGiaoDich))
+        {
+            lines.Add($"Mã giao dịch: {model.MaGiaoDich}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.GhiChuThanhToan))
+        {
+            lines.Add($"Ghi chú TT: {model.GhiChuThanhToan}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.GhiChuHoaDon))
+        {
+            lines.Add($"Ghi chú: {model.GhiChuHoaDon}");
+        }
+
+        lines.Add(string.Empty);
+        lines.Add("Cảm ơn quý khách. Hẹn gặp lại!");
         return lines;
     }
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using CoffeeShop.Wpf.Commands;
 using CoffeeShop.Wpf.Models;
@@ -31,6 +31,7 @@ public sealed class ThongKeViewModel : BaseViewModel
         DoanhThuTheoNgay = new ObservableCollection<ThongKeDoanhThu>();
         TopSanPhamBanChay = new ObservableCollection<ThongKeTopSanPhamDong>();
         DanhSachHoaDon = new ObservableCollection<HoaDonBanTimKiemDong>();
+        DoanhThuTheoHTTT = new ObservableCollection<ThongKeDoanhThuTheoHTTT>();
 
         _taiThongKeCommand = new RelayCommand(ExecuteTaiThongKe, () => !IsBusy);
         _lamMoiCommand = new RelayCommand(ExecuteLamMoi, () => !IsBusy);
@@ -41,6 +42,9 @@ public sealed class ThongKeViewModel : BaseViewModel
     public ObservableCollection<ThongKeTopSanPhamDong> TopSanPhamBanChay { get; }
 
     public ObservableCollection<HoaDonBanTimKiemDong> DanhSachHoaDon { get; }
+
+    /// <summary>Doanh thu theo hình thức thanh toán</summary>
+    public ObservableCollection<ThongKeDoanhThuTheoHTTT> DoanhThuTheoHTTT { get; }
 
     public DateTime FromDate
     {
@@ -176,6 +180,12 @@ public sealed class ThongKeViewModel : BaseViewModel
         foreach (var item in data.TopSanPhamBanChay)
         {
             TopSanPhamBanChay.Add(item);
+        }
+
+        DoanhThuTheoHTTT.Clear();
+        foreach (var item in data.DoanhThuTheoHTTT)
+        {
+            DoanhThuTheoHTTT.Add(item);
         }
 
         TongSoHoaDon = data.TongSoHoaDon;
