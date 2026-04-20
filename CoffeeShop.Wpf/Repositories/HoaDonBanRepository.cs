@@ -194,5 +194,64 @@ ORDER BY NgayBan DESC;";
 
         return result;
     }
+
+    /// <summary>
+    /// Lấy hóa đơn đã thanh toán trong khoảng thời gian (dùng cho thống kê).
+    /// Loại trừ hóa đơn đã hủy, dữ liệu cũ NULL xem như đã thanh toán.
+    /// </summary>
+    public async Task<IReadOnlyList<HoaDonBan>> GetPaidByDateRangeAsync(
+        DateTime fromDate,
+        DateTime toDate,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+SELECT HoaDonBanId,
+       NgayBan,
+       TongTien,
+       GiamGia,
+       CreatedByUserId,
+       BanId,
+       CaLamViecId,
+       KhachHangId,
+       KhuyenMaiId,
+       SoTienGiam,
+       DiemCong
+FROM dbo.HoaDonBan
+WHERE NgayBan >= @FromDate
+  AND NgayBan < @ToDateExclusive
+  AND ISNULL(TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
+ORDER BY NgayBan DESC;";
+
+        var result = new List<HoaDonBan>();
+
+        await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@FromDate", fromDate.Date);
+        command.Parameters.AddWithValue("@ToDateExclusive", toDate.Date.AddDays(1));
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            result.Add(new HoaDonBan
+            {
+                HoaDonBanId = reader.GetInt32(reader.GetOrdinal("HoaDonBanId")),
+                NgayBan = reader.GetDateTime(reader.GetOrdinal("NgayBan")),
+                TongTien = reader.GetDecimal(reader.GetOrdinal("TongTien")),
+                GiamGia = reader.GetDecimal(reader.GetOrdinal("GiamGia")),
+                CreatedByUserId = reader.GetInt32(reader.GetOrdinal("CreatedByUserId")),
+                BanId = reader.IsDBNull(reader.GetOrdinal("BanId")) ? null : reader.GetInt32(reader.GetOrdinal("BanId")),
+                CaLamViecId = reader.IsDBNull(reader.GetOrdinal("CaLamViecId")) ? null : reader.GetInt32(reader.GetOrdinal("CaLamViecId")),
+                KhachHangId = reader.IsDBNull(reader.GetOrdinal("KhachHangId")) ? null : reader.GetInt32(reader.GetOrdinal("KhachHangId")),
+                KhuyenMaiId = reader.IsDBNull(reader.GetOrdinal("KhuyenMaiId")) ? null : reader.GetInt32(reader.GetOrdinal("KhuyenMaiId")),
+                SoTienGiam = reader.GetDecimal(reader.GetOrdinal("SoTienGiam")),
+                DiemCong = reader.GetInt32(reader.GetOrdinal("DiemCong"))
+            });
+        }
+
+        return result;
+    }
 }
 

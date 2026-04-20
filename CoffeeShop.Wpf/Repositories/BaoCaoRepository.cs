@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Infrastructure;
+using CoffeeShop.Wpf.Infrastructure;
 using CoffeeShop.Wpf.Models;
 using Microsoft.Data.SqlClient;
 
@@ -20,6 +20,7 @@ public sealed class BaoCaoRepository : IBaoCaoRepository
         FROM dbo.HoaDonBan h
         WHERE h.NgayBan >= @FromDate
           AND h.NgayBan < @ToDateExclusive
+          AND ISNULL(h.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
         GROUP BY CAST(h.NgayBan AS DATE)
         ORDER BY Ngay DESC;";
 
@@ -64,6 +65,7 @@ public sealed class BaoCaoRepository : IBaoCaoRepository
         JOIN dbo.Mon m ON m.MonId = c.MonId
         WHERE h.NgayBan >= @FromDate
           AND h.NgayBan < @ToDateExclusive
+          AND ISNULL(h.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
         GROUP BY m.MonId, m.TenMon
         ORDER BY DoanhThuGop DESC, SoLuongBan DESC;";
 

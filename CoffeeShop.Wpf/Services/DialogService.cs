@@ -5,10 +5,91 @@ namespace CoffeeShop.Wpf.Services;
 
 public sealed class DialogService : IDialogService
 {
+    /// <summary>
+    /// Hiển thị popup xác nhận có ScrollViewer cho nội dung dài.
+    /// Nút Xác nhận / Hủy luôn nhìn thấy, không bị cuộn theo.
+    /// </summary>
     public bool ShowConfirmation(string message, string title)
     {
-        var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-        return result == MessageBoxResult.Yes;
+        // Message ngắn → dùng MessageBox cho nhanh
+        if (message.Length < 150 && !message.Contains('\n'))
+        {
+            var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            return result == MessageBoxResult.Yes;
+        }
+
+        // Message dài → custom dialog có scroll
+        var dialog = new Window
+        {
+            Title = title,
+            Width = 480,
+            MaxHeight = 500,
+            SizeToContent = SizeToContent.Height,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            ResizeMode = ResizeMode.NoResize
+        };
+
+        var mainPanel = new DockPanel { Margin = new Thickness(20) };
+
+        // Nút xác nhận / hủy cố định bên dưới
+        var buttonPanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(0, 15, 0, 0)
+        };
+        DockPanel.SetDock(buttonPanel, Dock.Bottom);
+
+        var yesButton = new Button
+        {
+            Content = "Xác nhận",
+            Width = 100,
+            Margin = new Thickness(0, 0, 10, 0),
+            IsDefault = true
+        };
+
+        var noButton = new Button
+        {
+            Content = "Hủy",
+            Width = 100,
+            IsCancel = true
+        };
+
+        buttonPanel.Children.Add(yesButton);
+        buttonPanel.Children.Add(noButton);
+        mainPanel.Children.Add(buttonPanel);
+
+        // Nội dung cuộn được khi dài
+        var scrollViewer = new ScrollViewer
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            MaxHeight = 400
+        };
+
+        scrollViewer.Content = new TextBlock
+        {
+            Text = message,
+            TextWrapping = TextWrapping.Wrap,
+            FontSize = 13
+        };
+
+        mainPanel.Children.Add(scrollViewer);
+
+        yesButton.Click += (s, e) =>
+        {
+            dialog.DialogResult = true;
+            dialog.Close();
+        };
+
+        noButton.Click += (s, e) =>
+        {
+            dialog.DialogResult = false;
+            dialog.Close();
+        };
+
+        dialog.Content = mainPanel;
+        return dialog.ShowDialog() == true;
     }
 
     public string? ShowPasswordInput(string message, string title)
