@@ -29,7 +29,7 @@ public sealed class HoaDonBan
     // === Thông tin thanh toán nâng cao ===
 
     /// <summary>Hình thức thanh toán: Tiền mặt, Chuyển khoản, Thẻ, Ví điện tử</summary>
-    public string HinhThucThanhToan { get; set; } = "Tiền mặt";
+    public string HinhThucThanhToan { get; set; } = HinhThucThanhToanConst.TienMat;
 
     /// <summary>Trạng thái thanh toán: Đã thanh toán, Chưa thanh toán, Đã hủy</summary>
     public string TrangThaiThanhToan { get; set; } = "Đã thanh toán";

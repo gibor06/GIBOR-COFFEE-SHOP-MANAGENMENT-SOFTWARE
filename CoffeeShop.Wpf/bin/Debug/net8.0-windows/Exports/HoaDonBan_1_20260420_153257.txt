@@ -1,0 +1,22 @@
+CoffeeShop CF4
+Địa chỉ: 123 Đường Demo, Quận 1, TP.HCM
+SĐT: 0909000999
+Cảm ơn quý khách và hẹn gặp lại.
+
+HÓA ĐƠN BÁN #1
+Ngày bán: 15/01/2026 09:30
+Nhân viên: Quản trị viên
+Bàn/Khu vực: N/A / N/A
+Ca làm việc: N/A
+Khách hàng: Khách lẻ
+
+Chi tiết:
+- Espresso Demo: 2 x 45.000 = 90.000
+
+Tổng tiền: 90.000
+Giảm giá: 5.000
+Thanh toán: 85.000
+Hình thức: Tiền mặt
+Trạng thái: Đã thanh toán
+
+Cảm ơn quý khách. Hẹn gặp lại!

@@ -1,0 +1,23 @@
+CoffeeShop CF4
+Địa chỉ: 123 Đường Demo, Quận 1, TP.HCM
+SĐT: 0909000999
+Cảm ơn quý khách và hẹn gặp lại.
+
+HÓA ĐƠN BÁN #26
+Ngày bán: 19/04/2026 13:49
+Nhân viên: Quản trị viên
+Bàn/Khu vực: Bàn 01 / Tầng 1
+Ca làm việc: N/A
+Khách hàng: Trần Thị B
+SĐT khách hàng: 0901000002
+
+Chi tiết:
+- Trà đào: 2 x 50.000 = 100.000
+
+Tổng tiền: 100.000
+Giảm giá: 10.000
+Thanh toán: 90.000
+Hình thức: Tiền mặt
+Trạng thái: Đã thanh toán
+
+Cảm ơn quý khách. Hẹn gặp lại!

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using CoffeeShop.Wpf.Commands;
+using CoffeeShop.Wpf.Helpers;
 using CoffeeShop.Wpf.Models;
 using CoffeeShop.Wpf.Services;
 
@@ -39,7 +40,7 @@ public sealed class HoaDonBanViewModel : BaseViewModel
     private int _diemCongDuKien;
 
     // === Thanh toán nâng cao ===
-    private string _hinhThucThanhToanDuocChon = "Tiền mặt";
+    private string _hinhThucThanhToanDuocChon = HinhThucThanhToanConst.TienMat;
     private string _tienKhachDuaText = string.Empty;
     private decimal _tienThoiLai;
     private string _maGiaoDich = string.Empty;
@@ -91,7 +92,7 @@ public sealed class HoaDonBanViewModel : BaseViewModel
 
     /// <summary>Danh sách hình thức thanh toán hiển thị trên ComboBox</summary>
     public IReadOnlyList<string> DanhSachHinhThucThanhToan { get; } =
-        ["Tiền mặt", "Chuyển khoản", "Thẻ", "Ví điện tử"];
+        HinhThucThanhToanConst.TatCa;
 
     public Mon? SelectedMon
     {
@@ -232,7 +233,13 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         get => _hinhThucThanhToanDuocChon;
         set
         {
-            if (SetProperty(ref _hinhThucThanhToanDuocChon, value))
+            var normalized = TextNormalizationHelper.Normalize(value)?.Trim() ?? string.Empty;
+            if (HinhThucThanhToanConst.TryNormalize(normalized, out var canonical))
+            {
+                normalized = canonical;
+            }
+
+            if (SetProperty(ref _hinhThucThanhToanDuocChon, normalized))
             {
                 OnPropertyChanged(nameof(IsThanhToanTienMat));
                 RecalculateTienThoiLai();
@@ -242,7 +249,7 @@ public sealed class HoaDonBanViewModel : BaseViewModel
 
     /// <summary>True khi hình thức thanh toán là tiền mặt (dùng cho Visibility binding)</summary>
     public bool IsThanhToanTienMat =>
-        string.Equals(_hinhThucThanhToanDuocChon, "Tiền mặt", StringComparison.OrdinalIgnoreCase);
+        string.Equals(_hinhThucThanhToanDuocChon, HinhThucThanhToanConst.TienMat, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Tiền khách đưa (text binding)</summary>
     public string TienKhachDuaText
@@ -525,7 +532,7 @@ public sealed class HoaDonBanViewModel : BaseViewModel
                 chiTietInputs,
                 SelectedKhachHang?.KhachHangId,
                 SelectedKhuyenMai?.KhuyenMaiId,
-                HinhThucThanhToanDuocChon,
+                HinhThucThanhToanDuocChon.Trim(),
                 TryParseDecimal(TienKhachDuaText, out var tienKhachDua) ? tienKhachDua : null,
                 string.IsNullOrWhiteSpace(MaGiaoDich) ? null : MaGiaoDich,
                 string.IsNullOrWhiteSpace(GhiChuThanhToan) ? null : GhiChuThanhToan,
@@ -572,7 +579,7 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         GiamGia = "0";
 
         // Reset thanh toán
-        HinhThucThanhToanDuocChon = "Tiền mặt";
+        HinhThucThanhToanDuocChon = HinhThucThanhToanConst.TienMat;
         TienKhachDuaText = string.Empty;
         MaGiaoDich = string.Empty;
         GhiChuThanhToan = string.Empty;
@@ -698,7 +705,7 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         GiamGia = "0";
 
         // Reset thanh toán
-        HinhThucThanhToanDuocChon = "Tiền mặt";
+        HinhThucThanhToanDuocChon = HinhThucThanhToanConst.TienMat;
         TienKhachDuaText = string.Empty;
         MaGiaoDich = string.Empty;
         GhiChuThanhToan = string.Empty;

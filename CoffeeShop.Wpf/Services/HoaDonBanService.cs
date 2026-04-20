@@ -1,5 +1,6 @@
 using CoffeeShop.Wpf.Models;
 using CoffeeShop.Wpf.Repositories;
+using CoffeeShop.Wpf.Helpers;
 
 namespace CoffeeShop.Wpf.Services;
 
@@ -31,9 +32,6 @@ public sealed class HoaDonBanService : IHoaDonBanService
         _khachHangService = khachHangService;
     }
 
-    // Danh sách hình thức thanh toán hợp lệ
-    private static readonly string[] HinhThucThanhToanHopLe = ["Tiền mặt", "Chuyển khoản", "Thẻ", "Ví điện tử"];
-
     public async Task<ServiceResult<HoaDonBan>> CreateAsync(
         int createdByUserId,
         decimal giamGia,
@@ -42,7 +40,7 @@ public sealed class HoaDonBanService : IHoaDonBanService
         IReadOnlyList<HoaDonBanChiTietInputModel> chiTietInputs,
         int? khachHangId = null,
         int? khuyenMaiId = null,
-        string hinhThucThanhToan = "Tiền mặt",
+        string hinhThucThanhToan = HinhThucThanhToanConst.TienMat,
         decimal? tienKhachDua = null,
         string? maGiaoDich = null,
         string? ghiChuThanhToan = null,
@@ -144,15 +142,16 @@ public sealed class HoaDonBanService : IHoaDonBanService
             return ServiceResult<HoaDonBan>.Fail("Giảm giá không được lớn hơn tổng tiền.");
         }
 
-        // === Validate hình thức thanh toán ===
-        if (string.IsNullOrWhiteSpace(hinhThucThanhToan))
+        // === Validate + chuẩn hóa hình thức thanh toán ===
+        var hinhThucThanhToanDaChuanHoa = TextNormalizationHelper.Normalize(hinhThucThanhToan)?.Trim();
+        if (string.IsNullOrWhiteSpace(hinhThucThanhToanDaChuanHoa))
         {
             return ServiceResult<HoaDonBan>.Fail("Vui lòng chọn hình thức thanh toán.");
         }
 
-        if (!HinhThucThanhToanHopLe.Contains(hinhThucThanhToan))
+        if (!HinhThucThanhToanConst.TryNormalize(hinhThucThanhToanDaChuanHoa, out var hinhThucThanhToanHopLe))
         {
-            return ServiceResult<HoaDonBan>.Fail($"Hình thức thanh toán '{hinhThucThanhToan}' không hợp lệ.");
+            return ServiceResult<HoaDonBan>.Fail($"Hình thức thanh toán '{hinhThucThanhToanDaChuanHoa}' không hợp lệ.");
         }
 
         if (khachHangId.HasValue && khachHangId.Value > 0)
@@ -186,7 +185,7 @@ public sealed class HoaDonBanService : IHoaDonBanService
 
         // === Validate tiền khách đưa cho tiền mặt ===
         decimal? tienThoiLai = null;
-        if (string.Equals(hinhThucThanhToan, "Tiền mặt", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(hinhThucThanhToanHopLe, HinhThucThanhToanConst.TienMat, StringComparison.OrdinalIgnoreCase))
         {
             if (!tienKhachDua.HasValue || tienKhachDua.Value < thanhToanSauGiam)
             {
@@ -213,7 +212,7 @@ public sealed class HoaDonBanService : IHoaDonBanService
             SoTienGiam = soTienGiamKhuyenMai,
             DiemCong = diemCong,
             // Thanh toán nâng cao
-            HinhThucThanhToan = hinhThucThanhToan,
+            HinhThucThanhToan = hinhThucThanhToanHopLe,
             TrangThaiThanhToan = "Đã thanh toán",
             TienKhachDua = tienKhachDua,
             TienThoiLai = tienThoiLai,

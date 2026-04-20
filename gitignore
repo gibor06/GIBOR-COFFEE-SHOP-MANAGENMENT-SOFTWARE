@@ -5,6 +5,13 @@
 
 #agent
 .agent/
+.github
+
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+.vs/
 
 # Build output
 [Bb]in/

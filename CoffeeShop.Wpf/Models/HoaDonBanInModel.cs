@@ -25,7 +25,7 @@ public sealed class HoaDonBanInModel
     public string? SoDienThoaiKhachHang { get; set; }
 
     // === Thông tin thanh toán ===
-    public string HinhThucThanhToan { get; set; } = "Tiền mặt";
+    public string HinhThucThanhToan { get; set; } = HinhThucThanhToanConst.TienMat;
     public string TrangThaiThanhToan { get; set; } = "Đã thanh toán";
     public decimal? TienKhachDua { get; set; }
     public decimal? TienThoiLai { get; set; }

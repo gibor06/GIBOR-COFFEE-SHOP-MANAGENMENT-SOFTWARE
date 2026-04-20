@@ -1,4 +1,5 @@
 using CoffeeShop.Wpf.Infrastructure;
+using CoffeeShop.Wpf.Helpers;
 using CoffeeShop.Wpf.Models;
 using Microsoft.Data.SqlClient;
 
@@ -61,6 +62,12 @@ VALUES
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             await using var insertHoaDonBanCommand = new SqlCommand(insertHoaDonBanSql, connection, (SqlTransaction)transaction);
+            var hinhThucThanhToan = TextNormalizationHelper.Normalize(hoaDonBan.HinhThucThanhToan)?.Trim();
+            if (!HinhThucThanhToanConst.TryNormalize(hinhThucThanhToan, out var hinhThucThanhToanHopLe))
+            {
+                hinhThucThanhToanHopLe = HinhThucThanhToanConst.TienMat;
+            }
+
             insertHoaDonBanCommand.Parameters.AddWithValue("@NgayBan", hoaDonBan.NgayBan);
             insertHoaDonBanCommand.Parameters.AddWithValue("@TongTien", hoaDonBan.TongTien);
             insertHoaDonBanCommand.Parameters.AddWithValue("@GiamGia", hoaDonBan.GiamGia);
@@ -72,8 +79,7 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
             insertHoaDonBanCommand.Parameters.AddWithValue("@SoTienGiam", hoaDonBan.SoTienGiam);
             insertHoaDonBanCommand.Parameters.AddWithValue("@DiemCong", hoaDonBan.DiemCong);
             // Thanh toán nâng cao
-            insertHoaDonBanCommand.Parameters.AddWithValue("@HinhThucThanhToan",
-                string.IsNullOrWhiteSpace(hoaDonBan.HinhThucThanhToan) ? "Tiền mặt" : hoaDonBan.HinhThucThanhToan);
+            insertHoaDonBanCommand.Parameters.AddWithValue("@HinhThucThanhToan", hinhThucThanhToanHopLe);
             insertHoaDonBanCommand.Parameters.AddWithValue("@TrangThaiThanhToan",
                 string.IsNullOrWhiteSpace(hoaDonBan.TrangThaiThanhToan) ? "Đã thanh toán" : hoaDonBan.TrangThaiThanhToan);
             insertHoaDonBanCommand.Parameters.AddWithValue("@TienKhachDua", (object?)hoaDonBan.TienKhachDua ?? DBNull.Value);

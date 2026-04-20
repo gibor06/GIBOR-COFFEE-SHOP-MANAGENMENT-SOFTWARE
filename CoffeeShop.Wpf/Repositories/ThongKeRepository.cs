@@ -116,7 +116,7 @@ SELECT ISNULL(HinhThucThanhToan, N'Tiền mặt') AS HinhThucThanhToan,
 FROM dbo.HoaDonBan
 WHERE NgayBan >= @FromDate
   AND NgayBan < @ToDateExclusive
-  AND ISNULL(TrangThaiThanhToan, N'Đã thanh toán') <> N'Đã hủy'
+  AND ISNULL(TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
 GROUP BY ISNULL(HinhThucThanhToan, N'Tiền mặt')
 ORDER BY TongDoanhThu DESC;";
 

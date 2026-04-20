@@ -12,7 +12,7 @@ public interface IHoaDonBanService
         IReadOnlyList<HoaDonBanChiTietInputModel> chiTietInputs,
         int? khachHangId = null,
         int? khuyenMaiId = null,
-        string hinhThucThanhToan = "Tiền mặt",
+        string hinhThucThanhToan = HinhThucThanhToanConst.TienMat,
         decimal? tienKhachDua = null,
         string? maGiaoDich = null,
         string? ghiChuThanhToan = null,

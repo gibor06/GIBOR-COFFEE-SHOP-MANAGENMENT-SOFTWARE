@@ -1,0 +1,13 @@
+CoffeeShop CF4
+Địa chỉ: 123 Đường Demo, Quận 1, TP.HCM
+SĐT: 0909000999
+Cảm ơn quý khách và hẹn gặp lại.
+
+PREVIEW BÁO CÁO NÂNG CAO
+Từ ngày: 13/04/2026
+Đến ngày: 20/04/2026
+Số dòng: 3
+
+1 | Cà phê sữa | Số lượng=19 | Doanh thu=475.000
+2 | Bạc xỉu | Số lượng=15 | Doanh thu=450.000
+3 | Trà đào | Số lượng=9 | Doanh thu=450.000
