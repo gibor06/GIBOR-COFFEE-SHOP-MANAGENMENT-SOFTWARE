@@ -1687,23 +1687,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Tran Gia Bao\\.nuget\\packages\\": {},
+    "C:\\Users\\HOAI TRAN\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj",
+      "projectUniqueName": "E:\\Learn\\Ky4_25_26\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj",
       "projectName": "CoffeeShop.Wpf",
-      "projectPath": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj",
-      "packagesPath": "C:\\Users\\Tran Gia Bao\\.nuget\\packages\\",
-      "outputPath": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\obj\\",
+      "projectPath": "E:\\Learn\\Ky4_25_26\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj",
+      "packagesPath": "C:\\Users\\HOAI TRAN\\.nuget\\packages\\",
+      "outputPath": "E:\\Learn\\Ky4_25_26\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\CoffeeShop.Wpf\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Tran Gia Bao\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\HOAI TRAN\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1712,6 +1712,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1730,7 +1731,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net8.0-windows7.0": {
@@ -1760,7 +1761,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

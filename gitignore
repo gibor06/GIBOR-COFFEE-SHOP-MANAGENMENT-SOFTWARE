@@ -3,6 +3,9 @@
 # .NET / WPF / Visual Studio
 # =========================
 
+#agent
+.agent/
+
 # Build output
 [Bb]in/
 [Oo]bj/
