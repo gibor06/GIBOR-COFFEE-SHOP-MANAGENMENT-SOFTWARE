@@ -22,6 +22,7 @@ public sealed class CaLamViecRepository : ICaLamViecRepository
         FROM dbo.CaLamViec c
         JOIN dbo.NguoiDung nd ON nd.NguoiDungId = c.NguoiDungId
         LEFT JOIN dbo.HoaDonBan hb ON hb.CaLamViecId = c.CaLamViecId
+              AND ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
         WHERE c.NguoiDungId = @NguoiDungId
           AND c.TrangThaiCa = N'DangMo'
         GROUP BY c.CaLamViecId, c.NguoiDungId, nd.HoTen, c.ThoiGianMoCa, c.ThoiGianDongCa, c.TrangThaiCa, c.GhiChu
@@ -102,6 +103,7 @@ public sealed class CaLamViecRepository : ICaLamViecRepository
         FROM dbo.CaLamViec c
         JOIN dbo.NguoiDung nd ON nd.NguoiDungId = c.NguoiDungId
         LEFT JOIN dbo.HoaDonBan hb ON hb.CaLamViecId = c.CaLamViecId
+              AND ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
         WHERE c.ThoiGianMoCa >= @FromDate
           AND c.ThoiGianMoCa < @ToDateExclusive
           AND (@NguoiDungId IS NULL OR c.NguoiDungId = @NguoiDungId)
@@ -135,6 +137,7 @@ public sealed class CaLamViecRepository : ICaLamViecRepository
                ISNULL(SUM(hb.ThanhToan), 0) AS TongDoanhThu
         FROM dbo.CaLamViec c
         LEFT JOIN dbo.HoaDonBan hb ON hb.CaLamViecId = c.CaLamViecId
+              AND ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
         WHERE c.CaLamViecId = @CaLamViecId
         GROUP BY c.CaLamViecId;";
 

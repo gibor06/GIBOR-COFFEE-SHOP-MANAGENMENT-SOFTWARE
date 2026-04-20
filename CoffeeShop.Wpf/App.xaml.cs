@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using CoffeeShop.Wpf.Repositories;
 using CoffeeShop.Wpf.Services;
 using CoffeeShop.Wpf.ViewModels;
@@ -77,7 +77,7 @@ public partial class App : Application
 
         var lichSuHoaDonRepository = new LichSuHoaDonRepository();
         var lichSuHoaDonService = new LichSuHoaDonService(lichSuHoaDonRepository);
-        var lichSuHoaDonViewModel = new LichSuHoaDonViewModel(lichSuHoaDonService);
+        var lichSuHoaDonViewModel = new LichSuHoaDonViewModel(lichSuHoaDonService, exportPrintService, dialogService, sessionService);
 
         var hoaDonBanRepository = new HoaDonBanRepository();
         var hoaDonBanService = new HoaDonBanService(

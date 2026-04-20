@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using CoffeeShop.Wpf.Commands;
@@ -37,6 +37,14 @@ public sealed class HoaDonBanViewModel : BaseViewModel
     private decimal _soTienGiamKhuyenMai;
     private decimal _thanhToan;
     private int _diemCongDuKien;
+
+    // === Thanh toán nâng cao ===
+    private string _hinhThucThanhToanDuocChon = "Tiền mặt";
+    private string _tienKhachDuaText = string.Empty;
+    private decimal _tienThoiLai;
+    private string _maGiaoDich = string.Empty;
+    private string _ghiChuThanhToan = string.Empty;
+    private string _ghiChuHoaDon = string.Empty;
 
     private string _errorMessage = string.Empty;
     private string _successMessage = string.Empty;
@@ -80,6 +88,10 @@ public sealed class HoaDonBanViewModel : BaseViewModel
     public ObservableCollection<KhuyenMai> KhuyenMais { get; }
 
     public ObservableCollection<ChiTietHoaDonBanHienThi> ChiTietLines { get; }
+
+    /// <summary>Danh sách hình thức thanh toán hiển thị trên ComboBox</summary>
+    public IReadOnlyList<string> DanhSachHinhThucThanhToan { get; } =
+        ["Tiền mặt", "Chuyển khoản", "Thẻ", "Ví điện tử"];
 
     public Mon? SelectedMon
     {
@@ -210,6 +222,67 @@ public sealed class HoaDonBanViewModel : BaseViewModel
     {
         get => _diemCongDuKien;
         private set => SetProperty(ref _diemCongDuKien, value);
+    }
+
+    // === Properties thanh toán nâng cao ===
+
+    /// <summary>Hình thức thanh toán được chọn (binding ComboBox)</summary>
+    public string HinhThucThanhToanDuocChon
+    {
+        get => _hinhThucThanhToanDuocChon;
+        set
+        {
+            if (SetProperty(ref _hinhThucThanhToanDuocChon, value))
+            {
+                OnPropertyChanged(nameof(IsThanhToanTienMat));
+                RecalculateTienThoiLai();
+            }
+        }
+    }
+
+    /// <summary>True khi hình thức thanh toán là tiền mặt (dùng cho Visibility binding)</summary>
+    public bool IsThanhToanTienMat =>
+        string.Equals(_hinhThucThanhToanDuocChon, "Tiền mặt", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Tiền khách đưa (text binding)</summary>
+    public string TienKhachDuaText
+    {
+        get => _tienKhachDuaText;
+        set
+        {
+            if (SetProperty(ref _tienKhachDuaText, value))
+            {
+                RecalculateTienThoiLai();
+            }
+        }
+    }
+
+    /// <summary>Tiền thối lại (tự tính)</summary>
+    public decimal TienThoiLai
+    {
+        get => _tienThoiLai;
+        private set => SetProperty(ref _tienThoiLai, value);
+    }
+
+    /// <summary>Mã giao dịch (chuyển khoản, thẻ, ví)</summary>
+    public string MaGiaoDich
+    {
+        get => _maGiaoDich;
+        set => SetProperty(ref _maGiaoDich, value);
+    }
+
+    /// <summary>Ghi chú thanh toán</summary>
+    public string GhiChuThanhToan
+    {
+        get => _ghiChuThanhToan;
+        set => SetProperty(ref _ghiChuThanhToan, value);
+    }
+
+    /// <summary>Ghi chú hóa đơn</summary>
+    public string GhiChuHoaDon
+    {
+        get => _ghiChuHoaDon;
+        set => SetProperty(ref _ghiChuHoaDon, value);
     }
 
     public string ErrorMessage
@@ -452,6 +525,11 @@ public sealed class HoaDonBanViewModel : BaseViewModel
                 chiTietInputs,
                 SelectedKhachHang?.KhachHangId,
                 SelectedKhuyenMai?.KhuyenMaiId,
+                HinhThucThanhToanDuocChon,
+                TryParseDecimal(TienKhachDuaText, out var tienKhachDua) ? tienKhachDua : null,
+                string.IsNullOrWhiteSpace(MaGiaoDich) ? null : MaGiaoDich,
+                string.IsNullOrWhiteSpace(GhiChuThanhToan) ? null : GhiChuThanhToan,
+                string.IsNullOrWhiteSpace(GhiChuHoaDon) ? null : GhiChuHoaDon,
                 cancellationToken);
 
             if (!result.IsSuccess)
@@ -492,6 +570,13 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         SoLuongBan = "1";
         DonGiaBan = string.Empty;
         GiamGia = "0";
+
+        // Reset thanh toán
+        HinhThucThanhToanDuocChon = "Tiền mặt";
+        TienKhachDuaText = string.Empty;
+        MaGiaoDich = string.Empty;
+        GhiChuThanhToan = string.Empty;
+        GhiChuHoaDon = string.Empty;
 
         SelectedDongChiTiet = null;
         ChiTietLines.Clear();
@@ -611,6 +696,13 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         DonGiaBan = string.Empty;
         GiamGia = "0";
 
+        // Reset thanh toán
+        HinhThucThanhToanDuocChon = "Tiền mặt";
+        TienKhachDuaText = string.Empty;
+        MaGiaoDich = string.Empty;
+        GhiChuThanhToan = string.Empty;
+        GhiChuHoaDon = string.Empty;
+
         SelectedDongChiTiet = null;
         ChiTietLines.Clear();
         RecalculateTotals();
@@ -632,6 +724,8 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         DiemCongDuKien = SelectedKhachHang is null
             ? 0
             : (int)Math.Floor(ThanhToan / 10000m);
+
+        RecalculateTienThoiLai();
     }
 
     private static decimal TinhSoTienGiamKhuyenMai(decimal tongTien, KhuyenMai? khuyenMai)
@@ -665,6 +759,25 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         }
 
         return decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out result);
+    }
+
+    /// <summary>Tính lại tiền thối lại khi HTTT hoặc tiền khách đưa thay đổi</summary>
+    private void RecalculateTienThoiLai()
+    {
+        if (!IsThanhToanTienMat)
+        {
+            TienThoiLai = 0;
+            return;
+        }
+
+        if (TryParseDecimal(TienKhachDuaText, out var tienKhachDua) && tienKhachDua >= ThanhToan)
+        {
+            TienThoiLai = tienKhachDua - ThanhToan;
+        }
+        else
+        {
+            TienThoiLai = 0;
+        }
     }
 }
 

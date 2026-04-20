@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Models;
+using CoffeeShop.Wpf.Models;
 using CoffeeShop.Wpf.Repositories;
 
 namespace CoffeeShop.Wpf.Services;
@@ -31,6 +31,7 @@ public sealed class ThongKeService : IThongKeService
 
         var doanhThuTheoNgay = await _thongKeRepository.GetDoanhThuTheoNgayAsync(fromDate, toDate, cancellationToken);
         var topSanPhamBanChay = await _thongKeRepository.GetTopSanPhamBanChayAsync(fromDate, toDate, 10, cancellationToken);
+        var doanhThuTheoHTTT = await _thongKeRepository.GetDoanhThuTheoHTTTAsync(fromDate, toDate, cancellationToken);
         var hoaDonBans = await _hoaDonBanRepository.GetByDateRangeAsync(fromDate, toDate, cancellationToken);
 
         var danhSachHoaDon = hoaDonBans
@@ -51,6 +52,7 @@ public sealed class ThongKeService : IThongKeService
         {
             DoanhThuTheoNgay = doanhThuTheoNgay.OrderByDescending(x => x.Ngay).ToList(),
             TopSanPhamBanChay = topSanPhamBanChay,
+            DoanhThuTheoHTTT = doanhThuTheoHTTT,
             DanhSachHoaDon = danhSachHoaDon,
             TongSoHoaDon = danhSachHoaDon.Count,
             TongDoanhThuGop = danhSachHoaDon.Sum(x => x.TongTien),

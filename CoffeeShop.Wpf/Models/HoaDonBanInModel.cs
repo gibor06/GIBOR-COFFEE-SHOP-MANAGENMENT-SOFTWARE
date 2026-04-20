@@ -20,6 +20,19 @@ public sealed class HoaDonBanInModel
 
     public int? CaLamViecId { get; set; }
 
+    // === Thông tin khách hàng ===
+    public string? TenKhachHang { get; set; }
+    public string? SoDienThoaiKhachHang { get; set; }
+
+    // === Thông tin thanh toán ===
+    public string HinhThucThanhToan { get; set; } = "Tiền mặt";
+    public string TrangThaiThanhToan { get; set; } = "Đã thanh toán";
+    public decimal? TienKhachDua { get; set; }
+    public decimal? TienThoiLai { get; set; }
+    public string? MaGiaoDich { get; set; }
+    public string? GhiChuThanhToan { get; set; }
+    public string? GhiChuHoaDon { get; set; }
+
     public IReadOnlyList<HoaDonBanInChiTietDong> ChiTiet { get; set; } = [];
 }
 

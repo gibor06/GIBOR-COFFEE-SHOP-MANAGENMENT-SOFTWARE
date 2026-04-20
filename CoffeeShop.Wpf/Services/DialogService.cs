@@ -17,31 +17,22 @@ public sealed class DialogService : IDialogService
         {
             Title = title,
             Width = 400,
-            Height = 200,
+            MaxHeight = 350,
+            SizeToContent = SizeToContent.Height,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
             ResizeMode = ResizeMode.NoResize
         };
 
-        var stackPanel = new StackPanel { Margin = new Thickness(20) };
+        var mainPanel = new DockPanel { Margin = new Thickness(20) };
 
-        stackPanel.Children.Add(new TextBlock
-        {
-            Text = message,
-            Margin = new Thickness(0, 0, 0, 10),
-            TextWrapping = TextWrapping.Wrap
-        });
-
-        var passwordBox = new PasswordBox
-        {
-            Margin = new Thickness(0, 0, 0, 15)
-        };
-        stackPanel.Children.Add(passwordBox);
-
+        // Nút nằm dưới cùng, ngoài vùng scroll
         var buttonPanel = new StackPanel
         {
             Orientation = Orientation.Horizontal,
-            HorizontalAlignment = HorizontalAlignment.Right
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(0, 15, 0, 0)
         };
+        DockPanel.SetDock(buttonPanel, Dock.Bottom);
 
         var okButton = new Button
         {
@@ -50,6 +41,40 @@ public sealed class DialogService : IDialogService
             Margin = new Thickness(0, 0, 10, 0),
             IsDefault = true
         };
+
+        var cancelButton = new Button
+        {
+            Content = "Hủy",
+            Width = 100,
+            IsCancel = true
+        };
+
+        buttonPanel.Children.Add(okButton);
+        buttonPanel.Children.Add(cancelButton);
+        mainPanel.Children.Add(buttonPanel);
+
+        // Nội dung cuộn được
+        var scrollViewer = new ScrollViewer
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            MaxHeight = 200
+        };
+
+        var contentPanel = new StackPanel();
+        contentPanel.Children.Add(new TextBlock
+        {
+            Text = message,
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Thickness(0, 0, 0, 10)
+        });
+
+        var passwordBox = new PasswordBox();
+        contentPanel.Children.Add(passwordBox);
+
+        scrollViewer.Content = contentPanel;
+        mainPanel.Children.Add(scrollViewer);
+
         okButton.Click += (s, e) =>
         {
             if (string.IsNullOrWhiteSpace(passwordBox.Password))
@@ -62,34 +87,95 @@ public sealed class DialogService : IDialogService
             dialog.Close();
         };
 
-        var cancelButton = new Button
-        {
-            Content = "Hủy",
-            Width = 100,
-            IsCancel = true
-        };
         cancelButton.Click += (s, e) =>
         {
             dialog.DialogResult = false;
             dialog.Close();
         };
 
-        buttonPanel.Children.Add(okButton);
-        buttonPanel.Children.Add(cancelButton);
-        stackPanel.Children.Add(buttonPanel);
-
-        dialog.Content = stackPanel;
+        dialog.Content = mainPanel;
 
         return dialog.ShowDialog() == true ? dialog.Tag as string : null;
     }
 
+    /// <summary>
+    /// Hiển thị thông báo lỗi bằng custom dialog có ScrollViewer cho nội dung dài.
+    /// Nút OK luôn nhìn thấy, không bị cuộn theo.
+    /// </summary>
     public void ShowError(string message, string title = "Lỗi")
     {
-        MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Error);
+        ShowScrollableDialog(message, title, MessageBoxImage.Error);
     }
 
+    /// <summary>
+    /// Hiển thị thông báo thông tin bằng custom dialog có ScrollViewer cho nội dung dài.
+    /// </summary>
     public void ShowInformation(string message, string title = "Thông báo")
     {
-        MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        ShowScrollableDialog(message, title, MessageBoxImage.Information);
+    }
+
+    /// <summary>
+    /// Custom dialog với ScrollViewer cho nội dung và nút OK cố định bên dưới.
+    /// </summary>
+    private static void ShowScrollableDialog(string message, string title, MessageBoxImage icon)
+    {
+        // Nếu message ngắn, dùng MessageBox bình thường cho nhẹ
+        if (message.Length < 200 && !message.Contains('\n'))
+        {
+            MessageBox.Show(message, title, MessageBoxButton.OK, icon);
+            return;
+        }
+
+        var dialog = new Window
+        {
+            Title = title,
+            Width = 460,
+            MaxHeight = 500,
+            SizeToContent = SizeToContent.Height,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            ResizeMode = ResizeMode.NoResize
+        };
+
+        var mainPanel = new DockPanel { Margin = new Thickness(20) };
+
+        // Nút OK cố định bên dưới
+        var okButton = new Button
+        {
+            Content = "OK",
+            Width = 90,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(0, 15, 0, 0),
+            IsDefault = true,
+            IsCancel = true
+        };
+        DockPanel.SetDock(okButton, Dock.Bottom);
+        mainPanel.Children.Add(okButton);
+
+        // Nội dung cuộn được
+        var scrollViewer = new ScrollViewer
+        {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            MaxHeight = 420
+        };
+
+        scrollViewer.Content = new TextBlock
+        {
+            Text = message,
+            TextWrapping = TextWrapping.Wrap,
+            FontSize = 13
+        };
+
+        mainPanel.Children.Add(scrollViewer);
+
+        okButton.Click += (s, e) =>
+        {
+            dialog.DialogResult = true;
+            dialog.Close();
+        };
+
+        dialog.Content = mainPanel;
+        dialog.ShowDialog();
     }
 }

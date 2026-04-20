@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Models;
+using CoffeeShop.Wpf.Models;
 
 namespace CoffeeShop.Wpf.Repositories;
 
@@ -13,5 +13,11 @@ public interface IThongKeRepository
         DateTime fromDate,
         DateTime toDate,
         int topN,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>Thống kê doanh thu theo hình thức thanh toán</summary>
+    Task<IReadOnlyList<ThongKeDoanhThuTheoHTTT>> GetDoanhThuTheoHTTTAsync(
+        DateTime fromDate,
+        DateTime toDate,
         CancellationToken cancellationToken = default);
 }

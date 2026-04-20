@@ -15,7 +15,8 @@ SELECT ISNULL(SUM(hb.ThanhToan), 0) AS DoanhThuHomNay,
        COUNT(1) AS SoHoaDonHomNay
 FROM dbo.HoaDonBan hb
 WHERE hb.NgayBan >= @Today
-  AND hb.NgayBan < DATEADD(DAY, 1, @Today);
+  AND hb.NgayBan < DATEADD(DAY, 1, @Today)
+  AND ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán';
 
 SELECT COUNT(1) AS SoSanPhamDangKinhDoanh
 FROM dbo.Mon
@@ -79,6 +80,7 @@ SELECT CAST(hb.NgayBan AS DATE) AS Ngay,
 FROM dbo.HoaDonBan hb
 WHERE hb.NgayBan >= DATEADD(DAY, -6, CAST(GETDATE() AS DATE))
   AND hb.NgayBan < DATEADD(DAY, 1, CAST(GETDATE() AS DATE))
+  AND ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
 GROUP BY CAST(hb.NgayBan AS DATE)
 ORDER BY Ngay ASC;";
 
@@ -140,6 +142,7 @@ JOIN dbo.ChiTietHoaDonBan ct ON ct.HoaDonBanId = hb.HoaDonBanId
 JOIN dbo.Mon m ON m.MonId = ct.MonId
 WHERE hb.NgayBan >= CAST(GETDATE() AS DATE)
   AND hb.NgayBan < DATEADD(DAY, 1, CAST(GETDATE() AS DATE))
+  AND ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
 GROUP BY m.MonId, m.TenMon
 ORDER BY SUM(ct.SoLuong) DESC, SUM(ct.ThanhTien) DESC, m.MonId ASC;";
 
@@ -215,7 +218,8 @@ ORDER BY (m.MucCanhBaoTonKho - m.TonKho) DESC, m.MonId ASC;";
 SELECT COUNT(1)
 FROM dbo.HoaDonBan
 WHERE NgayBan >= CAST(GETDATE() AS DATE)
-  AND NgayBan < DATEADD(DAY, 1, CAST(GETDATE() AS DATE));";
+  AND NgayBan < DATEADD(DAY, 1, CAST(GETDATE() AS DATE))
+  AND ISNULL(TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán';";
 
         await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
         await connection.OpenAsync(cancellationToken);

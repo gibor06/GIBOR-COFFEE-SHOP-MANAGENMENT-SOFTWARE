@@ -1,4 +1,5 @@
-﻿using CoffeeShop.Wpf.Infrastructure;
+using CoffeeShop.Wpf.Helpers;
+using CoffeeShop.Wpf.Infrastructure;
 using CoffeeShop.Wpf.Models;
 using Microsoft.Data.SqlClient;
 
@@ -20,6 +21,7 @@ SELECT CAST(NgayBan AS DATE) AS Ngay,
 FROM dbo.HoaDonBan
 WHERE NgayBan >= @FromDate
   AND NgayBan < @ToDateExclusive
+  AND ISNULL(TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
 GROUP BY CAST(NgayBan AS DATE)
 ORDER BY Ngay DESC;";
 
@@ -67,6 +69,7 @@ INNER JOIN dbo.ChiTietHoaDonBan ct ON ct.HoaDonBanId = hb.HoaDonBanId
 INNER JOIN dbo.Mon m ON m.MonId = ct.MonId
 WHERE hb.NgayBan >= @FromDate
   AND hb.NgayBan < @ToDateExclusive
+  AND ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
 GROUP BY m.MonId, m.TenMon
 ORDER BY SUM(ct.SoLuong) DESC, SUM(ct.ThanhTien) DESC, m.MonId ASC;";
 
@@ -89,6 +92,50 @@ ORDER BY SUM(ct.SoLuong) DESC, SUM(ct.ThanhTien) DESC, m.MonId ASC;";
                 MonId = reader.GetInt32(reader.GetOrdinal("MonId")),
                 TenMon = reader.GetString(reader.GetOrdinal("TenMon")),
                 TongSoLuongBan = reader.GetInt32(reader.GetOrdinal("TongSoLuongBan")),
+                SoHoaDon = reader.GetInt32(reader.GetOrdinal("SoHoaDon")),
+                TongDoanhThu = reader.GetDecimal(reader.GetOrdinal("TongDoanhThu"))
+            });
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Thống kê doanh thu theo hình thức thanh toán.
+    /// Chỉ tính hóa đơn đã thanh toán (loại trừ đã hủy).
+    /// </summary>
+    public async Task<IReadOnlyList<ThongKeDoanhThuTheoHTTT>> GetDoanhThuTheoHTTTAsync(
+        DateTime fromDate,
+        DateTime toDate,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+SELECT ISNULL(HinhThucThanhToan, N'Tiền mặt') AS HinhThucThanhToan,
+       COUNT(1) AS SoHoaDon,
+       SUM(ThanhToan) AS TongDoanhThu
+FROM dbo.HoaDonBan
+WHERE NgayBan >= @FromDate
+  AND NgayBan < @ToDateExclusive
+  AND ISNULL(TrangThaiThanhToan, N'Đã thanh toán') <> N'Đã hủy'
+GROUP BY ISNULL(HinhThucThanhToan, N'Tiền mặt')
+ORDER BY TongDoanhThu DESC;";
+
+        var result = new List<ThongKeDoanhThuTheoHTTT>();
+
+        await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@FromDate", fromDate.Date);
+        command.Parameters.AddWithValue("@ToDateExclusive", toDate.Date.AddDays(1));
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            result.Add(new ThongKeDoanhThuTheoHTTT
+            {
+                HinhThucThanhToan = TextNormalizationHelper.NormalizeOrEmpty(
+                    reader.GetString(reader.GetOrdinal("HinhThucThanhToan"))),
                 SoHoaDon = reader.GetInt32(reader.GetOrdinal("SoHoaDon")),
                 TongDoanhThu = reader.GetDecimal(reader.GetOrdinal("TongDoanhThu"))
             });

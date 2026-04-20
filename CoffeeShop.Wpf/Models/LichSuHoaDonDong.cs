@@ -23,5 +23,21 @@ public sealed class LichSuHoaDonDong
     public string? TenKhuVuc { get; set; }
 
     public int? CaLamViecId { get; set; }
+
+    // === Thông tin khách hàng ===
+
+    /// <summary>Tên khách hàng (JOIN từ bảng KhachHang)</summary>
+    public string TenKhachHang { get; set; } = "Khách lẻ";
+
+    /// <summary>Số điện thoại khách hàng</summary>
+    public string? SoDienThoai { get; set; }
+
+    // === Thông tin thanh toán ===
+
+    /// <summary>Hình thức thanh toán: Tiền mặt, Chuyển khoản, Thẻ, Ví điện tử</summary>
+    public string HinhThucThanhToan { get; set; } = "Tiền mặt";
+
+    /// <summary>Trạng thái: Đã thanh toán, Chưa thanh toán, Đã hủy</summary>
+    public string TrangThaiThanhToan { get; set; } = "Đã thanh toán";
 }
 

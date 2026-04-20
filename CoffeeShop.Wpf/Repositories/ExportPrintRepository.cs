@@ -1,3 +1,4 @@
+using CoffeeShop.Wpf.Helpers;
 using CoffeeShop.Wpf.Infrastructure;
 using CoffeeShop.Wpf.Models;
 using Microsoft.Data.SqlClient;
@@ -20,6 +21,7 @@ SELECT CAST(h.NgayBan AS DATE) AS Ngay,
 FROM dbo.HoaDonBan h
 WHERE h.NgayBan >= @FromDate
   AND h.NgayBan < @ToDateExclusive
+  AND ISNULL(h.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
 GROUP BY CAST(h.NgayBan AS DATE)
 ORDER BY Ngay DESC;";
 
@@ -64,6 +66,7 @@ JOIN dbo.HoaDonBan h ON h.HoaDonBanId = c.HoaDonBanId
 JOIN dbo.Mon m ON m.MonId = c.MonId
 WHERE h.NgayBan >= @FromDate
   AND h.NgayBan < @ToDateExclusive
+  AND ISNULL(h.TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
 GROUP BY m.MonId, m.TenMon
 ORDER BY DoanhThuGop DESC, SoLuongBan DESC;";
 
@@ -105,11 +108,21 @@ SELECT hb.HoaDonBanId,
        hb.CaLamViecId,
        nd.HoTen AS TenNhanVien,
        b.TenBan,
-       kv.TenKhuVuc
+       kv.TenKhuVuc,
+       kh.HoTen AS TenKhachHang,
+       kh.SoDienThoai AS SoDienThoaiKhachHang,
+       ISNULL(hb.HinhThucThanhToan, N'Tiền mặt') AS HinhThucThanhToan,
+       ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') AS TrangThaiThanhToan,
+       hb.TienKhachDua,
+       hb.TienThoiLai,
+       hb.MaGiaoDich,
+       hb.GhiChuThanhToan,
+       hb.GhiChuHoaDon
 FROM dbo.HoaDonBan hb
 LEFT JOIN dbo.NguoiDung nd ON nd.NguoiDungId = hb.CreatedByUserId
 LEFT JOIN dbo.Ban b ON b.BanId = hb.BanId
 LEFT JOIN dbo.KhuVuc kv ON kv.KhuVucId = b.KhuVucId
+LEFT JOIN dbo.KhachHang kh ON kh.KhachHangId = hb.KhachHangId
 WHERE hb.HoaDonBanId = @HoaDonBanId;";
 
         const string detailSql = @"
@@ -151,7 +164,35 @@ ORDER BY ct.ChiTietHoaDonBanId;";
                         : reader.GetString(reader.GetOrdinal("TenBan")),
                     TenKhuVuc = reader.IsDBNull(reader.GetOrdinal("TenKhuVuc"))
                         ? null
-                        : reader.GetString(reader.GetOrdinal("TenKhuVuc"))
+                        : reader.GetString(reader.GetOrdinal("TenKhuVuc")),
+                    // Thông tin khách hàng
+                    TenKhachHang = reader.IsDBNull(reader.GetOrdinal("TenKhachHang"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("TenKhachHang")),
+                    SoDienThoaiKhachHang = reader.IsDBNull(reader.GetOrdinal("SoDienThoaiKhachHang"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("SoDienThoaiKhachHang")),
+                    // Thanh toán nâng cao
+                    // Chuẩn hóa encoding cho dữ liệu cũ
+                    HinhThucThanhToan = TextNormalizationHelper.NormalizeOrEmpty(
+                        reader.GetString(reader.GetOrdinal("HinhThucThanhToan"))),
+                    TrangThaiThanhToan = TextNormalizationHelper.NormalizeOrEmpty(
+                        reader.GetString(reader.GetOrdinal("TrangThaiThanhToan"))),
+                    TienKhachDua = reader.IsDBNull(reader.GetOrdinal("TienKhachDua"))
+                        ? null
+                        : reader.GetDecimal(reader.GetOrdinal("TienKhachDua")),
+                    TienThoiLai = reader.IsDBNull(reader.GetOrdinal("TienThoiLai"))
+                        ? null
+                        : reader.GetDecimal(reader.GetOrdinal("TienThoiLai")),
+                    MaGiaoDich = reader.IsDBNull(reader.GetOrdinal("MaGiaoDich"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("MaGiaoDich")),
+                    GhiChuThanhToan = reader.IsDBNull(reader.GetOrdinal("GhiChuThanhToan"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("GhiChuThanhToan")),
+                    GhiChuHoaDon = reader.IsDBNull(reader.GetOrdinal("GhiChuHoaDon"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("GhiChuHoaDon"))
                 };
             }
         }
@@ -197,6 +238,7 @@ SELECT CAST(NgayBan AS DATE) AS Ngay,
 FROM dbo.HoaDonBan
 WHERE NgayBan >= @FromDate
   AND NgayBan < @ToDateExclusive
+  AND ISNULL(TrangThaiThanhToan, N'Đã thanh toán') = N'Đã thanh toán'
 GROUP BY CAST(NgayBan AS DATE)
 ORDER BY Ngay ASC;";
 
