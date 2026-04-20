@@ -4,115 +4,120 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="540"
+             d:DesignHeight="840"
              d:DesignWidth="980">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="12" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="300" />
+            </Grid.RowDefinitions>
 
-            <Border Grid.Column="0" Style="{StaticResource CardPanel}">
-                <StackPanel>
-                    <TextBlock Style="{StaticResource SectionHeader}" Text="Khuyến mãi" />
-                    <TextBlock Margin="0,6,0,0"
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource CardPanel}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionHeader}" Text="Khuyến mãi" />
+                        <TextBlock Margin="0,6,0,0"
                                Foreground="{DynamicResource MutedTextBrush}"
                                Text="Quản lý chương trình giảm giá theo phần trăm hoặc số tiền cố định." />
 
-                    <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Tên khuyến mãi" />
-                    <TextBox Text="{Binding TenKhuyenMai, UpdateSourceTrigger=PropertyChanged}" MaxLength="150" />
+                        <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Tên khuyến mãi" />
+                        <TextBox Text="{Binding TenKhuyenMai, UpdateSourceTrigger=PropertyChanged}" MaxLength="150" />
 
-                    <TextBlock Margin="0,8,0,0" FontWeight="SemiBold" Text="Loại khuyến mãi" />
-                    <ComboBox ItemsSource="{Binding LoaiKhuyenMaiOptions}"
+                        <TextBlock Margin="0,8,0,0" FontWeight="SemiBold" Text="Loại khuyến mãi" />
+                        <ComboBox ItemsSource="{Binding LoaiKhuyenMaiOptions}"
                               SelectedItem="{Binding LoaiKhuyenMai, Mode=TwoWay}" />
 
-                    <TextBlock Margin="0,8,0,0" FontWeight="SemiBold" Text="Giá trị" />
-                    <TextBox Text="{Binding GiaTri, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Margin="0,8,0,0" FontWeight="SemiBold" Text="Giá trị" />
+                        <TextBox Text="{Binding GiaTri, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <WrapPanel Margin="0,10,0,0">
-                        <StackPanel>
-                            <TextBlock FontWeight="SemiBold" Text="Từ ngày" />
-                            <DatePicker SelectedDate="{Binding TuNgay, Mode=TwoWay}" />
-                        </StackPanel>
-                        <StackPanel Margin="16,0,0,0">
-                            <TextBlock FontWeight="SemiBold" Text="Đến ngày" />
-                            <DatePicker SelectedDate="{Binding DenNgay, Mode=TwoWay}" />
-                        </StackPanel>
-                    </WrapPanel>
+                        <WrapPanel Margin="0,10,0,0">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Từ ngày" />
+                                <DatePicker SelectedDate="{Binding TuNgay, Mode=TwoWay}" />
+                            </StackPanel>
+                            <StackPanel Margin="16,0,0,0">
+                                <TextBlock FontWeight="SemiBold" Text="Đến ngày" />
+                                <DatePicker SelectedDate="{Binding DenNgay, Mode=TwoWay}" />
+                            </StackPanel>
+                        </WrapPanel>
 
-                    <CheckBox Margin="0,10,0,0"
+                        <CheckBox Margin="0,10,0,0"
                               Content="Đang hoạt động"
                               IsChecked="{Binding IsActive, Mode=TwoWay}" />
 
-                    <TextBlock Margin="0,8,0,0" FontWeight="SemiBold" Text="Mô tả" />
-                    <TextBox Height="70"
+                        <TextBlock Margin="0,8,0,0" FontWeight="SemiBold" Text="Mô tả" />
+                        <TextBox Height="70"
                              AcceptsReturn="True"
                              VerticalScrollBarVisibility="Auto"
                              Text="{Binding MoTa, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <WrapPanel Margin="0,12,0,0">
-                        <Button Content="Thêm"
+                        <WrapPanel Margin="0,12,0,0">
+                            <Button Content="Thêm"
                                 Width="100"
                                 Style="{StaticResource ButtonPrimary}"
                                 Command="{Binding ThemCommand}" />
-                        <Button Content="Sửa"
+                            <Button Content="Sửa"
                                 Width="100"
                                 Margin="8,0,0,0"
                                 Style="{StaticResource ButtonSecondary}"
                                 Command="{Binding SuaCommand}" />
-                        <Button Content="Làm mới"
+                            <Button Content="Làm mới"
                                 Width="100"
                                 Margin="8,0,0,0"
                                 Style="{StaticResource ButtonSecondary}"
                                 Command="{Binding LamMoiCommand}" />
-                    </WrapPanel>
+                        </WrapPanel>
 
-                    <TextBlock Margin="0,8,0,0"
+                        <TextBlock Margin="0,8,0,0"
                                Foreground="{DynamicResource DangerBrush}"
                                TextWrapping="Wrap"
                                Text="{Binding ErrorMessage}" />
-                    <TextBlock Margin="0,4,0,0"
+                        <TextBlock Margin="0,4,0,0"
                                Foreground="{DynamicResource SuccessBrush}"
                                TextWrapping="Wrap"
                                Text="{Binding SuccessMessage}" />
-                </StackPanel>
-            </Border>
+                    </StackPanel>
+                </Border>
 
-            <Border Grid.Column="2" Style="{StaticResource CardPanel}">
-                <StackPanel>
-                    <TextBlock FontSize="18"
+                <Border Grid.Column="2" Style="{StaticResource CardPanel}">
+                    <StackPanel>
+                        <TextBlock FontSize="18"
                                FontWeight="SemiBold"
                                Text="Tìm kiếm" />
-                    <TextBox Margin="0,8,0,0" Text="{Binding TuKhoa, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button Margin="0,8,0,0"
+                        <TextBox Margin="0,8,0,0" Text="{Binding TuKhoa, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Margin="0,8,0,0"
                             Content="Tìm kiếm"
                             Style="{StaticResource ButtonPrimary}"
                             Command="{Binding TimKiemCommand}" />
-                </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Style="{StaticResource CardPanel}">
+                <DataGrid ItemsSource="{Binding DanhSachKhuyenMai}"
+                      SelectedItem="{Binding SelectedKhuyenMai, Mode=TwoWay}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"    
+                      >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Mã" Binding="{Binding KhuyenMaiId}" Width="70" />
+                        <DataGridTextColumn Header="Tên khuyến mãi" Binding="{Binding TenKhuyenMai}" Width="2*" />
+                        <DataGridTextColumn Header="Loại" Binding="{Binding LoaiKhuyenMaiHienThi}" Width="160" />
+                        <DataGridTextColumn Header="Giá trị" Binding="{Binding GiaTri, StringFormat=N0}" Width="120" />
+                        <DataGridTextColumn Header="Từ ngày" Binding="{Binding TuNgay, StringFormat=dd/MM/yyyy}" Width="120" />
+                        <DataGridTextColumn Header="Đến ngày" Binding="{Binding DenNgay, StringFormat=dd/MM/yyyy}" Width="120" />
+                        <DataGridCheckBoxColumn Header="Kích hoạt" Binding="{Binding IsActive}" Width="100" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </Border>
         </Grid>
-
-        <Border Grid.Row="2" Style="{StaticResource CardPanel}">
-            <DataGrid ItemsSource="{Binding DanhSachKhuyenMai}"
-                      SelectedItem="{Binding SelectedKhuyenMai, Mode=TwoWay}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Mã" Binding="{Binding KhuyenMaiId}" Width="70" />
-                    <DataGridTextColumn Header="Tên khuyến mãi" Binding="{Binding TenKhuyenMai}" Width="2*" />
-                    <DataGridTextColumn Header="Loại" Binding="{Binding LoaiKhuyenMaiHienThi}" Width="160" />
-                    <DataGridTextColumn Header="Giá trị" Binding="{Binding GiaTri, StringFormat=N0}" Width="120" />
-                    <DataGridTextColumn Header="Từ ngày" Binding="{Binding TuNgay, StringFormat=dd/MM/yyyy}" Width="120" />
-                    <DataGridTextColumn Header="Đến ngày" Binding="{Binding DenNgay, StringFormat=dd/MM/yyyy}" Width="120" />
-                    <DataGridCheckBoxColumn Header="Kích hoạt" Binding="{Binding IsActive}" Width="100" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </Border>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

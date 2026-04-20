@@ -86,7 +86,7 @@
                         <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenMon}" Width="2*" />
                         <DataGridTextColumn Header="Danh mục" Binding="{Binding TenDanhMuc}" Width="150" />
                         <DataGridTextColumn Header="Tồn kho" Binding="{Binding TonKho}" Width="100" />
-                        <DataGridTextColumn Header="Ngưỡng cảnh báo" Binding="{Binding MucCanhBaoTonKho}" Width="130" />
+                        <DataGridTextColumn Header="Ngưỡng cảnh báo" Binding="{Binding MucCanhBaoTonKho}" Width="150" />
                         <DataGridTextColumn Header="Cần bổ sung" Binding="{Binding SoLuongCanBoSung}" Width="110" />
                     </DataGrid.Columns>
                 </DataGrid>

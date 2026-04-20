@@ -297,7 +297,7 @@ public sealed class ExportPrintService : IExportPrintService
 
         if (model.TienThoiLai.HasValue)
         {
-            lines.Add($"Tiền thối: {model.TienThoiLai.Value:N0}");
+            lines.Add($"Tiền trả lại cho khách: {model.TienThoiLai.Value:N0}");
         }
 
         if (!string.IsNullOrWhiteSpace(model.MaGiaoDich))
