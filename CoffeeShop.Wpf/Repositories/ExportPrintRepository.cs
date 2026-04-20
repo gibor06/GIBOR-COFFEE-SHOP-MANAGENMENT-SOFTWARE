@@ -1,0 +1,228 @@
+using CoffeeShop.Wpf.Infrastructure;
+using CoffeeShop.Wpf.Models;
+using Microsoft.Data.SqlClient;
+
+namespace CoffeeShop.Wpf.Repositories;
+
+public sealed class ExportPrintRepository : IExportPrintRepository
+{
+    public async Task<IReadOnlyList<BaoCaoDonGianDong>> GetDuLieuBaoCaoDonGianAsync(
+        DateTime fromDate,
+        DateTime toDate,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+SELECT CAST(h.NgayBan AS DATE) AS Ngay,
+       COUNT(1) AS SoHoaDon,
+       SUM(h.TongTien) AS TongTien,
+       SUM(h.GiamGia) AS TongGiamGia,
+       SUM(h.ThanhToan) AS DoanhThuThuan
+FROM dbo.HoaDonBan h
+WHERE h.NgayBan >= @FromDate
+  AND h.NgayBan < @ToDateExclusive
+GROUP BY CAST(h.NgayBan AS DATE)
+ORDER BY Ngay DESC;";
+
+        var result = new List<BaoCaoDonGianDong>();
+
+        await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@FromDate", fromDate.Date);
+        command.Parameters.AddWithValue("@ToDateExclusive", toDate.Date.AddDays(1));
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            result.Add(new BaoCaoDonGianDong
+            {
+                Ngay = reader.GetDateTime(reader.GetOrdinal("Ngay")),
+                SoHoaDon = reader.GetInt32(reader.GetOrdinal("SoHoaDon")),
+                TongTien = reader.GetDecimal(reader.GetOrdinal("TongTien")),
+                TongGiamGia = reader.GetDecimal(reader.GetOrdinal("TongGiamGia")),
+                DoanhThuThuan = reader.GetDecimal(reader.GetOrdinal("DoanhThuThuan"))
+            });
+        }
+
+        return result;
+    }
+
+    public async Task<IReadOnlyList<BaoCaoNangCaoDong>> GetDuLieuBaoCaoNangCaoAsync(
+        DateTime fromDate,
+        DateTime toDate,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+SELECT m.MonId,
+       m.TenMon,
+       SUM(c.SoLuong) AS SoLuongBan,
+       SUM(c.ThanhTien) AS DoanhThuGop,
+       CASE WHEN SUM(c.SoLuong) = 0 THEN 0 ELSE SUM(c.ThanhTien) / SUM(c.SoLuong) END AS GiaBanTrungBinh
+FROM dbo.ChiTietHoaDonBan c
+JOIN dbo.HoaDonBan h ON h.HoaDonBanId = c.HoaDonBanId
+JOIN dbo.Mon m ON m.MonId = c.MonId
+WHERE h.NgayBan >= @FromDate
+  AND h.NgayBan < @ToDateExclusive
+GROUP BY m.MonId, m.TenMon
+ORDER BY DoanhThuGop DESC, SoLuongBan DESC;";
+
+        var result = new List<BaoCaoNangCaoDong>();
+
+        await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@FromDate", fromDate.Date);
+        command.Parameters.AddWithValue("@ToDateExclusive", toDate.Date.AddDays(1));
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            result.Add(new BaoCaoNangCaoDong
+            {
+                MonId = reader.GetInt32(reader.GetOrdinal("MonId")),
+                TenMon = reader.GetString(reader.GetOrdinal("TenMon")),
+                SoLuongBan = reader.GetInt32(reader.GetOrdinal("SoLuongBan")),
+                DoanhThuGop = reader.GetDecimal(reader.GetOrdinal("DoanhThuGop")),
+                GiaBanTrungBinh = reader.GetDecimal(reader.GetOrdinal("GiaBanTrungBinh"))
+            });
+        }
+
+        return result;
+    }
+
+    public async Task<HoaDonBanInModel?> GetDuLieuHoaDonBanAsync(
+        int hoaDonBanId,
+        CancellationToken cancellationToken = default)
+    {
+        const string headerSql = @"
+SELECT hb.HoaDonBanId,
+       hb.NgayBan,
+       hb.TongTien,
+       hb.GiamGia,
+       hb.ThanhToan,
+       hb.CaLamViecId,
+       nd.HoTen AS TenNhanVien,
+       b.TenBan,
+       kv.TenKhuVuc
+FROM dbo.HoaDonBan hb
+LEFT JOIN dbo.NguoiDung nd ON nd.NguoiDungId = hb.CreatedByUserId
+LEFT JOIN dbo.Ban b ON b.BanId = hb.BanId
+LEFT JOIN dbo.KhuVuc kv ON kv.KhuVucId = b.KhuVucId
+WHERE hb.HoaDonBanId = @HoaDonBanId;";
+
+        const string detailSql = @"
+SELECT ct.MonId,
+       m.TenMon,
+       ct.SoLuong,
+       ct.DonGiaBan,
+       ct.ThanhTien
+FROM dbo.ChiTietHoaDonBan ct
+JOIN dbo.Mon m ON m.MonId = ct.MonId
+WHERE ct.HoaDonBanId = @HoaDonBanId
+ORDER BY ct.ChiTietHoaDonBanId;";
+
+        await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        HoaDonBanInModel? header = null;
+        await using (var headerCommand = new SqlCommand(headerSql, connection))
+        {
+            headerCommand.Parameters.AddWithValue("@HoaDonBanId", hoaDonBanId);
+            await using var reader = await headerCommand.ExecuteReaderAsync(cancellationToken);
+            if (await reader.ReadAsync(cancellationToken))
+            {
+                header = new HoaDonBanInModel
+                {
+                    HoaDonBanId = reader.GetInt32(reader.GetOrdinal("HoaDonBanId")),
+                    NgayBan = reader.GetDateTime(reader.GetOrdinal("NgayBan")),
+                    TongTien = reader.GetDecimal(reader.GetOrdinal("TongTien")),
+                    GiamGia = reader.GetDecimal(reader.GetOrdinal("GiamGia")),
+                    ThanhToan = reader.GetDecimal(reader.GetOrdinal("ThanhToan")),
+                    CaLamViecId = reader.IsDBNull(reader.GetOrdinal("CaLamViecId"))
+                        ? null
+                        : reader.GetInt32(reader.GetOrdinal("CaLamViecId")),
+                    TenNhanVien = reader.IsDBNull(reader.GetOrdinal("TenNhanVien"))
+                        ? string.Empty
+                        : reader.GetString(reader.GetOrdinal("TenNhanVien")),
+                    TenBan = reader.IsDBNull(reader.GetOrdinal("TenBan"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("TenBan")),
+                    TenKhuVuc = reader.IsDBNull(reader.GetOrdinal("TenKhuVuc"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("TenKhuVuc"))
+                };
+            }
+        }
+
+        if (header is null)
+        {
+            return null;
+        }
+
+        var details = new List<HoaDonBanInChiTietDong>();
+        await using (var detailCommand = new SqlCommand(detailSql, connection))
+        {
+            detailCommand.Parameters.AddWithValue("@HoaDonBanId", hoaDonBanId);
+            await using var reader = await detailCommand.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                details.Add(new HoaDonBanInChiTietDong
+                {
+                    MonId = reader.GetInt32(reader.GetOrdinal("MonId")),
+                    TenMon = reader.GetString(reader.GetOrdinal("TenMon")),
+                    SoLuong = reader.GetInt32(reader.GetOrdinal("SoLuong")),
+                    DonGiaBan = reader.GetDecimal(reader.GetOrdinal("DonGiaBan")),
+                    ThanhTien = reader.GetDecimal(reader.GetOrdinal("ThanhTien"))
+                });
+            }
+        }
+
+        header.ChiTiet = details;
+        return header;
+    }
+
+    public async Task<IReadOnlyList<ThongKeDoanhThu>> GetDuLieuThongKeDoanhThuAsync(
+        DateTime fromDate,
+        DateTime toDate,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+SELECT CAST(NgayBan AS DATE) AS Ngay,
+       COUNT(1) AS SoHoaDon,
+       SUM(TongTien) AS DoanhThuGop,
+       SUM(GiamGia) AS GiamGia,
+       SUM(ThanhToan) AS DoanhThuThuan
+FROM dbo.HoaDonBan
+WHERE NgayBan >= @FromDate
+  AND NgayBan < @ToDateExclusive
+GROUP BY CAST(NgayBan AS DATE)
+ORDER BY Ngay ASC;";
+
+        var result = new List<ThongKeDoanhThu>();
+
+        await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@FromDate", fromDate.Date);
+        command.Parameters.AddWithValue("@ToDateExclusive", toDate.Date.AddDays(1));
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            result.Add(new ThongKeDoanhThu
+            {
+                Ngay = reader.GetDateTime(reader.GetOrdinal("Ngay")),
+                SoHoaDon = reader.GetInt32(reader.GetOrdinal("SoHoaDon")),
+                DoanhThuGop = reader.GetDecimal(reader.GetOrdinal("DoanhThuGop")),
+                GiamGia = reader.GetDecimal(reader.GetOrdinal("GiamGia")),
+                DoanhThuThuan = reader.GetDecimal(reader.GetOrdinal("DoanhThuThuan"))
+            });
+        }
+
+        return result;
+    }
+}
+

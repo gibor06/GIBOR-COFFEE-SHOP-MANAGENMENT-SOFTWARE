@@ -1,0 +1,36 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|d:\\doannet\\gibor-coffee-shop-managenment-software\\src\\coffeeshop.wpf\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{A30E1DF0-5B02-4333-80CC-E226B7E7C22B}|CoffeeShop.Wpf\\CoffeeShop.Wpf.csproj|solutionrelative:coffeeshop.wpf\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "CoffeeShop.Wpf\\MainWindow.xaml",
+              "ToolTip": "D:\\DoAnNet\\GIBOR-COFFEE-SHOP-MANAGENMENT-SOFTWARE\\src\\CoffeeShop.Wpf\\MainWindow.xaml",
+              "RelativeToolTip": "CoffeeShop.Wpf\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-20T01:20:06.047Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
