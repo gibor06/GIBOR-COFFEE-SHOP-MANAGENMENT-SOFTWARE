@@ -153,7 +153,7 @@
                         <TextBox Text="{Binding TienKhachDuaText, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock Margin="0,4,0,0"
                                    FontWeight="SemiBold"
-                                   Text="{Binding TienThoiLai, StringFormat=Tiền thối: {0:N0} đ}" />
+                                   Text="{Binding TienThoiLai, StringFormat=Tiền trả lại cho khách: {0:N0} đ}" />
                     </StackPanel>
 
                     <!-- Mã giao dịch (chỉ hiện khi không phải tiền mặt) -->
@@ -219,7 +219,10 @@
 
                 <DataGrid Grid.Row="2"
                           ItemsSource="{Binding ChiTietLines}"
-                          SelectedItem="{Binding SelectedDongChiTiet, Mode=TwoWay}">
+                          SelectedItem="{Binding SelectedDongChiTiet, Mode=TwoWay}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          >
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Mã món" Binding="{Binding MonId}" Width="88" />
                         <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenMon}" Width="2*" />

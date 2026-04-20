@@ -78,7 +78,10 @@
                 <DataGrid ItemsSource="{Binding TopSanPhamBanChay}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
-                          CanUserAddRows="False">
+                          CanUserAddRows="False"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          >
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Mã món" Binding="{Binding MonId}" Width="80" />
                         <DataGridTextColumn Header="Tên món" Binding="{Binding TenMon}" Width="*" />

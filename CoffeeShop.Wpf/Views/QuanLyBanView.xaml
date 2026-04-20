@@ -4,153 +4,162 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="450"
+             d:DesignHeight="650"
              d:DesignWidth="800">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <Border Background="{DynamicResource CardBackgroundBrush}"
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="400" />
+            </Grid.RowDefinitions>
+
+            <Border Background="{DynamicResource CardBackgroundBrush}"
                 CornerRadius="10"
                 Padding="16">
-            <StackPanel>
-                <TextBlock Text="Quản lý bàn"
+                <StackPanel>
+                    <TextBlock Text="Quản lý bàn"
                            FontSize="20"
                            FontWeight="SemiBold" />
 
-                <Grid Margin="0,12,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="8" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBox Grid.Column="0"
+                        <TextBox Grid.Column="0"
                              Padding="10,6"
+                             Style="{StaticResource HintTextBoxStyle}"
+                             Tag="Nhập từ khóa cần tìm"
                              Text="{Binding TuKhoaTimKiem, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <ComboBox Grid.Column="2"
+                        <ComboBox Grid.Column="2"
                               ItemsSource="{Binding DanhSachKhuVuc}"
                               SelectedItem="{Binding SelectedKhuVucTimKiem, Mode=TwoWay}"
                               DisplayMemberPath="TenKhuVuc"
                               Padding="8,4" />
 
-                    <ComboBox Grid.Column="4"
+                        <ComboBox Grid.Column="4"
                               ItemsSource="{Binding DanhSachTrangThai}"
                               SelectedItem="{Binding SelectedTrangThaiTimKiem, Mode=TwoWay}"
                               DisplayMemberPath="DisplayName"
                               Padding="8,4" />
 
-                    <Button Grid.Column="6"
+                        <Button Grid.Column="6"
                             Width="110"
                             Content="Tải danh sách"
                             Command="{Binding TaiDanhSachCommand}" />
 
-                    <Button Grid.Column="8"
+                        <Button Grid.Column="8"
                             Width="90"
                             Content="Làm mới"
                             Command="{Binding LamMoiCommand}"
                             Background="{DynamicResource SecondaryBrush}"
                             BorderBrush="{DynamicResource SecondaryBrush}"
                             Foreground="{DynamicResource SecondaryTextBrush}" />
-                </Grid>
+                    </Grid>
 
-                <WrapPanel Margin="0,10,0,0">
-                    <TextBlock VerticalAlignment="Center" Text="Tên bàn mới:" />
-                    <TextBox Width="180"
+                    <WrapPanel Margin="0,10,0,0">
+                        <TextBlock VerticalAlignment="Center" Text="Tên bàn mới:" />
+                        <TextBox Width="180"
                              Margin="8,0,0,0"
                              Padding="10,6"
                              Text="{Binding TenBanMoi, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock Margin="10,4,0,0" VerticalAlignment="Center" Text="Khu vực:" />
-                    <ComboBox Width="170"
+                        <TextBlock Margin="10,4,0,0" VerticalAlignment="Center" Text="Khu vực:" />
+                        <ComboBox Width="170"
                               Margin="6,0,0,0"
                               ItemsSource="{Binding DanhSachKhuVuc}"
                               SelectedItem="{Binding SelectedKhuVucThem, Mode=TwoWay}"
                               DisplayMemberPath="TenKhuVuc"
                               Padding="8,4" />
-                    <Button Width="90"
+                        <Button Width="90"
                             Margin="10,0,0,0"
                             Content="Thêm bàn"
                             Command="{Binding ThemBanCommand}" />
-                </WrapPanel>
+                    </WrapPanel>
 
-                <TextBlock Margin="0,10,0,0"
+                    <TextBlock Margin="0,10,0,0"
                            Foreground="{DynamicResource DangerBrush}"
                            TextWrapping="Wrap"
                            Text="{Binding ErrorMessage}" />
-                <TextBlock Margin="0,6,0,0"
+                    <TextBlock Margin="0,6,0,0"
                            Foreground="{DynamicResource SuccessBrush}"
                            TextWrapping="Wrap"
                            Text="{Binding SuccessMessage}" />
-            </StackPanel>
-        </Border>
+                </StackPanel>
+            </Border>
 
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="2*" />
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="500" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0"
+                <Border Grid.Column="0"
                     Background="{DynamicResource CardBackgroundBrush}"
                     CornerRadius="10"
                     Padding="12">
-                <DataGrid ItemsSource="{Binding DanhSachBan}"
+                    <DataGrid ItemsSource="{Binding DanhSachBan}"
                           SelectedItem="{Binding SelectedBan, Mode=TwoWay}"
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
-                          CanUserAddRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã bàn" Binding="{Binding BanId}" Width="80" />
-                        <DataGridTextColumn Header="Khu vực" Binding="{Binding TenKhuVuc}" Width="*" />
-                        <DataGridTextColumn Header="Tên bàn" Binding="{Binding TenBan}" Width="120" />
-                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding TrangThaiBanHienThi}" Width="120" />
-                        <DataGridCheckBoxColumn Header="Hoạt động" Binding="{Binding IsActive}" Width="90" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Border>
+                          CanUserAddRows="False"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          >
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Mã bàn" Binding="{Binding BanId}" Width="*" />
+                            <DataGridTextColumn Header="Khu vực" Binding="{Binding TenKhuVuc}" Width="*" />
+                            <DataGridTextColumn Header="Tên bàn" Binding="{Binding TenBan}" Width="*" />
+                            <DataGridTextColumn Header="Trạng thái" Binding="{Binding TrangThaiBanHienThi}" Width="*" />
+                            <DataGridCheckBoxColumn Header="Hoạt động" Binding="{Binding IsActive}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
 
-            <Border Grid.Column="2"
+                <Border Grid.Column="2"
                     Background="{DynamicResource CardBackgroundBrush}"
                     CornerRadius="10"
                     Padding="12">
-                <StackPanel>
-                    <TextBlock Text="Thao tác bàn"
+                    <StackPanel>
+                        <TextBlock Text="Thao tác bàn"
                                FontSize="16"
                                FontWeight="SemiBold" />
 
-                    <TextBlock Margin="0,10,0,0"
+                        <TextBlock Margin="0,10,0,0"
                                Text="Trạng thái mới" />
-                    <ComboBox ItemsSource="{Binding DanhSachTrangThai}"
+                        <ComboBox ItemsSource="{Binding DanhSachTrangThai}"
                               SelectedItem="{Binding SelectedTrangThaiCapNhat, Mode=TwoWay}"
                               DisplayMemberPath="DisplayName"
                               Padding="8,4" />
-                    <Button Content="Đổi trạng thái bàn"
+                        <Button Content="Đổi trạng thái bàn"
                             Command="{Binding DoiTrangThaiBanCommand}" />
 
-                    <TextBlock Margin="0,10,0,0"
+                        <TextBlock Margin="0,10,0,0"
                                Text="Bàn đích (chuyển/gộp)" />
-                    <ComboBox ItemsSource="{Binding DanhSachBan}"
+                        <ComboBox ItemsSource="{Binding DanhSachBan}"
                               SelectedItem="{Binding SelectedBanDich, Mode=TwoWay}"
                               DisplayMemberPath="TenBanHienThi"
                               Padding="8,4" />
-                    <Button Content="Chuyển bàn"
+                        <Button Content="Chuyển bàn"
                             Command="{Binding ChuyenBanCommand}" />
-                    <Button Content="Gộp bàn"
+                        <Button Content="Gộp bàn"
                             Command="{Binding GopBanCommand}" />
-                </StackPanel>
-            </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </UserControl>
 

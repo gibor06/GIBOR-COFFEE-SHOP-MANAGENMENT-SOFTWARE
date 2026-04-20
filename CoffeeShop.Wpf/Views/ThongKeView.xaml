@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             d:DesignHeight="820"
+             d:DesignHeight="1300"
              d:DesignWidth="1250">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
@@ -13,11 +13,11 @@
                 <RowDefinition Height="12" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="12" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="300" />
                 <RowDefinition Height="12" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="300" />
                 <RowDefinition Height="12" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="300" />
             </Grid.RowDefinitions>
 
             <Border Style="{StaticResource CardPanel}">
@@ -113,7 +113,10 @@
                     <TextBlock Style="{StaticResource CardTitleText}" Text="Doanh thu theo hình thức thanh toán" />
                     <DataGrid Grid.Row="2"
                               ItemsSource="{Binding DoanhThuTheoHTTT}"
-                              MaxHeight="200">
+                              MaxHeight="200"
+                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                              >
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Hình thức" Binding="{Binding HinhThucThanhToan}" Width="*" />
                             <DataGridTextColumn Header="Số HĐ"
@@ -145,7 +148,10 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Style="{StaticResource CardTitleText}" Text="Doanh thu theo ngày" />
-                        <DataGrid Grid.Row="2" ItemsSource="{Binding DoanhThuTheoNgay}">
+                        <DataGrid Grid.Row="2" ItemsSource="{Binding DoanhThuTheoNgay}"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  >
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Ngày" Binding="{Binding Ngay, StringFormat=dd/MM/yyyy}" Width="120" />
                                 <DataGridTextColumn Header="Số HĐ"
@@ -178,10 +184,13 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Style="{StaticResource CardTitleText}" Text="Top 10 sản phẩm bán chạy" />
-                        <DataGrid Grid.Row="2" ItemsSource="{Binding TopSanPhamBanChay}">
+                        <DataGrid Grid.Row="2" ItemsSource="{Binding TopSanPhamBanChay}"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  >
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Mã" Binding="{Binding MonId}" Width="70" />
-                                <DataGridTextColumn Header="Tên món" Binding="{Binding TenMon}" Width="*" />
+                                <DataGridTextColumn Header="Tên món" Binding="{Binding TenMon}" Width="100" />
                                 <DataGridTextColumn Header="SL bán"
                                                     Binding="{Binding TongSoLuongBan}"
                                                     ElementStyle="{StaticResource RightAlignedCellText}"
@@ -209,7 +218,10 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Style="{StaticResource CardTitleText}" Text="Danh sách hóa đơn bán" />
-                    <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSachHoaDon}">
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding DanhSachHoaDon}"
+                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                              >
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Mã HĐ" Binding="{Binding HoaDonBanId}" Width="80" />
                             <DataGridTextColumn Header="Ngày bán" Binding="{Binding NgayBan, StringFormat=dd/MM/yyyy HH:mm}" Width="150" />
@@ -221,11 +233,10 @@
                                                 Binding="{Binding GiamGia, StringFormat={}{0:N0} đ}"
                                                 ElementStyle="{StaticResource RightAlignedCellText}"
                                                 Width="120" />
-                            <DataGridTextColumn Header="Thành toán"
+                            <DataGridTextColumn Header="Thanh toán"
                                                 Binding="{Binding ThanhToan, StringFormat={}{0:N0} đ}"
                                                 ElementStyle="{StaticResource RightAlignedCellText}"
-                                                Width="130" />
-                            <DataGridTextColumn Header="Người tạo" Binding="{Binding CreatedByUserId}" Width="110" />
+                                                Width="Auto" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

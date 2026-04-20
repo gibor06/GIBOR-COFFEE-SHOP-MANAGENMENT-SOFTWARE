@@ -319,10 +319,10 @@ public sealed class MainShellViewModel : BaseViewModel
             "HoaDonNhap" => "Lập phiếu nhập, kiểm tra số lượng, đơn giá và cập nhật tồn kho.",
             "HoaDonBan" => "Tạo hóa đơn bán, chọn món, tính tiền và lưu giao dịch bán hàng.",
             "ThongKe" => "Xem doanh thu, số lượng bán và kết quả kinh doanh theo thời gian.",
-            "BaoCao" => "Tổng hợp số liệu để đối chiếu, in báo cáo và phục vụ demo.",
+            "BaoCao" => "Tổng hợp số liệu để đối chiếu, in báo cáo.",
             "QuanLyBan" => "Theo dõi trạng thái bàn và hỗ trợ sắp xếp phục vụ tại quán.",
             "AuditLog" => "Xem lại lịch sử thao tác để kiểm tra và đối chiếu khi cần.",
-            "QuanLyTaiKhoan" => "Quản lý tài khoản người dùng, phân vai trò và trạng thái hoạt động.",
+            "QuanLyTaiKhoan" => "Quản lý tài khoản người dùng, vai trò và trạng thái hoạt động.",
             "DoiMatKhau" => "Đổi mật khẩu đăng nhập để bảo vệ tài khoản cá nhân.",
             _ => ""
         };
