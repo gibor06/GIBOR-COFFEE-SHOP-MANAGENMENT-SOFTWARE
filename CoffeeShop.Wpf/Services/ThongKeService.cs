@@ -32,7 +32,8 @@ public sealed class ThongKeService : IThongKeService
         var doanhThuTheoNgay = await _thongKeRepository.GetDoanhThuTheoNgayAsync(fromDate, toDate, cancellationToken);
         var topSanPhamBanChay = await _thongKeRepository.GetTopSanPhamBanChayAsync(fromDate, toDate, 10, cancellationToken);
         var doanhThuTheoHTTT = await _thongKeRepository.GetDoanhThuTheoHTTTAsync(fromDate, toDate, cancellationToken);
-        var hoaDonBans = await _hoaDonBanRepository.GetByDateRangeAsync(fromDate, toDate, cancellationToken);
+        // Chỉ lấy hóa đơn đã thanh toán cho thống kê (loại trừ đã hủy)
+        var hoaDonBans = await _hoaDonBanRepository.GetPaidByDateRangeAsync(fromDate, toDate, cancellationToken);
 
         var danhSachHoaDon = hoaDonBans
             .Select(x => new HoaDonBanTimKiemDong

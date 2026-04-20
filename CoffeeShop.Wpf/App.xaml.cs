@@ -76,7 +76,7 @@ public partial class App : Application
         var caLamViecViewModel = new CaLamViecViewModel(caLamViecService, sessionService);
 
         var lichSuHoaDonRepository = new LichSuHoaDonRepository();
-        var lichSuHoaDonService = new LichSuHoaDonService(lichSuHoaDonRepository);
+        var lichSuHoaDonService = new LichSuHoaDonService(lichSuHoaDonRepository, auditLogService);
         var lichSuHoaDonViewModel = new LichSuHoaDonViewModel(lichSuHoaDonService, exportPrintService, dialogService, sessionService);
 
         var hoaDonBanRepository = new HoaDonBanRepository();

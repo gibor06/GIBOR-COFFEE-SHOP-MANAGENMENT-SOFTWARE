@@ -610,8 +610,9 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         }
 
         Bans.Clear();
+        // Chỉ hiển thị bàn Trống khi lập hóa đơn bán
         foreach (var ban in banResult.Data
-                     .Where(x => !string.Equals(x.TrangThaiBan, TrangThaiBanConst.TamKhoa, StringComparison.OrdinalIgnoreCase))
+                     .Where(x => string.Equals(x.TrangThaiBan, TrangThaiBanConst.Trong, StringComparison.OrdinalIgnoreCase))
                      .OrderBy(x => x.TenKhuVuc)
                      .ThenBy(x => x.TenBan))
         {

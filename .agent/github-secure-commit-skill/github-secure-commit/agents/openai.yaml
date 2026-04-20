@@ -1,0 +1,3 @@
+interface:
+  display_name: "GitHub Secure Commit"
+  short_description: "Run secret scan + OWASP security audit before commit/push"
