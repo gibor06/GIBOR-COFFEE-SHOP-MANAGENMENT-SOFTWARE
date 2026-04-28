@@ -1,4 +1,5 @@
 using System.Windows;
+using CoffeeShop.Wpf.Infrastructure;
 using CoffeeShop.Wpf.Repositories;
 using CoffeeShop.Wpf.Services;
 using CoffeeShop.Wpf.ViewModels;
@@ -10,6 +11,17 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        try
+        {
+            DbConnectionFactory.InitializeFromConfig();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Lỗi Cấu Hình Kết Nối", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown();
+            return;
+        }
 
         var navigationService = new NavigationService();
         var sessionService = new SessionService();
@@ -57,19 +69,31 @@ public partial class App : Application
         var monRepository = new MonRepository();
         var monService = new MonService(monRepository, danhMucService);
         var monViewModel = new MonViewModel(monService, danhMucService);
+
+        var lichSuTonKhoRepository = new LichSuTonKhoRepository();
+        var lichSuNguyenLieuRepository = new LichSuNguyenLieuRepository();
+        var nguyenLieuRepository = new NguyenLieuRepository();
+        var nguyenLieuService = new NguyenLieuService(nguyenLieuRepository);
+        var nguyenLieuViewModel = new NguyenLieuViewModel(nguyenLieuService);
+
+        var congThucMonRepository = new CongThucMonRepository();
+        var congThucMonService = new CongThucMonService(congThucMonRepository, monService, nguyenLieuService);
+        var congThucMonViewModel = new CongThucMonViewModel(congThucMonService, monService, nguyenLieuService);
+
         var khoRepository = new KhoRepository();
         var khoService = new KhoService(khoRepository, auditLogService, sessionService);
         var trangThaiSanPhamViewModel = new TrangThaiSanPhamViewModel(khoService, danhMucService);
         var canhBaoTonKhoViewModel = new CanhBaoTonKhoViewModel(khoService, danhMucService);
         var timKiemSanPhamViewModel = new TimKiemSanPhamViewModel(monService, danhMucService);
 
-        var hoaDonNhapRepository = new HoaDonNhapRepository();
+        var hoaDonNhapRepository = new HoaDonNhapRepository(lichSuTonKhoRepository);
         var hoaDonNhapService = new HoaDonNhapService(hoaDonNhapRepository, nhaCungCapService, monService, auditLogService);
         var hoaDonNhapViewModel = new HoaDonNhapViewModel(hoaDonNhapService, nhaCungCapService, monService, sessionService);
 
+        // Module Quản lý bàn đã bị gỡ - giữ lại BanRepository và BanService vì HoaDonBanService còn dùng
         var banRepository = new BanRepository();
         var banService = new BanService(banRepository, auditLogService, sessionService);
-        var quanLyBanViewModel = new QuanLyBanViewModel(banService);
+        // var quanLyBanViewModel = new QuanLyBanViewModel(banService); // Đã gỡ
 
         var caLamViecRepository = new CaLamViecRepository();
         var caLamViecService = new CaLamViecService(caLamViecRepository, auditLogService);
@@ -79,7 +103,11 @@ public partial class App : Application
         var lichSuHoaDonService = new LichSuHoaDonService(lichSuHoaDonRepository, auditLogService);
         var lichSuHoaDonViewModel = new LichSuHoaDonViewModel(lichSuHoaDonService, exportPrintService, dialogService, sessionService);
 
-        var hoaDonBanRepository = new HoaDonBanRepository();
+        var hoaDonBanRepository = new HoaDonBanRepository(
+            lichSuTonKhoRepository,
+            congThucMonRepository,
+            nguyenLieuRepository,
+            lichSuNguyenLieuRepository);
         var hoaDonBanService = new HoaDonBanService(
             hoaDonBanRepository,
             monService,
@@ -91,7 +119,6 @@ public partial class App : Application
         var hoaDonBanViewModel = new HoaDonBanViewModel(
             hoaDonBanService,
             monService,
-            banService,
             caLamViecService,
             khachHangService,
             khuyenMaiService,
@@ -107,6 +134,10 @@ public partial class App : Application
         var baoCaoService = new BaoCaoService(baoCaoRepository);
         var baoCaoViewModel = new BaoCaoViewModel(baoCaoService);
 
+        var phaCheRepository = new PhaCheRepository();
+        var phaCheService = new PhaCheService(phaCheRepository);
+        var phaCheViewModel = new PhaCheViewModel(phaCheService);
+
         var mainShellViewModel = new MainShellViewModel(
             permissionService,
             dashboardViewModel,
@@ -120,17 +151,21 @@ public partial class App : Application
             danhMucViewModel,
             nhaCungCapViewModel,
             monViewModel,
+            nguyenLieuViewModel,
+            congThucMonViewModel,
             trangThaiSanPhamViewModel,
             canhBaoTonKhoViewModel,
             timKiemSanPhamViewModel,
             hoaDonNhapViewModel,
-            quanLyBanViewModel,
+            // Module Quản lý bàn đã bị gỡ
+            // quanLyBanViewModel,
             caLamViecViewModel,
             hoaDonBanViewModel,
             lichSuHoaDonViewModel,
             topSanPhamBanChayViewModel,
             thongKeViewModel,
-            baoCaoViewModel);
+            baoCaoViewModel,
+            phaCheViewModel);
 
         var loginViewModel = new LoginViewModel(
             authService,

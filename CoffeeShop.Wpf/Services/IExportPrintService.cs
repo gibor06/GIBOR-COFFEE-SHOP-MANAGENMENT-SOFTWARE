@@ -18,7 +18,7 @@ public interface IExportPrintService
         int? nguoiDungId = null,
         CancellationToken cancellationToken = default);
 
-    Task<ServiceResult<string>> XuatExcelThongKeAsync(
+    Task<ServiceResult<string>> XuatCsvThongKeAsync(
         DateTime fromDate,
         DateTime toDate,
         string? outputDirectory = null,
@@ -35,6 +35,24 @@ public interface IExportPrintService
         DateTime fromDate,
         DateTime toDate,
         string loaiBaoCao,
+        string? outputDirectory = null,
+        int? nguoiDungId = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Xem trước hóa đơn khách hàng (không in, chỉ mở file)
+    /// </summary>
+    Task<ServiceResult<string>> PreviewHoaDonBanAsync(
+        int hoaDonBanId,
+        string? outputDirectory = null,
+        int? nguoiDungId = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// In phiếu pha chế cho nhân viên (không có giá tiền)
+    /// </summary>
+    Task<ServiceResult<string>> InPhieuPhaCheAsync(
+        int hoaDonBanId,
         string? outputDirectory = null,
         int? nguoiDungId = null,
         CancellationToken cancellationToken = default);

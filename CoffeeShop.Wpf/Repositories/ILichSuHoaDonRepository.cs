@@ -20,6 +20,7 @@ public interface ILichSuHoaDonRepository
         string? soDienThoai = null,
         string? hinhThucThanhToan = null,
         string? trangThaiThanhToan = null,
+        string? trangThaiPhaChe = null,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<LichSuHoaDonChiTietDong>> GetChiTietHoaDonAsync(

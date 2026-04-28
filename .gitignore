@@ -57,8 +57,17 @@ Generated\\ Files/
 *.publishsettings
 *.pubxml.user
 appsettings.Development.json
+appsettings.json
 .env
 .env.*
+
+# Local appsettings / secrets
+CoffeeShop.PaymentApi/appsettings.json
+CoffeeShop.PaymentApi/appsettings.Development.json
+CoffeeShop.PaymentApi/appsettings.Production.json
+
+# WPF App.config (contains API URLs and connection strings)
+CoffeeShop.Wpf/App.config
 
 # Database / local data files
 *.mdf
@@ -83,5 +92,8 @@ desktop.ini
 
 # Keep source and required project assets
 !.gitignore
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1198054 (update qr)
 .agents

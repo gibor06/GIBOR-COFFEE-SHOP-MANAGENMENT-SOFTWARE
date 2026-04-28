@@ -38,8 +38,7 @@ public sealed class QuanLyBanViewModel : BaseViewModel
         {
             new("Tất cả", null),
             new("Trống", TrangThaiBanConst.Trong),
-            new("Đang phục vụ", TrangThaiBanConst.DangPhucVu),
-            new("Chờ thanh toán", TrangThaiBanConst.ChoThanhToan),
+            new("Đang có khách", TrangThaiBanConst.DangCoKhach),
             new("Tạm khóa", TrangThaiBanConst.TamKhoa)
         };
 

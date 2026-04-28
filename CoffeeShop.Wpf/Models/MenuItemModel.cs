@@ -27,7 +27,8 @@ public sealed class MenuItemModel
             "HoaDonBan" => "Nghiệp vụ",
             "ExportPrint" => "Nghiệp vụ",
             "LichSuHoaDon" => "Nghiệp vụ",
-            "QuanLyBan" => "Vận hành",
+            // Module Quản lý bàn đã bị gỡ
+            // "QuanLyBan" => "Vận hành",
             "CaLamViec" => "Vận hành",
             "TrangThaiSanPham" => "Vận hành",
             "CanhBaoTonKho" => "Vận hành",
@@ -35,6 +36,8 @@ public sealed class MenuItemModel
             "DanhMuc" => "Danh mục",
             "NhaCungCap" => "Danh mục",
             "Mon" => "Danh mục",
+            "NguyenLieu" => "Danh mục",
+            "CongThucMon" => "Danh mục",
             "KhuyenMai" => "Danh mục",
             "KhachHang" => "Danh mục",
             "QuanLyTaiKhoan" => "Quản trị",

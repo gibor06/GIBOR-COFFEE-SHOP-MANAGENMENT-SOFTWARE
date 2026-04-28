@@ -11,9 +11,11 @@ public sealed class ExportPrintViewModel : BaseViewModel
     private readonly SessionService _sessionService;
     private readonly RelayCommand _xuatPdfBaoCaoDonGianCommand;
     private readonly RelayCommand _xuatPdfBaoCaoNangCaoCommand;
-    private readonly RelayCommand _xuatExcelThongKeCommand;
+    private readonly RelayCommand _xuatCsvThongKeCommand;
     private readonly RelayCommand _inHoaDonCommand;
     private readonly RelayCommand _previewBaoCaoCommand;
+    private readonly RelayCommand _previewHoaDonCommand;
+    private readonly RelayCommand _inPhieuPhaCheCommand;
 
     private DateTime _fromDate = DateTime.Today.AddDays(-7);
     private DateTime _toDate = DateTime.Today;
@@ -32,9 +34,11 @@ public sealed class ExportPrintViewModel : BaseViewModel
 
         _xuatPdfBaoCaoDonGianCommand = new RelayCommand(ExecuteXuatPdfBaoCaoDonGian, () => !IsBusy);
         _xuatPdfBaoCaoNangCaoCommand = new RelayCommand(ExecuteXuatPdfBaoCaoNangCao, () => !IsBusy);
-        _xuatExcelThongKeCommand = new RelayCommand(ExecuteXuatExcelThongKe, () => !IsBusy);
+        _xuatCsvThongKeCommand = new RelayCommand(ExecuteXuatCsvThongKe, () => !IsBusy);
         _inHoaDonCommand = new RelayCommand(ExecuteInHoaDon, () => !IsBusy);
         _previewBaoCaoCommand = new RelayCommand(ExecutePreviewBaoCao, () => !IsBusy);
+        _previewHoaDonCommand = new RelayCommand(ExecutePreviewHoaDon, () => !IsBusy);
+        _inPhieuPhaCheCommand = new RelayCommand(ExecuteInPhieuPhaChe, () => !IsBusy);
     }
 
     public DateTime FromDate
@@ -94,9 +98,11 @@ public sealed class ExportPrintViewModel : BaseViewModel
             {
                 _xuatPdfBaoCaoDonGianCommand.RaiseCanExecuteChanged();
                 _xuatPdfBaoCaoNangCaoCommand.RaiseCanExecuteChanged();
-                _xuatExcelThongKeCommand.RaiseCanExecuteChanged();
+                _xuatCsvThongKeCommand.RaiseCanExecuteChanged();
                 _inHoaDonCommand.RaiseCanExecuteChanged();
                 _previewBaoCaoCommand.RaiseCanExecuteChanged();
+                _previewHoaDonCommand.RaiseCanExecuteChanged();
+                _inPhieuPhaCheCommand.RaiseCanExecuteChanged();
             }
         }
     }
@@ -105,11 +111,15 @@ public sealed class ExportPrintViewModel : BaseViewModel
 
     public ICommand XuatPdfBaoCaoNangCaoCommand => _xuatPdfBaoCaoNangCaoCommand;
 
-    public ICommand XuatExcelThongKeCommand => _xuatExcelThongKeCommand;
+    public ICommand XuatCsvThongKeCommand => _xuatCsvThongKeCommand;
 
     public ICommand InHoaDonCommand => _inHoaDonCommand;
 
     public ICommand PreviewBaoCaoCommand => _previewBaoCaoCommand;
+
+    public ICommand PreviewHoaDonCommand => _previewHoaDonCommand;
+
+    public ICommand InPhieuPhaCheCommand => _inPhieuPhaCheCommand;
 
     public Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -138,10 +148,10 @@ public sealed class ExportPrintViewModel : BaseViewModel
                 ct));
     }
 
-    private async void ExecuteXuatExcelThongKe()
+    private async void ExecuteXuatCsvThongKe()
     {
         await RunAsync(ct =>
-            _exportPrintService.XuatExcelThongKeAsync(
+            _exportPrintService.XuatCsvThongKeAsync(
                 FromDate,
                 ToDate,
                 ThuMucXuat,
@@ -173,6 +183,40 @@ public sealed class ExportPrintViewModel : BaseViewModel
                 FromDate,
                 ToDate,
                 LoaiPreview,
+                ThuMucXuat,
+                _sessionService.CurrentUser?.UserId,
+                ct));
+    }
+
+    private async void ExecutePreviewHoaDon()
+    {
+        if (!int.TryParse(HoaDonBanIdInput, out var hoaDonBanId) || hoaDonBanId <= 0)
+        {
+            ErrorMessage = "Vui lòng nhập mã hóa đơn bán hợp lệ để xem.";
+            SuccessMessage = string.Empty;
+            return;
+        }
+
+        await RunAsync(ct =>
+            _exportPrintService.PreviewHoaDonBanAsync(
+                hoaDonBanId,
+                ThuMucXuat,
+                _sessionService.CurrentUser?.UserId,
+                ct));
+    }
+
+    private async void ExecuteInPhieuPhaChe()
+    {
+        if (!int.TryParse(HoaDonBanIdInput, out var hoaDonBanId) || hoaDonBanId <= 0)
+        {
+            ErrorMessage = "Vui lòng nhập mã hóa đơn bán hợp lệ để in phiếu pha chế.";
+            SuccessMessage = string.Empty;
+            return;
+        }
+
+        await RunAsync(ct =>
+            _exportPrintService.InPhieuPhaCheAsync(
+                hoaDonBanId,
                 ThuMucXuat,
                 _sessionService.CurrentUser?.UserId,
                 ct));

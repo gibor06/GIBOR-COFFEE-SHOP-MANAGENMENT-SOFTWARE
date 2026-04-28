@@ -1,3 +1,29 @@
+﻿-- ============================================================
+-- GIBOR Coffee Shop - Consolidated Upgrade Scripts
+-- Database: CoffeeShopDb
+-- Lưu ý:
+--   1) Đây là script NÂNG CẤP, dùng sau khi đã chạy database gốc 01-09.
+--   2) Script được viết theo hướng idempotent: chạy lại nhiều lần sẽ hạn chế lỗi.
+--   3) Nên backup database trước khi chạy.
+-- ============================================================
+USE CoffeeShopDb;
+GO
+
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+GO
+
+-- ============================================================
+-- FILE 01 - BÁN HÀNG / THU NGÂN / HÓA ĐƠN
+-- Gộp từ: 10, 11, 12, 13, 15, 18
+-- 14_MakeBanOptionalForHoaDonBan đã được tích hợp trong phần HinhThucPhucVu.
+-- ============================================================
+
+
+-- ============================================================
+-- PHẦN 10
+-- Source: 10_CashierUpgrade_Migration.sql
+-- ============================================================
 -- =============================================
 -- Script: Nâng cấp nghiệp vụ thu ngân (PHIÊN BẢN ĐẦY ĐỦ)
 -- Mô tả:
@@ -7,10 +33,6 @@
 -- Lưu ý: Script an toàn, chạy nhiều lần không gây lỗi.
 --         Không xóa, không rename bất kỳ cột/bảng nào.
 -- =============================================
-
-USE CoffeeShopDb;
-GO
-
 -- ========================================
 -- PHẦN A: ĐẢM BẢO CÁC CỘT THU NGÂN TỒN TẠI
 -- ========================================
@@ -163,9 +185,9 @@ PRINT N'  Sửa HinhThucThanhToan → Chuyển khoản: ' + CAST(@@ROWCOUNT AS N
 UPDATE dbo.HoaDonBan
 SET HinhThucThanhToan = N'Ví điện tử'
 WHERE HinhThucThanhToan IN (
-    N'VÃ Ä'iá»‡n tá»',
+    N'VÃ Äiá»‡n tá»',
     N'VÃ điện tử',
-    N'Ví Ä'iá»‡n tử'
+    N'Ví Äiá»‡n tử'
 );
 PRINT N'  Sửa HinhThucThanhToan → Ví điện tử: ' + CAST(@@ROWCOUNT AS NVARCHAR(10)) + N' dòng';
 
@@ -379,4 +401,315 @@ PRINT N'Dữ liệu tiếng Việt bị lỗi encoding đã được sửa.';
 PRINT N'Trigger tự động chuẩn hóa đã được tạo:';
 PRINT N'  - TR_HoaDonBan_NormalizeVietnamese_Insert';
 PRINT N'  - TR_HoaDonBan_NormalizeVietnamese_Update';
+GO
+
+
+-- ============================================================
+-- PHẦN 11
+-- Source: 11_AddSoGoiMon.sql
+-- ============================================================
+IF COL_LENGTH(N'dbo.HoaDonBan', N'SoThuTuGoiMon') IS NULL
+BEGIN
+    ALTER TABLE dbo.HoaDonBan ADD SoThuTuGoiMon INT NULL;
+END
+GO
+
+IF COL_LENGTH(N'dbo.HoaDonBan', N'NgaySoThuTu') IS NULL
+BEGIN
+    ALTER TABLE dbo.HoaDonBan ADD NgaySoThuTu DATE NULL;
+END
+GO
+
+UPDATE dbo.HoaDonBan
+SET NgaySoThuTu = CAST(NgayBan AS DATE)
+WHERE NgaySoThuTu IS NULL;
+GO
+
+;WITH Ranked AS
+(
+    SELECT 
+        HoaDonBanId,
+        ROW_NUMBER() OVER (
+            PARTITION BY CAST(NgayBan AS DATE)
+            ORDER BY NgayBan, HoaDonBanId
+        ) AS SoMoi
+    FROM dbo.HoaDonBan
+    WHERE SoThuTuGoiMon IS NULL
+)
+UPDATE hb
+SET hb.SoThuTuGoiMon = r.SoMoi
+FROM dbo.HoaDonBan hb
+JOIN Ranked r ON r.HoaDonBanId = hb.HoaDonBanId;
+GO
+
+IF NOT EXISTS (
+    SELECT 1 
+    FROM sys.indexes 
+    WHERE name = N'UX_HoaDonBan_NgaySoThuTu_SoThuTuGoiMon'
+      AND object_id = OBJECT_ID(N'dbo.HoaDonBan')
+)
+BEGIN
+    CREATE UNIQUE INDEX UX_HoaDonBan_NgaySoThuTu_SoThuTuGoiMon
+    ON dbo.HoaDonBan(NgaySoThuTu, SoThuTuGoiMon)
+    WHERE NgaySoThuTu IS NOT NULL AND SoThuTuGoiMon IS NOT NULL;
+END
+GO
+
+
+-- ============================================================
+-- PHẦN 12
+-- Source: 12_AddTrangThaiPhaChe.sql
+-- ============================================================
+-- 1. Thêm cột TrangThaiPhaChe
+IF COL_LENGTH(N'dbo.HoaDonBan', N'TrangThaiPhaChe') IS NULL
+BEGIN
+    ALTER TABLE dbo.HoaDonBan ADD TrangThaiPhaChe NVARCHAR(30) NULL;
+END
+GO
+
+-- 2. Thêm cột thời gian pha chế
+IF COL_LENGTH(N'dbo.HoaDonBan', N'ThoiGianBatDauPhaChe') IS NULL
+BEGIN
+    ALTER TABLE dbo.HoaDonBan ADD ThoiGianBatDauPhaChe DATETIME2 NULL;
+END
+GO
+
+IF COL_LENGTH(N'dbo.HoaDonBan', N'ThoiGianHoanThanhPhaChe') IS NULL
+BEGIN
+    ALTER TABLE dbo.HoaDonBan ADD ThoiGianHoanThanhPhaChe DATETIME2 NULL;
+END
+GO
+
+IF COL_LENGTH(N'dbo.HoaDonBan', N'ThoiGianGiaoKhach') IS NULL
+BEGIN
+    ALTER TABLE dbo.HoaDonBan ADD ThoiGianGiaoKhach DATETIME2 NULL;
+END
+GO
+
+-- 3. Backfill dữ liệu cũ
+UPDATE dbo.HoaDonBan
+SET TrangThaiPhaChe = N'DaHuy'
+WHERE TrangThaiPhaChe IS NULL
+  AND TrangThaiThanhToan = N'Đã hủy';
+GO
+
+UPDATE dbo.HoaDonBan
+SET TrangThaiPhaChe = N'DaGiaoKhach'
+WHERE TrangThaiPhaChe IS NULL;
+GO
+
+-- 4. Default cho hóa đơn mới
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.default_constraints
+    WHERE parent_object_id = OBJECT_ID(N'dbo.HoaDonBan')
+      AND name = N'DF_HoaDonBan_TrangThaiPhaChe'
+)
+BEGIN
+    ALTER TABLE dbo.HoaDonBan
+    ADD CONSTRAINT DF_HoaDonBan_TrangThaiPhaChe
+    DEFAULT N'ChoPhaChe' FOR TrangThaiPhaChe;
+END
+GO
+
+-- 5. Check constraint
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.check_constraints
+    WHERE parent_object_id = OBJECT_ID(N'dbo.HoaDonBan')
+      AND name = N'CK_HoaDonBan_TrangThaiPhaChe'
+)
+BEGIN
+    ALTER TABLE dbo.HoaDonBan
+    ADD CONSTRAINT CK_HoaDonBan_TrangThaiPhaChe
+    CHECK (TrangThaiPhaChe IN (
+        N'ChoPhaChe',
+        N'DangPhaChe',
+        N'DaHoanThanh',
+        N'DaGiaoKhach',
+        N'DaHuy'
+    ));
+END
+GO
+
+-- 6. Index theo TrangThaiPhaChe, NgayBan
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = N'IX_HoaDonBan_TrangThaiPhaChe_NgayBan'
+      AND object_id = OBJECT_ID(N'dbo.HoaDonBan')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_HoaDonBan_TrangThaiPhaChe_NgayBan
+    ON dbo.HoaDonBan(TrangThaiPhaChe, NgayBan);
+END
+GO
+
+
+-- ============================================================
+-- PHẦN 13
+-- Source: 13_AddSizeAndNoteToChiTietHoaDonBan.sql
+-- ============================================================
+-- 1. Thêm cột KichCo (Size đồ uống)
+IF COL_LENGTH(N'dbo.ChiTietHoaDonBan', N'KichCo') IS NULL
+BEGIN
+    ALTER TABLE dbo.ChiTietHoaDonBan ADD KichCo NVARCHAR(20) NULL;
+END
+GO
+
+-- 2. Thêm cột PhuThuKichCo (phụ thu theo size)
+IF COL_LENGTH(N'dbo.ChiTietHoaDonBan', N'PhuThuKichCo') IS NULL
+BEGIN
+    ALTER TABLE dbo.ChiTietHoaDonBan ADD PhuThuKichCo DECIMAL(18,2) NOT NULL DEFAULT(0);
+END
+GO
+
+-- 3. Thêm cột GhiChuMon (ghi chú riêng từng món)
+IF COL_LENGTH(N'dbo.ChiTietHoaDonBan', N'GhiChuMon') IS NULL
+BEGIN
+    ALTER TABLE dbo.ChiTietHoaDonBan ADD GhiChuMon NVARCHAR(255) NULL;
+END
+GO
+
+
+-- ============================================================
+-- PHẦN 15
+-- Source: 15_AddHinhThucPhucVuToHoaDonBan.sql
+-- ============================================================
+-- =============================================
+-- 15_AddHinhThucPhucVuToHoaDonBan.sql
+-- Thêm cột HinhThucPhucVu: UongTaiQuan / MangDi
+-- Đồng thời đảm bảo BanId nullable
+-- =============================================
+-- 1. Thêm cột HinhThucPhucVu nếu chưa có
+IF COL_LENGTH('dbo.HoaDonBan', 'HinhThucPhucVu') IS NULL
+BEGIN
+    ALTER TABLE dbo.HoaDonBan
+    ADD HinhThucPhucVu NVARCHAR(30) NOT NULL
+        CONSTRAINT DF_HoaDonBan_HinhThucPhucVu DEFAULT(N'UongTaiQuan');
+
+    PRINT N'Đã thêm cột HinhThucPhucVu.';
+END
+ELSE
+BEGIN
+    PRINT N'Cột HinhThucPhucVu đã tồn tại, bỏ qua.';
+END
+GO
+
+-- 2. Thêm check constraint nếu chưa có
+IF NOT EXISTS (
+    SELECT 1 FROM sys.check_constraints
+    WHERE name = 'CK_HoaDonBan_HinhThucPhucVu'
+)
+BEGIN
+    ALTER TABLE dbo.HoaDonBan
+    ADD CONSTRAINT CK_HoaDonBan_HinhThucPhucVu
+        CHECK (HinhThucPhucVu IN (N'UongTaiQuan', N'MangDi'));
+
+    PRINT N'Đã thêm check constraint CK_HoaDonBan_HinhThucPhucVu.';
+END
+GO
+
+-- 3. Đảm bảo BanId nullable
+IF EXISTS (
+    SELECT 1
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = 'dbo'
+      AND TABLE_NAME = 'HoaDonBan'
+      AND COLUMN_NAME = 'BanId'
+      AND IS_NULLABLE = 'NO'
+)
+BEGIN
+    ALTER TABLE dbo.HoaDonBan ALTER COLUMN BanId INT NULL;
+    PRINT N'Đã đổi HoaDonBan.BanId thành NULL.';
+END
+GO
+
+
+-- ============================================================
+-- PHẦN 18
+-- Source: 18_HoaDonBan_DiemSuDung.sql
+-- ============================================================
+-- =============================================
+-- Migration: Thêm chức năng dùng điểm tích lũy để giảm tiền
+-- File: 18_HoaDonBan_DiemSuDung.sql
+-- Mô tả: Thêm cột DiemSuDung và SoTienGiamTuDiem vào bảng HoaDonBan
+-- =============================================
+-- Kiểm tra và thêm cột DiemSuDung nếu chưa có
+IF NOT EXISTS (
+    SELECT 1 
+    FROM sys.columns 
+    WHERE object_id = OBJECT_ID('dbo.HoaDonBan') 
+    AND name = 'DiemSuDung'
+)
+BEGIN
+    ALTER TABLE dbo.HoaDonBan
+    ADD DiemSuDung INT NOT NULL DEFAULT(0);
+    
+    PRINT 'Đã thêm cột DiemSuDung vào bảng HoaDonBan';
+END
+ELSE
+BEGIN
+    PRINT 'Cột DiemSuDung đã tồn tại trong bảng HoaDonBan';
+END
+GO
+
+-- Kiểm tra và thêm cột SoTienGiamTuDiem nếu chưa có
+IF NOT EXISTS (
+    SELECT 1 
+    FROM sys.columns 
+    WHERE object_id = OBJECT_ID('dbo.HoaDonBan') 
+    AND name = 'SoTienGiamTuDiem'
+)
+BEGIN
+    ALTER TABLE dbo.HoaDonBan
+    ADD SoTienGiamTuDiem DECIMAL(18,2) NOT NULL DEFAULT(0);
+    
+    PRINT 'Đã thêm cột SoTienGiamTuDiem vào bảng HoaDonBan';
+END
+ELSE
+BEGIN
+    PRINT 'Cột SoTienGiamTuDiem đã tồn tại trong bảng HoaDonBan';
+END
+GO
+
+-- Thêm check constraint cho DiemSuDung
+IF NOT EXISTS (
+    SELECT 1 
+    FROM sys.check_constraints 
+    WHERE name = 'CK_HoaDonBan_DiemSuDung_NonNegative'
+)
+BEGIN
+    ALTER TABLE dbo.HoaDonBan
+    ADD CONSTRAINT CK_HoaDonBan_DiemSuDung_NonNegative 
+    CHECK (DiemSuDung >= 0);
+    
+    PRINT 'Đã thêm constraint CK_HoaDonBan_DiemSuDung_NonNegative';
+END
+ELSE
+BEGIN
+    PRINT 'Constraint CK_HoaDonBan_DiemSuDung_NonNegative đã tồn tại';
+END
+GO
+
+-- Thêm check constraint cho SoTienGiamTuDiem
+IF NOT EXISTS (
+    SELECT 1 
+    FROM sys.check_constraints 
+    WHERE name = 'CK_HoaDonBan_SoTienGiamTuDiem_NonNegative'
+)
+BEGIN
+    ALTER TABLE dbo.HoaDonBan
+    ADD CONSTRAINT CK_HoaDonBan_SoTienGiamTuDiem_NonNegative 
+    CHECK (SoTienGiamTuDiem >= 0);
+    
+    PRINT 'Đã thêm constraint CK_HoaDonBan_SoTienGiamTuDiem_NonNegative';
+END
+ELSE
+BEGIN
+    PRINT 'Constraint CK_HoaDonBan_SoTienGiamTuDiem đã tồn tại';
+END
+GO
+
+PRINT 'Migration 18_HoaDonBan_DiemSuDung.sql hoàn tất!';
 GO

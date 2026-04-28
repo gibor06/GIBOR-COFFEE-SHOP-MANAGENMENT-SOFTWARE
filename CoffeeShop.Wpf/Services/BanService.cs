@@ -8,8 +8,7 @@ public sealed class BanService : IBanService
     private static readonly HashSet<string> AllowedTrangThaiBan =
     [
         TrangThaiBanConst.Trong,
-        TrangThaiBanConst.DangPhucVu,
-        TrangThaiBanConst.ChoThanhToan,
+        TrangThaiBanConst.DangCoKhach,
         TrangThaiBanConst.TamKhoa
     ];
 

@@ -1,4 +1,4 @@
-﻿namespace CoffeeShop.Wpf.Models;
+namespace CoffeeShop.Wpf.Models;
 
 public sealed class KhuyenMai
 {
@@ -19,6 +19,12 @@ public sealed class KhuyenMai
     public int? MonId { get; set; }
 
     public string? MoTa { get; set; }
+
+    /// <summary>Giá trị đơn hàng tối thiểu để áp dụng KM (null = không giới hạn)</summary>
+    public decimal? GiaTriDonHangToiThieu { get; set; }
+
+    /// <summary>Số tiền giảm tối đa (null = không giới hạn)</summary>
+    public decimal? SoTienGiamToiDa { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

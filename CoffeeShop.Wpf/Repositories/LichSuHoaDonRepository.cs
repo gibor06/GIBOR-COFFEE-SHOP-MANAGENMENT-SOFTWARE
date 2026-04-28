@@ -14,7 +14,7 @@ public sealed class LichSuHoaDonRepository : ILichSuHoaDonRepository
     {
         // Gọi TimKiemHoaDonAsync với tất cả filter = null → lấy toàn bộ
         return TimKiemHoaDonAsync(fromDate, toDate, null, null, null, null,
-            null, null, null, null, cancellationToken);
+            null, null, null, null, null, cancellationToken);
     }
 
     public async Task<IReadOnlyList<LichSuHoaDonDong>> TimKiemHoaDonAsync(
@@ -28,6 +28,7 @@ public sealed class LichSuHoaDonRepository : ILichSuHoaDonRepository
         string? soDienThoai = null,
         string? hinhThucThanhToan = null,
         string? trangThaiThanhToan = null,
+        string? trangThaiPhaChe = null,
         CancellationToken cancellationToken = default)
     {
         // SQL query mở rộng: JOIN bảng KhachHang lấy thông tin KH,
@@ -47,7 +48,9 @@ SELECT hb.HoaDonBanId,
        kh.HoTen AS TenKhachHang,
        kh.SoDienThoai,
        ISNULL(hb.HinhThucThanhToan, N'Tiền mặt') AS HinhThucThanhToan,
-       ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') AS TrangThaiThanhToan
+       ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') AS TrangThaiThanhToan,
+       ISNULL(hb.TrangThaiPhaChe, N'ChoPhaChe') AS TrangThaiPhaChe,
+       ISNULL(hb.HinhThucPhucVu, N'UongTaiQuan') AS HinhThucPhucVu
 FROM dbo.HoaDonBan hb
 LEFT JOIN dbo.NguoiDung nd ON nd.NguoiDungId = hb.CreatedByUserId
 LEFT JOIN dbo.Ban b ON b.BanId = hb.BanId
@@ -63,6 +66,7 @@ WHERE hb.NgayBan >= @FromDate
   AND (@SoDienThoai IS NULL OR kh.SoDienThoai LIKE N'%' + @SoDienThoai + N'%')
   AND (@HinhThucThanhToan IS NULL OR hb.HinhThucThanhToan = @HinhThucThanhToan)
   AND (@TrangThaiThanhToan IS NULL OR ISNULL(hb.TrangThaiThanhToan, N'Đã thanh toán') = @TrangThaiThanhToan)
+  AND (@TrangThaiPhaChe IS NULL OR ISNULL(hb.TrangThaiPhaChe, N'ChoPhaChe') = @TrangThaiPhaChe)
 ORDER BY hb.NgayBan DESC;";
 
         var result = new List<LichSuHoaDonDong>();
@@ -85,6 +89,8 @@ ORDER BY hb.NgayBan DESC;";
             string.IsNullOrWhiteSpace(hinhThucThanhToan) ? DBNull.Value : hinhThucThanhToan.Trim());
         command.Parameters.AddWithValue("@TrangThaiThanhToan",
             string.IsNullOrWhiteSpace(trangThaiThanhToan) ? DBNull.Value : trangThaiThanhToan.Trim());
+        command.Parameters.AddWithValue("@TrangThaiPhaChe",
+            string.IsNullOrWhiteSpace(trangThaiPhaChe) ? DBNull.Value : trangThaiPhaChe.Trim());
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -122,7 +128,11 @@ ORDER BY hb.NgayBan DESC;";
                 HinhThucThanhToan = TextNormalizationHelper.NormalizeOrEmpty(
                     reader.GetString(reader.GetOrdinal("HinhThucThanhToan"))),
                 TrangThaiThanhToan = TextNormalizationHelper.NormalizeOrEmpty(
-                    reader.GetString(reader.GetOrdinal("TrangThaiThanhToan")))
+                    reader.GetString(reader.GetOrdinal("TrangThaiThanhToan"))),
+                // Trạng thái pha chế
+                TrangThaiPhaChe = reader.GetString(reader.GetOrdinal("TrangThaiPhaChe")),
+                // Hình thức phục vụ
+                HinhThucPhucVu = reader.GetString(reader.GetOrdinal("HinhThucPhucVu"))
             });
         }
 
@@ -138,7 +148,10 @@ SELECT ct.MonId,
        m.TenMon,
        ct.SoLuong,
        ct.DonGiaBan,
-       ct.ThanhTien
+       ct.ThanhTien,
+       ct.KichCo,
+       ISNULL(ct.PhuThuKichCo, 0) AS PhuThuKichCo,
+       ct.GhiChuMon
 FROM dbo.ChiTietHoaDonBan ct
 JOIN dbo.Mon m ON m.MonId = ct.MonId
 WHERE ct.HoaDonBanId = @HoaDonBanId
@@ -161,7 +174,12 @@ ORDER BY ct.ChiTietHoaDonBanId;";
                 TenMon = reader.GetString(reader.GetOrdinal("TenMon")),
                 SoLuong = reader.GetInt32(reader.GetOrdinal("SoLuong")),
                 DonGiaBan = reader.GetDecimal(reader.GetOrdinal("DonGiaBan")),
-                ThanhTien = reader.GetDecimal(reader.GetOrdinal("ThanhTien"))
+                ThanhTien = reader.GetDecimal(reader.GetOrdinal("ThanhTien")),
+                KichCo = reader.IsDBNull(reader.GetOrdinal("KichCo"))
+                    ? "Mặc định" : reader.GetString(reader.GetOrdinal("KichCo")),
+                PhuThuKichCo = reader.GetDecimal(reader.GetOrdinal("PhuThuKichCo")),
+                GhiChuMon = reader.IsDBNull(reader.GetOrdinal("GhiChuMon"))
+                    ? null : reader.GetString(reader.GetOrdinal("GhiChuMon"))
             });
         }
 
@@ -227,6 +245,7 @@ WHERE HoaDonBanId = @HoaDonBanId;";
             const string updateStatusSql = @"
 UPDATE dbo.HoaDonBan
 SET TrangThaiThanhToan = N'Đã hủy',
+    TrangThaiPhaChe = N'DaHuy',
     LyDoHuy = @LyDoHuy,
     NguoiHuy = @NguoiHuy,
     NgayHuy = SYSDATETIME()

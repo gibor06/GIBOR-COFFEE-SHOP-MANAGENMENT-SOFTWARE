@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Models;
+using CoffeeShop.Wpf.Models;
 using CoffeeShop.Wpf.Repositories;
 
 namespace CoffeeShop.Wpf.Services;
@@ -86,6 +86,17 @@ public sealed class KhuyenMaiService : IKhuyenMaiService
         DateTime? thoiDiem = null,
         CancellationToken cancellationToken = default)
     {
+        // Overload cũ: gọi overload mới với danh sách rỗng (TheoSanPham sẽ không áp dụng được)
+        return await ApDungKhuyenMaiAsync(khuyenMaiId, tongTienTruocGiam, Array.Empty<HoaDonBanChiTietInputModel>(), thoiDiem, cancellationToken);
+    }
+
+    public async Task<ServiceResult<KhuyenMaiApDungModel>> ApDungKhuyenMaiAsync(
+        int? khuyenMaiId,
+        decimal tongTienTruocGiam,
+        IReadOnlyList<HoaDonBanChiTietInputModel> chiTietInputs,
+        DateTime? thoiDiem = null,
+        CancellationToken cancellationToken = default)
+    {
         if (tongTienTruocGiam <= 0)
         {
             return ServiceResult<KhuyenMaiApDungModel>.Fail("Tổng tiền hóa đơn không hợp lệ.");
@@ -116,6 +127,13 @@ public sealed class KhuyenMaiService : IKhuyenMaiService
             return ServiceResult<KhuyenMaiApDungModel>.Fail("Khuyến mãi đã chọn không còn hiệu lực.");
         }
 
+        // Kiểm tra đơn hàng tối thiểu
+        if (khuyenMai.GiaTriDonHangToiThieu.HasValue && tongTienTruocGiam < khuyenMai.GiaTriDonHangToiThieu.Value)
+        {
+            return ServiceResult<KhuyenMaiApDungModel>.Fail(
+                $"Khuyến mãi yêu cầu đơn hàng tối thiểu {khuyenMai.GiaTriDonHangToiThieu.Value:N0} đ. Đơn hiện tại: {tongTienTruocGiam:N0} đ.");
+        }
+
         decimal soTienGiam;
         switch (khuyenMai.LoaiKhuyenMai)
         {
@@ -126,8 +144,35 @@ public sealed class KhuyenMaiService : IKhuyenMaiService
                 soTienGiam = khuyenMai.GiaTri;
                 break;
             case "TheoSanPham":
+            {
+                // Bắt buộc có MonId
+                if (!khuyenMai.MonId.HasValue || khuyenMai.MonId <= 0)
+                {
+                    return ServiceResult<KhuyenMaiApDungModel>.Fail("Khuyến mãi theo sản phẩm chưa được gắn sản phẩm.");
+                }
+
+                // Tìm dòng chi tiết có MonId trùng
+                var dongSanPham = chiTietInputs
+                    .Where(x => x.MonId == khuyenMai.MonId.Value)
+                    .ToList();
+
+                if (dongSanPham.Count == 0)
+                {
+                    return ServiceResult<KhuyenMaiApDungModel>.Fail(
+                        "Khuyến mãi này chỉ áp dụng cho sản phẩm được chọn. Hóa đơn không có sản phẩm đó.");
+                }
+
+                // Tính tổng thành tiền của sản phẩm được khuyến mãi
+                var thanhTienSanPham = dongSanPham.Sum(x => x.ThanhTien);
+
+                // Giảm = GiaTri, nhưng tối đa = thành tiền sản phẩm
                 soTienGiam = khuyenMai.GiaTri;
+                if (soTienGiam > thanhTienSanPham)
+                {
+                    soTienGiam = thanhTienSanPham;
+                }
                 break;
+            }
             default:
                 return ServiceResult<KhuyenMaiApDungModel>.Fail("Loại khuyến mãi chưa được hỗ trợ.");
         }
@@ -135,6 +180,12 @@ public sealed class KhuyenMaiService : IKhuyenMaiService
         if (soTienGiam < 0)
         {
             soTienGiam = 0;
+        }
+
+        // Áp dụng giới hạn giảm tối đa
+        if (khuyenMai.SoTienGiamToiDa.HasValue && soTienGiam > khuyenMai.SoTienGiamToiDa.Value)
+        {
+            soTienGiam = khuyenMai.SoTienGiamToiDa.Value;
         }
 
         if (soTienGiam > tongTienTruocGiam)
@@ -185,6 +236,16 @@ public sealed class KhuyenMaiService : IKhuyenMaiService
         if (khuyenMai.LoaiKhuyenMai == "TheoSanPham" && (!khuyenMai.MonId.HasValue || khuyenMai.MonId <= 0))
         {
             return Task.FromResult(ServiceResult.Fail("Khuyến mãi theo sản phẩm phải chọn sản phẩm áp dụng."));
+        }
+
+        if (khuyenMai.GiaTriDonHangToiThieu.HasValue && khuyenMai.GiaTriDonHangToiThieu.Value < 0)
+        {
+            return Task.FromResult(ServiceResult.Fail("Giá trị đơn hàng tối thiểu không được âm."));
+        }
+
+        if (khuyenMai.SoTienGiamToiDa.HasValue && khuyenMai.SoTienGiamToiDa.Value <= 0)
+        {
+            return Task.FromResult(ServiceResult.Fail("Số tiền giảm tối đa phải lớn hơn 0."));
         }
 
         return Task.FromResult(ServiceResult.Success());

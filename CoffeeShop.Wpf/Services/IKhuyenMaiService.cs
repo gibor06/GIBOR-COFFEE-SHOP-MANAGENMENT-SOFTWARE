@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Models;
+using CoffeeShop.Wpf.Models;
 
 namespace CoffeeShop.Wpf.Services;
 
@@ -24,6 +24,13 @@ public interface IKhuyenMaiService
     Task<ServiceResult<KhuyenMaiApDungModel>> ApDungKhuyenMaiAsync(
         int? khuyenMaiId,
         decimal tongTienTruocGiam,
+        DateTime? thoiDiem = null,
+        CancellationToken cancellationToken = default);
+
+    Task<ServiceResult<KhuyenMaiApDungModel>> ApDungKhuyenMaiAsync(
+        int? khuyenMaiId,
+        decimal tongTienTruocGiam,
+        IReadOnlyList<HoaDonBanChiTietInputModel> chiTietInputs,
         DateTime? thoiDiem = null,
         CancellationToken cancellationToken = default);
 

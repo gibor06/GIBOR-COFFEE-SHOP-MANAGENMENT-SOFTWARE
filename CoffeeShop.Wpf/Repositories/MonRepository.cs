@@ -15,6 +15,7 @@ SELECT m.MonId,
        dm.TenDanhMuc,
        m.DonGia,
        m.TonKho,
+       ISNULL(m.TonKhoToiThieu, 0) AS TonKhoToiThieu,
        m.HinhAnhPath,
        m.IsActive,
        m.CreatedAt
@@ -47,6 +48,7 @@ SELECT m.MonId,
        dm.TenDanhMuc,
        m.DonGia,
        m.TonKho,
+       ISNULL(m.TonKhoToiThieu, 0) AS TonKhoToiThieu,
        m.HinhAnhPath,
        m.IsActive,
        m.CreatedAt
@@ -84,6 +86,7 @@ SELECT m.MonId,
        dm.TenDanhMuc,
        m.DonGia,
        m.TonKho,
+       ISNULL(m.TonKhoToiThieu, 0) AS TonKhoToiThieu,
        m.HinhAnhPath,
        m.IsActive,
        m.CreatedAt
@@ -109,8 +112,8 @@ WHERE m.MonId = @MonId;";
     public async Task<int> InsertAsync(Mon mon, CancellationToken cancellationToken = default)
     {
         const string sql = @"
-INSERT INTO dbo.Mon (TenMon, DanhMucId, DonGia, TonKho, HinhAnhPath, IsActive, CreatedAt)
-VALUES (@TenMon, @DanhMucId, @DonGia, @TonKho, @HinhAnhPath, @IsActive, SYSDATETIME());
+INSERT INTO dbo.Mon (TenMon, DanhMucId, DonGia, TonKho, TonKhoToiThieu, HinhAnhPath, IsActive, CreatedAt)
+VALUES (@TenMon, @DanhMucId, @DonGia, @TonKho, @TonKhoToiThieu, @HinhAnhPath, @IsActive, SYSDATETIME());
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
         await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
@@ -121,6 +124,7 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
         command.Parameters.AddWithValue("@DanhMucId", mon.DanhMucId);
         command.Parameters.AddWithValue("@DonGia", mon.DonGia);
         command.Parameters.AddWithValue("@TonKho", mon.TonKho);
+        command.Parameters.AddWithValue("@TonKhoToiThieu", mon.TonKhoToiThieu);
         command.Parameters.AddWithValue("@HinhAnhPath", (object?)mon.HinhAnhPath ?? DBNull.Value);
         command.Parameters.AddWithValue("@IsActive", mon.IsActive);
 
@@ -136,6 +140,7 @@ SET TenMon = @TenMon,
     DanhMucId = @DanhMucId,
     DonGia = @DonGia,
     TonKho = @TonKho,
+    TonKhoToiThieu = @TonKhoToiThieu,
     HinhAnhPath = @HinhAnhPath,
     IsActive = @IsActive
 WHERE MonId = @MonId;";
@@ -149,6 +154,7 @@ WHERE MonId = @MonId;";
         command.Parameters.AddWithValue("@DanhMucId", mon.DanhMucId);
         command.Parameters.AddWithValue("@DonGia", mon.DonGia);
         command.Parameters.AddWithValue("@TonKho", mon.TonKho);
+        command.Parameters.AddWithValue("@TonKhoToiThieu", mon.TonKhoToiThieu);
         command.Parameters.AddWithValue("@HinhAnhPath", (object?)mon.HinhAnhPath ?? DBNull.Value);
         command.Parameters.AddWithValue("@IsActive", mon.IsActive);
 
@@ -185,6 +191,7 @@ WHERE MonId = @MonId;";
             TenDanhMuc = reader.IsDBNull(reader.GetOrdinal("TenDanhMuc")) ? null : reader.GetString(reader.GetOrdinal("TenDanhMuc")),
             DonGia = reader.GetDecimal(reader.GetOrdinal("DonGia")),
             TonKho = reader.GetInt32(reader.GetOrdinal("TonKho")),
+            TonKhoToiThieu = reader.GetInt32(reader.GetOrdinal("TonKhoToiThieu")),
             HinhAnhPath = reader.IsDBNull(reader.GetOrdinal("HinhAnhPath")) ? null : reader.GetString(reader.GetOrdinal("HinhAnhPath")),
             IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
             CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt"))

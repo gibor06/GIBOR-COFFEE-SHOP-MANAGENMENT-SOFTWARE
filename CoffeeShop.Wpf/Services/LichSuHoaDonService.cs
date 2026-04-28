@@ -41,6 +41,7 @@ public sealed class LichSuHoaDonService : ILichSuHoaDonService
         string? soDienThoai = null,
         string? hinhThucThanhToan = null,
         string? trangThaiThanhToan = null,
+        string? trangThaiPhaChe = null,
         CancellationToken cancellationToken = default)
     {
         if (fromDate.Date > toDate.Date)
@@ -59,6 +60,7 @@ public sealed class LichSuHoaDonService : ILichSuHoaDonService
             soDienThoai,
             hinhThucThanhToan,
             trangThaiThanhToan,
+            trangThaiPhaChe,
             cancellationToken);
 
         return ServiceResult<IReadOnlyList<LichSuHoaDonDong>>.Success(data, "Tìm kiếm hóa đơn thành công.");

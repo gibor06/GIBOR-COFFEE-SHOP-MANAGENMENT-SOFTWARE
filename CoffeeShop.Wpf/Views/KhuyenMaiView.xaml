@@ -59,6 +59,22 @@
                              VerticalScrollBarVisibility="Auto"
                              Text="{Binding MoTa, UpdateSourceTrigger=PropertyChanged}" />
 
+                        <WrapPanel Margin="0,8,0,0">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Đơn hàng tối thiểu" />
+                                <TextBox Width="150" Text="{Binding GiaTriDonToiThieuText, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <StackPanel Margin="16,0,0,0">
+                                <TextBlock FontWeight="SemiBold" Text="Giảm tối đa" />
+                                <TextBox Width="150" Text="{Binding SoTienGiamToiDaText, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </WrapPanel>
+                        <TextBlock Margin="0,3,0,0"
+                                   FontSize="11"
+                                   FontStyle="Italic"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="Để trống nếu không giới hạn." />
+
                         <WrapPanel Margin="0,12,0,0">
                             <Button Content="Thêm"
                                 Width="100"
@@ -114,7 +130,9 @@
                         <DataGridTextColumn Header="Giá trị" Binding="{Binding GiaTri, StringFormat=N0}" Width="120" />
                         <DataGridTextColumn Header="Từ ngày" Binding="{Binding TuNgay, StringFormat=dd/MM/yyyy}" Width="120" />
                         <DataGridTextColumn Header="Đến ngày" Binding="{Binding DenNgay, StringFormat=dd/MM/yyyy}" Width="120" />
-                        <DataGridCheckBoxColumn Header="Kích hoạt" Binding="{Binding IsActive}" Width="100" />
+                        <DataGridCheckBoxColumn Header="Kích hoạt" Binding="{Binding IsActive}" Width="80" />
+                        <DataGridTextColumn Header="Đơn tối thiểu" Binding="{Binding GiaTriDonHangToiThieu, StringFormat=N0}" Width="110" />
+                        <DataGridTextColumn Header="Giảm tối đa" Binding="{Binding SoTienGiamToiDa, StringFormat=N0}" Width="100" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>

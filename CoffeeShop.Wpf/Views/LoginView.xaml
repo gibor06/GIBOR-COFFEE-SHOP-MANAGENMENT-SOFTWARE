@@ -98,6 +98,7 @@
                             Content="Đăng nhập"
                             Style="{StaticResource ButtonPrimary}"
                             Command="{Binding LoginCommand}" 
+                            IsDefault="True"
                             />
 
                     <TextBlock Grid.Row="8"

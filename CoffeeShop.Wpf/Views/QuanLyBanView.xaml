@@ -147,15 +147,19 @@
                             Command="{Binding DoiTrangThaiBanCommand}" />
 
                         <TextBlock Margin="0,10,0,0"
-                               Text="Bàn đích (chuyển/gộp)" />
+                               Text="Bàn đích (chuyển/gộp)" 
+                               Visibility="Collapsed" />
                         <ComboBox ItemsSource="{Binding DanhSachBan}"
                               SelectedItem="{Binding SelectedBanDich, Mode=TwoWay}"
                               DisplayMemberPath="TenBanHienThi"
-                              Padding="8,4" />
+                              Padding="8,4"
+                              Visibility="Collapsed" />
                         <Button Content="Chuyển bàn"
-                            Command="{Binding ChuyenBanCommand}" />
+                            Command="{Binding ChuyenBanCommand}" 
+                            Visibility="Collapsed" />
                         <Button Content="Gộp bàn"
-                            Command="{Binding GopBanCommand}" />
+                            Command="{Binding GopBanCommand}" 
+                            Visibility="Collapsed" />
                     </StackPanel>
                 </Border>
             </Grid>

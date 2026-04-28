@@ -183,7 +183,7 @@ WHERE BanId = @BanId
 
             await using var updateTo = new SqlCommand(updateToBanSql, connection, (SqlTransaction)transaction);
             updateTo.Parameters.AddWithValue("@BanId", toBanId);
-            updateTo.Parameters.AddWithValue("@TrangThaiMoi", TrangThaiBanConst.DangPhucVu);
+            updateTo.Parameters.AddWithValue("@TrangThaiMoi", TrangThaiBanConst.DangCoKhach);
             updateTo.Parameters.AddWithValue("@TrangThaiTamKhoa", TrangThaiBanConst.TamKhoa);
             var toAffected = await updateTo.ExecuteNonQueryAsync(cancellationToken);
 
@@ -234,7 +234,7 @@ WHERE BanId = @BanId
 
             await using var updateTarget = new SqlCommand(updateTargetSql, connection, (SqlTransaction)transaction);
             updateTarget.Parameters.AddWithValue("@BanId", targetBanId);
-            updateTarget.Parameters.AddWithValue("@TrangThaiMoi", TrangThaiBanConst.DangPhucVu);
+            updateTarget.Parameters.AddWithValue("@TrangThaiMoi", TrangThaiBanConst.DangCoKhach);
             updateTarget.Parameters.AddWithValue("@TrangThaiTamKhoa", TrangThaiBanConst.TamKhoa);
             var targetAffected = await updateTarget.ExecuteNonQueryAsync(cancellationToken);
 

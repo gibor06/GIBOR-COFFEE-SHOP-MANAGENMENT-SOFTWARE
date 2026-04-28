@@ -23,11 +23,17 @@ public sealed class MonService : IMonService
         return data.Where(x => x.IsActive).ToList();
     }
 
+    public async Task<Mon?> GetByIdAsync(int monId, CancellationToken cancellationToken = default)
+    {
+        return await _monRepository.GetByIdAsync(monId, cancellationToken);
+    }
+
     public async Task<ServiceResult<Mon>> CreateAsync(
         string tenMon,
         int danhMucId,
         decimal donGia,
         int tonKhoBanDau,
+        int tonKhoToiThieu,
         string hinhAnhPath,
         CancellationToken cancellationToken = default)
     {
@@ -66,6 +72,11 @@ public sealed class MonService : IMonService
             return ServiceResult<Mon>.Fail("Tồn kho ban đầu không được âm.");
         }
 
+        if (tonKhoToiThieu < 0)
+        {
+            return ServiceResult<Mon>.Fail("Tồn kho tối thiểu không được âm.");
+        }
+
         if (string.IsNullOrWhiteSpace(hinhAnhPathNormalized))
         {
             return ServiceResult<Mon>.Fail("Đường dẫn hình ảnh không được để trống.");
@@ -94,6 +105,7 @@ public sealed class MonService : IMonService
             DanhMucId = danhMucId,
             DonGia = donGia,
             TonKho = tonKhoBanDau,
+            TonKhoToiThieu = tonKhoToiThieu,
             HinhAnhPath = hinhAnhPathNormalized,
             IsActive = true
         };
@@ -106,6 +118,7 @@ public sealed class MonService : IMonService
             DanhMucId = newMon.DanhMucId,
             DonGia = newMon.DonGia,
             TonKho = newMon.TonKho,
+            TonKhoToiThieu = newMon.TonKhoToiThieu,
             HinhAnhPath = newMon.HinhAnhPath,
             IsActive = true,
             CreatedAt = DateTime.Now

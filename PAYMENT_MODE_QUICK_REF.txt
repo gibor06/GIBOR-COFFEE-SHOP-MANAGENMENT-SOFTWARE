@@ -1,0 +1,117 @@
+╔══════════════════════════════════════════════════════════════╗
+║              PAYMENT MODE - QUICK REFERENCE                 ║
+╚══════════════════════════════════════════════════════════════╝
+
+📍 File cấu hình: CoffeeShop.PaymentApi/appsettings.Development.json
+
+╔══════════════════════════════════════════════════════════════╗
+║                    MODE 1: VIETQR (Mặc định)                ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ Miễn phí
+✅ Không cần đăng ký
+✅ QR chuyển khoản ngân hàng trực tiếp
+
+Cấu hình:
+{
+  "PaymentMode": "VietQR",
+  "VietQR": {
+    "BankId": "970422",           ← Mã ngân hàng
+    "AccountNo": "0123456789",    ← Số tài khoản
+    "AccountName": "NGUYEN VAN A", ← Tên (HOA, không dấu)
+    "Template": "compact"
+  }
+}
+
+Quy trình:
+1. Tạo QR → Khách quét → Khách chuyển khoản
+2. Nhân viên click "Xác nhận thanh toán (Test)"
+3. Done!
+
+╔══════════════════════════════════════════════════════════════╗
+║                    MODE 2: PAYOS                            ║
+╚══════════════════════════════════════════════════════════════╝
+
+✅ Tự động webhook
+✅ Hỗ trợ nhiều ví
+❌ Có phí (~1-2%)
+❌ Cần đăng ký
+
+Đăng ký: https://payos.vn
+
+Cấu hình:
+{
+  "PaymentMode": "PayOS",
+  "PayOS": {
+    "ClientId": "abc123...",      ← Từ PayOS Dashboard
+    "ApiKey": "xyz789...",         ← Từ PayOS Dashboard
+    "ChecksumKey": "def456...",    ← Từ PayOS Dashboard
+    "BaseUrl": "https://api-merchant.payos.vn",
+    "ReturnUrl": "https://localhost:5002/payment/success",
+    "CancelUrl": "https://localhost:5002/payment/cancel"
+  }
+}
+
+Quy trình:
+1. Tạo QR → Khách quét → Khách thanh toán
+2. TỰ ĐỘNG cập nhật (không cần click gì!)
+3. Done!
+
+╔══════════════════════════════════════════════════════════════╗
+║                    CHUYỂN ĐỔI MODE                          ║
+╚══════════════════════════════════════════════════════════════╝
+
+Chuyển sang VietQR:
+  "PaymentMode": "VietQR"
+
+Chuyển sang PayOS:
+  "PaymentMode": "PayOS"
+
+Sau khi sửa → Restart API (Shift+F5 rồi F5)
+
+╔══════════════════════════════════════════════════════════════╗
+║                    MÃ NGÂN HÀNG PHỔ BIẾN                    ║
+╚══════════════════════════════════════════════════════════════╝
+
+Vietcombank (VCB)    : 970436
+Techcombank (TCB)    : 970407
+MB Bank (MB)         : 970422
+VietinBank (CTG)     : 970415
+BIDV                 : 970418
+Agribank             : 970405
+ACB                  : 970416
+Sacombank (STB)      : 970403
+VPBank               : 970432
+TPBank               : 970423
+
+Xem đầy đủ: https://api.vietqr.io/v2/banks
+
+╔══════════════════════════════════════════════════════════════╗
+║                    KHUYẾN NGHỊ                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+🏪 Quán nhỏ/vừa     → VietQR (miễn phí)
+🏢 Quán lớn/chuỗi   → PayOS (tự động)
+🧪 Development      → VietQR (test miễn phí)
+🚀 Production       → Tùy quy mô
+
+╔══════════════════════════════════════════════════════════════╗
+║                    FALLBACK TỰ ĐỘNG                         ║
+╚══════════════════════════════════════════════════════════════╝
+
+Nếu PayOS mode nhưng:
+  - Credentials sai
+  - API lỗi
+  - Không kết nối được
+
+→ Tự động chuyển về VietQR (không gián đoạn dịch vụ!)
+
+╔══════════════════════════════════════════════════════════════╗
+║                    TÀI LIỆU THAM KHẢO                       ║
+╚══════════════════════════════════════════════════════════════╝
+
+📄 HUONG_DAN_CHON_PAYMENT_MODE.md - Chi tiết đầy đủ
+📄 CAU_HINH_VIETQR.md - Hướng dẫn VietQR
+📄 appsettings.Development.json - File cấu hình
+
+╔══════════════════════════════════════════════════════════════╝

@@ -39,5 +39,21 @@ public sealed class LichSuHoaDonDong
 
     /// <summary>Trạng thái: Đã thanh toán, Chưa thanh toán, Đã hủy</summary>
     public string TrangThaiThanhToan { get; set; } = "Đã thanh toán";
+
+    // === Trạng thái pha chế ===
+
+    /// <summary>Trạng thái pha chế: ChoPhaChe, DangPhaChe, DaHoanThanh, DaGiaoKhach, DaHuy</summary>
+    public string TrangThaiPhaChe { get; set; } = TrangThaiPhaCheConst.ChoPhaChe;
+
+    /// <summary>Trạng thái pha chế hiển thị tiếng Việt</summary>
+    public string TrangThaiPhaCheHienThi => TrangThaiPhaCheConst.ToDisplayName(TrangThaiPhaChe);
+
+    // === Hình thức phục vụ ===
+
+    /// <summary>Hình thức phục vụ: UongTaiQuan, MangDi</summary>
+    public string HinhThucPhucVu { get; set; } = HinhThucPhucVuConst.UongTaiQuan;
+
+    /// <summary>Hình thức phục vụ hiển thị tiếng Việt</summary>
+    public string HinhThucPhucVuHienThi => HinhThucPhucVuConst.ToDisplayName(HinhThucPhucVu);
 }
 

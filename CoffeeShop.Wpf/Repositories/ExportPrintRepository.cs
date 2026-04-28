@@ -117,7 +117,13 @@ SELECT hb.HoaDonBanId,
        hb.TienThoiLai,
        hb.MaGiaoDich,
        hb.GhiChuThanhToan,
-       hb.GhiChuHoaDon
+       hb.GhiChuHoaDon,
+       hb.SoThuTuGoiMon,
+       hb.NgaySoThuTu,
+       ISNULL(hb.HinhThucPhucVu, N'UongTaiQuan') AS HinhThucPhucVu,
+       ISNULL(hb.DiemSuDung, 0) AS DiemSuDung,
+       ISNULL(hb.SoTienGiamTuDiem, 0) AS SoTienGiamTuDiem,
+       ISNULL(hb.DiemCong, 0) AS DiemCong
 FROM dbo.HoaDonBan hb
 LEFT JOIN dbo.NguoiDung nd ON nd.NguoiDungId = hb.CreatedByUserId
 LEFT JOIN dbo.Ban b ON b.BanId = hb.BanId
@@ -130,7 +136,10 @@ SELECT ct.MonId,
        m.TenMon,
        ct.SoLuong,
        ct.DonGiaBan,
-       ct.ThanhTien
+       ct.ThanhTien,
+       ct.KichCo,
+       ISNULL(ct.PhuThuKichCo, 0) AS PhuThuKichCo,
+       ct.GhiChuMon
 FROM dbo.ChiTietHoaDonBan ct
 JOIN dbo.Mon m ON m.MonId = ct.MonId
 WHERE ct.HoaDonBanId = @HoaDonBanId
@@ -192,7 +201,22 @@ ORDER BY ct.ChiTietHoaDonBanId;";
                         : reader.GetString(reader.GetOrdinal("GhiChuThanhToan")),
                     GhiChuHoaDon = reader.IsDBNull(reader.GetOrdinal("GhiChuHoaDon"))
                         ? null
-                        : reader.GetString(reader.GetOrdinal("GhiChuHoaDon"))
+                        : reader.GetString(reader.GetOrdinal("GhiChuHoaDon")),
+                    // Số gọi món
+                    SoThuTuGoiMon = reader.IsDBNull(reader.GetOrdinal("SoThuTuGoiMon"))
+                        ? null
+                        : reader.GetInt32(reader.GetOrdinal("SoThuTuGoiMon")),
+                    NgaySoThuTu = reader.IsDBNull(reader.GetOrdinal("NgaySoThuTu"))
+                        ? null
+                        : reader.GetDateTime(reader.GetOrdinal("NgaySoThuTu")),
+                    // Hình thức phục vụ
+                    HinhThucPhucVu = reader.IsDBNull(reader.GetOrdinal("HinhThucPhucVu"))
+                        ? HinhThucPhucVuConst.UongTaiQuan
+                        : reader.GetString(reader.GetOrdinal("HinhThucPhucVu")),
+                    // Điểm tích lũy
+                    DiemSuDung = reader.GetInt32(reader.GetOrdinal("DiemSuDung")),
+                    SoTienGiamTuDiem = reader.GetDecimal(reader.GetOrdinal("SoTienGiamTuDiem")),
+                    DiemCong = reader.GetInt32(reader.GetOrdinal("DiemCong"))
                 };
             }
         }
@@ -215,7 +239,12 @@ ORDER BY ct.ChiTietHoaDonBanId;";
                     TenMon = reader.GetString(reader.GetOrdinal("TenMon")),
                     SoLuong = reader.GetInt32(reader.GetOrdinal("SoLuong")),
                     DonGiaBan = reader.GetDecimal(reader.GetOrdinal("DonGiaBan")),
-                    ThanhTien = reader.GetDecimal(reader.GetOrdinal("ThanhTien"))
+                    ThanhTien = reader.GetDecimal(reader.GetOrdinal("ThanhTien")),
+                    KichCo = reader.IsDBNull(reader.GetOrdinal("KichCo"))
+                        ? "Mặc định" : reader.GetString(reader.GetOrdinal("KichCo")),
+                    PhuThuKichCo = reader.GetDecimal(reader.GetOrdinal("PhuThuKichCo")),
+                    GhiChuMon = reader.IsDBNull(reader.GetOrdinal("GhiChuMon"))
+                        ? null : reader.GetString(reader.GetOrdinal("GhiChuMon"))
                 });
             }
         }

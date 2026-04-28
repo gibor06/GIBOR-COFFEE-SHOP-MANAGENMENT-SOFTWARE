@@ -18,6 +18,7 @@ public sealed class MonViewModel : BaseViewModel
     private string _tenMon = string.Empty;
     private string _donGia = string.Empty;
     private string _tonKhoBanDau = "0";
+    private string _tonKhoToiThieu = "10";
     private string _hinhAnhPath = string.Empty;
     private string _tuKhoaTimKiem = string.Empty;
     private DanhMuc? _selectedDanhMucTaoMoi;
@@ -73,6 +74,18 @@ public sealed class MonViewModel : BaseViewModel
         set
         {
             if (SetProperty(ref _tonKhoBanDau, value))
+            {
+                _taoMoiCommand.RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    public string TonKhoToiThieu
+    {
+        get => _tonKhoToiThieu;
+        set
+        {
+            if (SetProperty(ref _tonKhoToiThieu, value))
             {
                 _taoMoiCommand.RaiseCanExecuteChanged();
             }
@@ -179,6 +192,7 @@ public sealed class MonViewModel : BaseViewModel
                && !string.IsNullOrWhiteSpace(TenMon)
                && !string.IsNullOrWhiteSpace(DonGia)
                && !string.IsNullOrWhiteSpace(TonKhoBanDau)
+               && !string.IsNullOrWhiteSpace(TonKhoToiThieu)
                && !string.IsNullOrWhiteSpace(HinhAnhPath)
                && SelectedDanhMucTaoMoi is not null;
     }
@@ -210,9 +224,15 @@ public sealed class MonViewModel : BaseViewModel
             return;
         }
 
-        if (!int.TryParse(TonKhoBanDau, out var tonKhoValue))
+        if (!int.TryParse(TonKhoBanDau, out var tonKhoValue) || tonKhoValue < 0)
         {
-            ErrorMessage = "Tồn kho ban đầu phải là số nguyên.";
+            ErrorMessage = "Tồn kho ban đầu phải là số nguyên không âm.";
+            return;
+        }
+
+        if (!int.TryParse(TonKhoToiThieu, out var tonKhoToiThieuValue) || tonKhoToiThieuValue < 0)
+        {
+            ErrorMessage = "Tồn kho tối thiểu phải là số nguyên không âm.";
             return;
         }
 
@@ -225,6 +245,7 @@ public sealed class MonViewModel : BaseViewModel
                 SelectedDanhMucTaoMoi.DanhMucId,
                 donGiaValue,
                 tonKhoValue,
+                tonKhoToiThieuValue,
                 HinhAnhPath,
                 cancellationToken);
 
@@ -238,6 +259,7 @@ public sealed class MonViewModel : BaseViewModel
             TenMon = string.Empty;
             DonGia = string.Empty;
             TonKhoBanDau = "0";
+            TonKhoToiThieu = "10";
             HinhAnhPath = string.Empty;
 
             await LoadMonAsync(TuKhoaTimKiem, SelectedDanhMucTimKiem?.DanhMucId, cancellationToken);

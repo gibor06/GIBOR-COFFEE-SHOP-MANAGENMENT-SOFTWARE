@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using CoffeeShop.Wpf.Commands;
@@ -23,6 +23,8 @@ public sealed class KhuyenMaiViewModel : BaseViewModel
     private bool _isActive = true;
     private string _moTa = string.Empty;
     private string _tuKhoa = string.Empty;
+    private string _giaTriDonToiThieuText = string.Empty;
+    private string _soTienGiamToiDaText = string.Empty;
 
     private KhuyenMai? _selectedKhuyenMai;
     private string _errorMessage = string.Empty;
@@ -64,6 +66,8 @@ public sealed class KhuyenMaiViewModel : BaseViewModel
                 DenNgay = value.DenNgay;
                 IsActive = value.IsActive;
                 MoTa = value.MoTa ?? string.Empty;
+                GiaTriDonToiThieuText = value.GiaTriDonHangToiThieu?.ToString("0", CultureInfo.CurrentCulture) ?? string.Empty;
+                SoTienGiamToiDaText = value.SoTienGiamToiDa?.ToString("0", CultureInfo.CurrentCulture) ?? string.Empty;
                 _suaCommand.RaiseCanExecuteChanged();
             }
         }
@@ -122,6 +126,18 @@ public sealed class KhuyenMaiViewModel : BaseViewModel
     {
         get => _tuKhoa;
         set => SetProperty(ref _tuKhoa, value);
+    }
+
+    public string GiaTriDonToiThieuText
+    {
+        get => _giaTriDonToiThieuText;
+        set => SetProperty(ref _giaTriDonToiThieuText, value);
+    }
+
+    public string SoTienGiamToiDaText
+    {
+        get => _soTienGiamToiDaText;
+        set => SetProperty(ref _soTienGiamToiDaText, value);
     }
 
     public string ErrorMessage
@@ -193,6 +209,8 @@ public sealed class KhuyenMaiViewModel : BaseViewModel
         DenNgay = DateTime.Today.AddDays(30);
         IsActive = true;
         MoTa = string.Empty;
+        GiaTriDonToiThieuText = string.Empty;
+        SoTienGiamToiDaText = string.Empty;
         TuKhoa = string.Empty;
         SelectedKhuyenMai = null;
         await LoadDataAsync(null);
@@ -223,16 +241,18 @@ public sealed class KhuyenMaiViewModel : BaseViewModel
         try
         {
             var result = await _khuyenMaiService.TaoKhuyenMaiAsync(
-                new KhuyenMai
-                {
-                    TenKhuyenMai = TenKhuyenMai,
-                    LoaiKhuyenMai = LoaiKhuyenMai,
-                    GiaTri = giaTri,
-                    TuNgay = TuNgay,
-                    DenNgay = DenNgay,
-                    IsActive = IsActive,
-                    MoTa = MoTa
-                },
+                    new KhuyenMai
+                    {
+                        TenKhuyenMai = TenKhuyenMai,
+                        LoaiKhuyenMai = LoaiKhuyenMai,
+                        GiaTri = giaTri,
+                        TuNgay = TuNgay,
+                        DenNgay = DenNgay,
+                        IsActive = IsActive,
+                        MoTa = MoTa,
+                        GiaTriDonHangToiThieu = ParseNullableDecimal(GiaTriDonToiThieuText),
+                        SoTienGiamToiDa = ParseNullableDecimal(SoTienGiamToiDaText)
+                    },
                 cancellationToken);
 
             if (!result.IsSuccess)
@@ -283,7 +303,9 @@ public sealed class KhuyenMaiViewModel : BaseViewModel
                     TuNgay = TuNgay,
                     DenNgay = DenNgay,
                     IsActive = IsActive,
-                    MoTa = MoTa
+                    MoTa = MoTa,
+                    GiaTriDonHangToiThieu = ParseNullableDecimal(GiaTriDonToiThieuText),
+                    SoTienGiamToiDa = ParseNullableDecimal(SoTienGiamToiDaText)
                 },
                 cancellationToken);
 
@@ -352,6 +374,22 @@ public sealed class KhuyenMaiViewModel : BaseViewModel
         }
 
         return decimal.TryParse(GiaTri, NumberStyles.Number, CultureInfo.InvariantCulture, out giaTri);
+    }
+
+    private static decimal? ParseNullableDecimal(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        if (decimal.TryParse(text.Trim(), NumberStyles.Number, CultureInfo.CurrentCulture, out var result)
+            || decimal.TryParse(text.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out result))
+        {
+            return result;
+        }
+
+        return null;
     }
 }
 

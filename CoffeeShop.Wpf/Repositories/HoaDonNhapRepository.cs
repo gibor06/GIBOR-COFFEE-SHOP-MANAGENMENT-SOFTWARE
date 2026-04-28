@@ -6,6 +6,13 @@ namespace CoffeeShop.Wpf.Repositories;
 
 public sealed class HoaDonNhapRepository : IHoaDonNhapRepository
 {
+    private readonly ILichSuTonKhoRepository _lichSuTonKhoRepository;
+
+    public HoaDonNhapRepository(ILichSuTonKhoRepository lichSuTonKhoRepository)
+    {
+        _lichSuTonKhoRepository = lichSuTonKhoRepository;
+    }
+
     public async Task<int> CreateAsync(
         HoaDonNhap hoaDonNhap,
         IReadOnlyList<ChiTietHoaDonNhap> chiTietHoaDonNhaps,
@@ -35,6 +42,9 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
 INSERT INTO dbo.ChiTietHoaDonNhap (HoaDonNhapId, MonId, DonGiaNhap, SoLuong)
 VALUES (@HoaDonNhapId, @MonId, @DonGiaNhap, @SoLuong);";
 
+            const string getTonKhoSql = @"
+SELECT TonKho FROM dbo.Mon WHERE MonId = @MonId;";
+
             const string updateTonKhoSql = @"
 UPDATE dbo.Mon
 SET TonKho = TonKho + @SoLuongTang
@@ -49,10 +59,38 @@ WHERE MonId = @MonId;";
                 insertChiTietCommand.Parameters.AddWithValue("@SoLuong", chiTiet.SoLuong);
                 await insertChiTietCommand.ExecuteNonQueryAsync(cancellationToken);
 
+                // Lấy tồn kho trước khi tăng
+                int tonTruoc;
+                await using (var getTonKhoCommand = new SqlCommand(getTonKhoSql, connection, (SqlTransaction)transaction))
+                {
+                    getTonKhoCommand.Parameters.AddWithValue("@MonId", chiTiet.MonId);
+                    var tonKhoObj = await getTonKhoCommand.ExecuteScalarAsync(cancellationToken);
+                    tonTruoc = tonKhoObj != null ? Convert.ToInt32(tonKhoObj) : 0;
+                }
+
+                // Tăng tồn kho
                 await using var updateTonKhoCommand = new SqlCommand(updateTonKhoSql, connection, (SqlTransaction)transaction);
                 updateTonKhoCommand.Parameters.AddWithValue("@MonId", chiTiet.MonId);
                 updateTonKhoCommand.Parameters.AddWithValue("@SoLuongTang", chiTiet.SoLuong);
                 await updateTonKhoCommand.ExecuteNonQueryAsync(cancellationToken);
+
+                // Tính tồn sau
+                int tonSau = tonTruoc + chiTiet.SoLuong;
+
+                // Ghi lịch sử tồn kho
+                await _lichSuTonKhoRepository.ThemLichSuAsync(
+                    connection,
+                    (SqlTransaction)transaction,
+                    monId: chiTiet.MonId,
+                    loaiPhatSinh: "NhapHang",
+                    soLuongThayDoi: chiTiet.SoLuong,
+                    tonTruoc: tonTruoc,
+                    tonSau: tonSau,
+                    hoaDonBanId: null,
+                    hoaDonNhapId: newHoaDonNhapId,
+                    ghiChu: $"Nhập hàng - Hóa đơn #{newHoaDonNhapId}",
+                    nguoiDungId: hoaDonNhap.CreatedByUserId,
+                    cancellationToken: cancellationToken);
             }
 
             await transaction.CommitAsync(cancellationToken);

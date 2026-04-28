@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Input;
 using CoffeeShop.Wpf.Commands;
 using CoffeeShop.Wpf.Models;
@@ -13,11 +14,16 @@ public sealed class CaLamViecViewModel : BaseViewModel
     private readonly RelayCommand _moCaCommand;
     private readonly RelayCommand _dongCaCommand;
     private readonly RelayCommand _taiLichSuCaCommand;
+    private readonly RelayCommand _taiTongKetCaCommand;
 
     private DateTime _fromDate = DateTime.Today.AddDays(-7);
     private DateTime _toDate = DateTime.Today;
     private string _ghiChu = string.Empty;
+    private string _tienDauCaText = "0";
+    private string _tienMatThucDemText = "0";
+    private string _ghiChuDoiSoat = string.Empty;
     private CaLamViec? _caDangMo;
+    private CaTongKetModel? _tongKetCa;
     private string _errorMessage = string.Empty;
     private string _successMessage = string.Empty;
     private bool _isBusy;
@@ -32,6 +38,7 @@ public sealed class CaLamViecViewModel : BaseViewModel
         _moCaCommand = new RelayCommand(ExecuteMoCa, () => !IsBusy);
         _dongCaCommand = new RelayCommand(ExecuteDongCa, () => !IsBusy);
         _taiLichSuCaCommand = new RelayCommand(ExecuteTaiLichSuCa, () => !IsBusy);
+        _taiTongKetCaCommand = new RelayCommand(ExecuteTaiTongKetCa, () => !IsBusy);
     }
 
     public ObservableCollection<CaLamViec> LichSuCa { get; }
@@ -54,10 +61,34 @@ public sealed class CaLamViecViewModel : BaseViewModel
         set => SetProperty(ref _ghiChu, value);
     }
 
+    public string TienDauCaText
+    {
+        get => _tienDauCaText;
+        set => SetProperty(ref _tienDauCaText, value);
+    }
+
+    public string TienMatThucDemText
+    {
+        get => _tienMatThucDemText;
+        set => SetProperty(ref _tienMatThucDemText, value);
+    }
+
+    public string GhiChuDoiSoat
+    {
+        get => _ghiChuDoiSoat;
+        set => SetProperty(ref _ghiChuDoiSoat, value);
+    }
+
     public CaLamViec? CaDangMo
     {
         get => _caDangMo;
         private set => SetProperty(ref _caDangMo, value);
+    }
+
+    public CaTongKetModel? TongKetCa
+    {
+        get => _tongKetCa;
+        private set => SetProperty(ref _tongKetCa, value);
     }
 
     public string ErrorMessage
@@ -82,6 +113,7 @@ public sealed class CaLamViecViewModel : BaseViewModel
                 _moCaCommand.RaiseCanExecuteChanged();
                 _dongCaCommand.RaiseCanExecuteChanged();
                 _taiLichSuCaCommand.RaiseCanExecuteChanged();
+                _taiTongKetCaCommand.RaiseCanExecuteChanged();
             }
         }
     }
@@ -89,6 +121,7 @@ public sealed class CaLamViecViewModel : BaseViewModel
     public ICommand MoCaCommand => _moCaCommand;
     public ICommand DongCaCommand => _dongCaCommand;
     public ICommand TaiLichSuCaCommand => _taiLichSuCaCommand;
+    public ICommand TaiTongKetCaCommand => _taiTongKetCaCommand;
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -130,13 +163,19 @@ public sealed class CaLamViecViewModel : BaseViewModel
             return;
         }
 
+        if (!TryParseDecimal(TienDauCaText, out var tienDauCa) || tienDauCa < 0)
+        {
+            ErrorMessage = "Tiền đầu ca không hợp lệ. Vui lòng nhập số >= 0.";
+            return;
+        }
+
         IsBusy = true;
         ErrorMessage = string.Empty;
         SuccessMessage = string.Empty;
 
         try
         {
-            var result = await _caLamViecService.MoCaAsync(currentUserId, GhiChu);
+            var result = await _caLamViecService.MoCaAsync(currentUserId, tienDauCa, GhiChu);
             if (!result.IsSuccess || result.Data is null)
             {
                 ErrorMessage = result.Message;
@@ -144,12 +183,54 @@ public sealed class CaLamViecViewModel : BaseViewModel
             }
 
             CaDangMo = result.Data;
-            SuccessMessage = result.Message;
+            SuccessMessage = $"Mở ca thành công. Tiền đầu ca: {tienDauCa:N0} đ.";
+            TongKetCa = null;
             await TaiLichSuCaCoreAsync();
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Không thể mở ca làm việc: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async void ExecuteTaiTongKetCa()
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        if (CaDangMo is null)
+        {
+            ErrorMessage = "Hiện không có ca đang mở để tải tổng kết.";
+            return;
+        }
+
+        IsBusy = true;
+        ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+
+        try
+        {
+            var result = await _caLamViecService.GetTongKetCaAsync(CaDangMo.CaLamViecId);
+            if (!result.IsSuccess || result.Data is null)
+            {
+                ErrorMessage = result.Message;
+                return;
+            }
+
+            TongKetCa = result.Data;
+            // Gợi ý tiền mặt thực đếm = dự kiến cuối ca
+            TienMatThucDemText = TongKetCa.TienMatDuKienCuoiCa.ToString("0");
+            SuccessMessage = "Đã tải tổng kết ca.";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Không thể tải tổng kết ca: {ex.Message}";
         }
         finally
         {
@@ -171,13 +252,20 @@ public sealed class CaLamViecViewModel : BaseViewModel
             return;
         }
 
+        if (!TryParseDecimal(TienMatThucDemText, out var tienMatThucDem) || tienMatThucDem < 0)
+        {
+            ErrorMessage = "Tiền mặt thực đếm không hợp lệ. Vui lòng nhập số >= 0.";
+            return;
+        }
+
         IsBusy = true;
         ErrorMessage = string.Empty;
         SuccessMessage = string.Empty;
 
         try
         {
-            var result = await _caLamViecService.DongCaAsync(currentUserId, GhiChu);
+            var result = await _caLamViecService.DongCaAsync(
+                currentUserId, tienMatThucDem, GhiChu, GhiChuDoiSoat);
             if (!result.IsSuccess)
             {
                 ErrorMessage = result.Message;
@@ -185,6 +273,9 @@ public sealed class CaLamViecViewModel : BaseViewModel
             }
 
             SuccessMessage = result.Message;
+            TongKetCa = null;
+            GhiChuDoiSoat = string.Empty;
+            TienMatThucDemText = "0";
             await LoadCaDangMoAsync();
             await TaiLichSuCaCoreAsync();
         }
@@ -265,5 +356,16 @@ public sealed class CaLamViecViewModel : BaseViewModel
 
         SuccessMessage = $"Đã tải {LichSuCa.Count} ca làm việc.";
     }
-}
 
+    private static bool TryParseDecimal(string? text, out decimal result)
+    {
+        result = 0;
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        return decimal.TryParse(text.Trim(), NumberStyles.Any, CultureInfo.CurrentCulture, out result)
+            || decimal.TryParse(text.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+    }
+}

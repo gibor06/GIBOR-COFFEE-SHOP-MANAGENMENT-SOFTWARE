@@ -5,140 +5,652 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              d:DesignHeight="780"
-             d:DesignWidth="1220">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="12" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="12" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+             d:DesignWidth="1280">
 
-        <Border Style="{StaticResource CardPanel}">
-            <StackPanel>
-                <TextBlock Style="{StaticResource PageTitleText}" Text="Hóa đơn bán" />
-                <TextBlock Margin="0,6,0,0"
-                           Style="{StaticResource PageSubtitleText}"
-                           Text="Chọn bàn, chọn khách hàng, thêm món và thanh toán nhanh cho thu ngân." />
-                <TextBlock Margin="0,8,0,0"
-                           Style="{StaticResource CaptionText}"
-                           Text="{Binding ThongTinCaLamViec}" />
-            </StackPanel>
-        </Border>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="67*" />
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="33*" />
+        </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2.1*" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="1.1*" />
-            </Grid.ColumnDefinitions>
+        <!-- ==================== CỘT TRÁI: CHỌN MÓN ==================== -->
+        <Border Grid.Column="0" Style="{StaticResource CardPanel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-            <Border Grid.Column="0" Style="{StaticResource CardPanel}">
-                <StackPanel>
-                    <TextBlock Style="{StaticResource CardTitleText}" Text="Thông tin bán hàng" />
+                <!-- Header + thông tin ca -->
+                <StackPanel Grid.Row="0">
+                    <TextBlock Style="{StaticResource CardTitleText}" Text="☕ Chọn món" />
+                    <TextBlock Margin="0,4,0,0"
+                               Style="{StaticResource CaptionText}"
+                               Text="{Binding ThongTinCaLamViec}" />
+                </StackPanel>
 
-                    <Grid Margin="0,10,0,0">
+                <!-- Tìm kiếm -->
+                <TextBox Grid.Row="1"
+                         Margin="0,10,0,0"
+                         Style="{StaticResource HintTextBoxStyle}"
+                         Tag="🔍 Tìm theo tên món, danh mục, mã món..."
+                         Text="{Binding TuKhoaTimMon, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!-- Size & Ghi chú (chọn trước khi thêm món) -->
+                <StackPanel Grid.Row="2" Margin="0,8,0,0">
+                    <Grid Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="10" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Style="{StaticResource FieldLabelText}" Text="Bàn phục vụ" />
-                            <ComboBox ItemsSource="{Binding Bans}"
-                                      SelectedItem="{Binding SelectedBan, Mode=TwoWay}"
-                                      DisplayMemberPath="TenBanHienThi" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Style="{StaticResource FieldLabelText}" Text="Khách hàng" />
-                            <ComboBox ItemsSource="{Binding KhachHangs}"
-                                      SelectedItem="{Binding SelectedKhachHang, Mode=TwoWay}"
-                                      DisplayMemberPath="HienThi" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="4">
-                            <TextBlock Style="{StaticResource FieldLabelText}" Text="Khuyến mãi" />
-                            <ComboBox ItemsSource="{Binding KhuyenMais}"
-                                      SelectedItem="{Binding SelectedKhuyenMai, Mode=TwoWay}"
-                                      DisplayMemberPath="TenKhuyenMai" />
-                        </StackPanel>
+                        <ComboBox Grid.Column="0" Width="85"
+                                  ItemsSource="{Binding DanhSachKichCo}"
+                                  SelectedItem="{Binding KichCoDuocChon, Mode=TwoWay}" />
+                        <TextBox Grid.Column="2"
+                                 Style="{StaticResource HintTextBoxStyle}"
+                                 Tag="Ghi chú món (ít đá, không đường...)"
+                                 Text="{Binding GhiChuMon, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
+                </StackPanel>
+                <!-- Lọc danh mục -->
+                <ComboBox Grid.Row="3"
+                          Margin="0,8,0,0"
+                          ItemsSource="{Binding DanhMucMons}"
+                          SelectedItem="{Binding SelectedDanhMuc, Mode=TwoWay}" />
 
-                    <Border Margin="0,12,0,0"
-                            Style="{StaticResource CardPanelMuted}">
+                <!-- Danh sách món dạng card grid -->
+                <ScrollViewer Grid.Row="4"
+                              Margin="0,10,0,0"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding MonsHienThi}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Width="165"
+                                        Margin="0,0,8,8"
+                                        Padding="0"
+                                        HorizontalContentAlignment="Stretch"
+                                        Command="{Binding DataContext.ThemMonNhanhCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+                                            <Setter Property="Background" Value="{DynamicResource CardMutedBackgroundBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TonKho}" Value="0">
+                                                    <Setter Property="IsEnabled" Value="False" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <Border Padding="10,10" CornerRadius="10">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding TenMon}"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="13"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Foreground="{DynamicResource PrimaryTextBrush}" />
+                                            <TextBlock Text="{Binding TenDanhMuc}"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource MutedTextBrush}"
+                                                       Margin="0,2,0,0"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding DonGia, StringFormat={}{0:N0} đ}"
+                                                       FontSize="14"
+                                                       FontWeight="Bold"
+                                                       Foreground="{DynamicResource PrimaryBrush}"
+                                                       Margin="0,6,0,0" />
+                                            <TextBlock Margin="0,3,0,0" FontSize="11">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+                                                        <Setter Property="Text" Value="{Binding TonKho, StringFormat=Kho: {0}}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding TonKho}" Value="0">
+                                                                <Setter Property="Text" Value="❌ Hết hàng" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+                                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <!-- Cảnh báo sắp hết hàng -->
+                                            <TextBlock Margin="0,2,0,0" FontSize="10" FontWeight="SemiBold" Foreground="#FF9800">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SapHetHang}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                                <Run Text="⚠️ Sắp hết" />
+                                            </TextBlock>
+                                            <Button Content="➕ Thêm"
+                                                    Margin="0,6,0,0"
+                                                    MinHeight="26"
+                                                    FontSize="12"
+                                                    FontWeight="SemiBold"
+                                                    HorizontalAlignment="Stretch"
+                                                    Command="{Binding DataContext.ThemMonNhanhCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource ButtonPrimary}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- ==================== CỘT PHẢI: HÓA ĐƠN & THANH TOÁN ==================== -->
+        <Border Grid.Column="2" Style="{StaticResource CardPanel}" Padding="14">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Tiêu đề -->
+                <TextBlock Grid.Row="0"
+                           Style="{StaticResource CardTitleText}"
+                           Text="🧾 Hóa đơn hiện tại" />
+
+                <!-- Thông tin đơn: Khách hàng, Khuyến mãi -->
+                <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                    <!-- Hình thức phục vụ -->
+                    <TextBlock Style="{StaticResource FieldLabelText}" Text="Hình thức phục vụ" />
+                    <ComboBox ItemsSource="{Binding DanhSachHinhThucPhucVu}"
+                              SelectedItem="{Binding HinhThucPhucVuHienThi, Mode=TwoWay}" />
+
+                    <TextBlock Margin="0,8,0,0" Style="{StaticResource FieldLabelText}" Text="Khách hàng" />
+                    
+                    <!-- Tìm kiếm khách hàng theo SĐT -->
+                    <TextBox Margin="0,4,0,4"
+                             Style="{StaticResource HintTextBoxStyle}"
+                             Tag="🔍 Tìm theo SĐT (VD: 0901234567)"
+                             Text="{Binding TimKiemKhachHangText, UpdateSourceTrigger=PropertyChanged}" />
+                    
+                    <!-- Hiển thị khách hàng đã chọn -->
+                    <Border Margin="0,4,0,0"
+                            Padding="10,8"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource PrimaryBrush}"
+                            BorderThickness="2"
+                            CornerRadius="8">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedKhachHang, Converter={StaticResource NullToBooleanConverter}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*" />
-                                <ColumnDefinition Width="10" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="10" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="10" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding SelectedKhachHang.HoTen}"
+                                           FontWeight="SemiBold"
+                                           FontSize="13"
+                                           Foreground="{DynamicResource PrimaryTextBrush}" />
+                                <TextBlock Text="{Binding SelectedKhachHang.SoDienThoai}"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource MutedTextBrush}"
+                                           Margin="0,2,0,0" />
+                                <TextBlock FontSize="11"
+                                           Foreground="{DynamicResource SuccessBrush}"
+                                           Margin="0,2,0,0">
+                                    <Run Text="💎 Điểm:" />
+                                    <Run Text="{Binding SelectedKhachHang.DiemTichLuy, Mode=OneWay}" FontWeight="SemiBold" />
+                                </TextBlock>
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Content="✕"
+                                    Width="30"
+                                    Height="30"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    VerticalAlignment="Center"
+                                    Command="{Binding XoaKhachHangCommand}"
+                                    ToolTip="Xóa khách hàng"
+                                    Style="{StaticResource ButtonDanger}" />
+                        </Grid>
+                    </Border>
+                    
+                    <!-- Danh sách kết quả tìm kiếm -->
+                    <Border Margin="0,4,0,0"
+                            MaxHeight="200"
+                            Background="{DynamicResource CardBackgroundBrush}"
+                            BorderBrush="{DynamicResource CardBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <!-- Hiển thị khi có text tìm kiếm và chưa chọn khách hàng -->
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding TimKiemKhachHangText, Converter={StaticResource StringNullOrEmptyToBooleanConverter}}" Value="False" />
+                                            <Condition Binding="{Binding SelectedKhachHang, Converter={StaticResource NullToBooleanConverter}}" Value="False" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding KhachHangsFiltered}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button HorizontalContentAlignment="Stretch"
+                                                Padding="10,8"
+                                                Command="{Binding DataContext.ChonKhachHangCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Style="{StaticResource ButtonBase}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="{Binding HoTen}"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="12"
+                                                               Foreground="{DynamicResource PrimaryTextBrush}" />
+                                                    <TextBlock Text="{Binding SoDienThoai}"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource MutedTextBrush}"
+                                                               Margin="0,2,0,0" />
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1"
+                                                           VerticalAlignment="Center"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource SuccessBrush}">
+                                                    <Run Text="💎" />
+                                                    <Run Text="{Binding DiemTichLuy, Mode=OneWay}" FontWeight="SemiBold" />
+                                                </TextBlock>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
 
-                            <ComboBox Grid.Column="0"
-                                      ItemsSource="{Binding Mons}"
-                                      SelectedItem="{Binding SelectedMon, Mode=TwoWay}"
-                                      DisplayMemberPath="TenMon" />
+                    <TextBlock Margin="0,8,0,0" Style="{StaticResource FieldLabelText}" Text="Khuyến mãi" />
+                    <ComboBox ItemsSource="{Binding KhuyenMais}"
+                              SelectedItem="{Binding SelectedKhuyenMai, Mode=TwoWay}"
+                              DisplayMemberPath="TenKhuyenMai" />
+                </StackPanel>
 
-                            <TextBox Grid.Column="2"
-                                     Text="{Binding SoLuongBan, UpdateSourceTrigger=PropertyChanged}" />
+                <!-- Chi tiết hóa đơn (scrollable) -->
+                <ScrollViewer Grid.Row="2"
+                              Margin="0,10,0,0"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding ChiTietLines}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,6"
+                                        Padding="10,8"
+                                        Background="{DynamicResource CardMutedBackgroundBrush}"
+                                        BorderBrush="{DynamicResource CardBorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
 
-                            <TextBox Grid.Column="4"
-                                     Text="{Binding DonGiaBan, UpdateSourceTrigger=PropertyChanged}" />
+                                        <!-- Tên món -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   Text="{Binding TenMon}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="13"
+                                                   TextTrimming="CharacterEllipsis" />
 
-                            <Button Grid.Column="6"
-                                    Width="130"
-                                    Content="Thêm món"
-                                    Style="{StaticResource ButtonPrimary}"
-                                    Command="{Binding ThemDongCommand}" />
+                                        <!-- Thành tiền -->
+                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                   Text="{Binding ThanhTien, StringFormat={}{0:N0} đ}"
+                                                   FontWeight="Bold"
+                                                   FontSize="13"
+                                                   Foreground="{DynamicResource PrimaryBrush}"
+                                                   HorizontalAlignment="Right" />
+
+                                        <!-- Hàng 2: đơn giá + nút +/-/xóa -->
+                                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                                   Margin="0,4,0,0"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource MutedTextBrush}">
+                                            <Run Text="{Binding DonGiaBan, StringFormat={}{0:N0} đ, Mode=OneWay}" />
+                                            <Run Text=" × " />
+                                            <Run Text="{Binding SoLuong, Mode=OneWay}" />
+                                            <Run Text=" | " />
+                                            <Run Text="{Binding KichCo, Mode=OneWay}" />
+                                        </TextBlock>
+
+                                        <!-- Ghi chú món (nếu có) -->
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                   Margin="0,2,0,0"
+                                                   FontSize="10"
+                                                   FontStyle="Italic"
+                                                   Foreground="{DynamicResource MutedTextBrush}"
+                                                   Text="{Binding GhiChuMon}"
+                                                   TextTrimming="CharacterEllipsis">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding GhiChuMon}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding GhiChuMon}" Value="">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <!-- Nút +, -, xóa -->
+                                        <StackPanel Grid.Row="1" Grid.Column="1"
+                                                    Orientation="Horizontal"
+                                                    HorizontalAlignment="Right"
+                                                    Margin="0,3,0,0">
+                                            <Button Content="−"
+                                                    Width="28" Height="26"
+                                                    Margin="0" Padding="0"
+                                                    FontSize="14" FontWeight="Bold"
+                                                    VerticalContentAlignment="Center"
+                                                    HorizontalContentAlignment="Center"
+                                                    Command="{Binding DataContext.GiamSoLuongCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+                                                        <Setter Property="Background" Value="{DynamicResource SecondaryBrush}" />
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+
+                                            <TextBlock Text="{Binding SoLuong}"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Center"
+                                                       FontWeight="Bold"
+                                                       FontSize="13"
+                                                       Width="28"
+                                                       TextAlignment="Center" />
+
+                                            <Button Content="+"
+                                                    Width="28" Height="26"
+                                                    Margin="0" Padding="0"
+                                                    FontSize="14" FontWeight="Bold"
+                                                    VerticalContentAlignment="Center"
+                                                    HorizontalContentAlignment="Center"
+                                                    Command="{Binding DataContext.TangSoLuongCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+                                                        <Setter Property="Background" Value="{DynamicResource SecondaryBrush}" />
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+
+                                            <Button Content="✕"
+                                                    Width="28" Height="26"
+                                                    Margin="6,0,0,0" Padding="0"
+                                                    FontSize="11"
+                                                    VerticalContentAlignment="Center"
+                                                    HorizontalContentAlignment="Center"
+                                                    Command="{Binding DataContext.XoaMonCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+                                                        <Setter Property="Background" Value="#1AB8403A" />
+                                                        <Setter Property="BorderBrush" Value="#33B8403A" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- ===== KHU VỰC THANH TOÁN ===== -->
+                <StackPanel Grid.Row="3" Margin="0,6,0,0">
+
+                    <!-- Đường kẻ phân cách -->
+                    <Border BorderBrush="{DynamicResource CardBorderBrush}"
+                            BorderThickness="0,1,0,0"
+                            Margin="0,0,0,8" />
+
+                    <!-- Tổng tiền -->
+                    <Grid Margin="0,2,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Tổng tiền" FontSize="13" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding TongTien, StringFormat={}{0:N0} đ}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <!-- Giảm khuyến mãi -->
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Giảm khuyến mãi"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding SoTienGiamKhuyenMai, StringFormat=-{0:N0} đ}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource SuccessBrush}"
+                                   HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <!-- Giảm giá khác -->
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Giảm giá khác"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   VerticalAlignment="Center" />
+                        <TextBox Grid.Column="2"
+                                 Margin="0"
+                                 FontSize="12"
+                                 Text="{Binding GiamGia, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <!-- ===== DÙNG ĐIỂM TÍCH LŨY ===== -->
+                    <Border Margin="0,8,0,0"
+                            Padding="10,8"
+                            Background="{DynamicResource CardMutedBackgroundBrush}"
+                            BorderBrush="{DynamicResource CardBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                        <StackPanel>
+                            <TextBlock Text="💎 Dùng điểm tích lũy"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource PrimaryBrush}" />
+                            
+                            <!-- Hiển thị khi chưa chọn khách hàng -->
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="11"
+                                       FontStyle="Italic"
+                                       Foreground="{DynamicResource MutedTextBrush}"
+                                       TextWrapping="Wrap">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedKhachHang}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <!-- Hiển thị khi đã chọn khách hàng -->
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedKhachHang}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+
+                                <!-- Điểm hiện có -->
+                                <Grid Margin="0,4,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Điểm hiện có"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource MutedTextBrush}" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding SelectedKhachHang.DiemTichLuy, StringFormat={}{0} điểm}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource PrimaryBrush}"
+                                               HorizontalAlignment="Right" />
+                                </Grid>
+
+                                <!-- Điểm muốn dùng -->
+                                <Grid Margin="0,6,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Điểm dùng"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource MutedTextBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBox Grid.Column="2"
+                                             Margin="0"
+                                             FontSize="12"
+                                             Text="{Binding DiemSuDungText, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+
+                                <!-- Số tiền giảm từ điểm -->
+                                <Grid Margin="0,4,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Giảm từ điểm"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource MutedTextBrush}" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding SoTienGiamTuDiem, StringFormat=-{0:N0} đ}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource SuccessBrush}"
+                                               HorizontalAlignment="Right" />
+                                </Grid>
+
+                                <TextBlock Margin="0,4,0,0"
+                                           FontSize="10"
+                                           FontStyle="Italic"
+                                           Foreground="{DynamicResource MutedTextBrush}"
+                                           TextWrapping="Wrap"
+                                           Text="💡 1 điểm = 100đ (tối đa 500 điểm = 50,000đ/đơn). Điểm cộng: 10,000đ = 1 điểm." />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- THÀNH TOÁN - nổi bật -->
+                    <Border Margin="0,8,0,0"
+                            Padding="10,8"
+                            Background="{DynamicResource PrimaryBrush}"
+                            CornerRadius="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="THÀNH TOÁN"
+                                       Foreground="White"
+                                       FontSize="15"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding ThanhToan, StringFormat={}{0:N0} đ}"
+                                       Foreground="White"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
                         </Grid>
                     </Border>
 
-                    <WrapPanel Margin="0,12,0,0">
-                        <TextBlock VerticalAlignment="Center"
-                                   Style="{StaticResource FieldLabelText}"
-                                   Text="Giảm giá khác" />
-                        <TextBox Width="170"
-                                 Margin="8,0,0,0"
-                                 Text="{Binding GiamGia, UpdateSourceTrigger=PropertyChanged}" />
-                    </WrapPanel>
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="2" Style="{StaticResource CardPanel}">
-                <StackPanel>
-                    <TextBlock Style="{StaticResource CardTitleText}" Text="Thanh toán" />
-
-                    <TextBlock Margin="0,12,0,0"
-                               FontSize="20"
-                               FontWeight="SemiBold"
-                               Text="{Binding TongTien, StringFormat=Tổng tiền: {0:N0} đ}" />
-                    <TextBlock Margin="0,6,0,0"
-                               Text="{Binding SoTienGiamKhuyenMai, StringFormat=Giảm khuyến mãi: {0:N0} đ}" />
-                    <TextBlock Margin="0,6,0,0"
-                               FontSize="22"
-                               FontWeight="SemiBold"
-                               Text="{Binding ThanhToan, StringFormat=Thành toán: {0:N0} đ}" />
-                    <TextBlock Margin="0,6,0,0"
+                    <!-- Điểm cộng dự kiến -->
+                    <TextBlock Margin="0,4,0,0"
+                               FontSize="11"
+                               Foreground="{DynamicResource MutedTextBrush}"
                                Text="{Binding DiemCongDuKien, StringFormat=Điểm cộng dự kiến: {0}}" />
 
                     <!-- Hình thức thanh toán -->
-                    <StackPanel Margin="0,10,0,0">
-                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Hình thức thanh toán" />
-                        <ComboBox ItemsSource="{Binding DanhSachHinhThucThanhToan}"
-                                  SelectedItem="{Binding HinhThucThanhToanDuocChon, Mode=TwoWay}" />
-                    </StackPanel>
+                    <TextBlock Margin="0,8,0,0"
+                               Style="{StaticResource FieldLabelText}"
+                               Text="Hình thức thanh toán" />
+                    <ComboBox ItemsSource="{Binding DanhSachHinhThucThanhToan}"
+                              SelectedItem="{Binding HinhThucThanhToanDuocChon, Mode=TwoWay}" />
 
-                    <!-- Tiền khách đưa (chỉ hiện khi tiền mặt) -->
-                    <StackPanel Margin="0,8,0,0">
+                    <!-- Tiền khách đưa (chỉ khi tiền mặt) -->
+                    <StackPanel>
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -149,15 +661,19 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Tiền khách đưa" />
+                        <TextBlock Margin="0,6,0,0"
+                                   Style="{StaticResource FieldLabelText}"
+                                   Text="Tiền khách đưa" />
                         <TextBox Text="{Binding TienKhachDuaText, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock Margin="0,4,0,0"
                                    FontWeight="SemiBold"
-                                   Text="{Binding TienThoiLai, StringFormat=Tiền trả lại cho khách: {0:N0} đ}" />
+                                   FontSize="13"
+                                   Foreground="{DynamicResource SuccessBrush}"
+                                   Text="{Binding TienThoiLai, StringFormat=Tiền trả lại: {0:N0} đ}" />
                     </StackPanel>
 
-                    <!-- Mã giao dịch (chỉ hiện khi không phải tiền mặt) -->
-                    <StackPanel Margin="0,8,0,0">
+                    <!-- Mã giao dịch (không phải tiền mặt) -->
+                    <StackPanel>
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
                                 <Setter Property="Visibility" Value="Visible" />
@@ -168,81 +684,322 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Mã giao dịch" />
+                        <TextBlock Margin="0,6,0,0"
+                                   Style="{StaticResource FieldLabelText}"
+                                   Text="Mã giao dịch" />
                         <TextBox Text="{Binding MaGiaoDich, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Margin="0,3,0,0"
+                                   FontSize="11"
+                                   FontStyle="Italic"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="⚠ Bắt buộc nhập mã giao dịch để đối soát cuối ca." />
                     </StackPanel>
 
                     <!-- Ghi chú thanh toán -->
-                    <StackPanel Margin="0,8,0,0">
-                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Ghi chú thanh toán" />
-                        <TextBox Text="{Binding GhiChuThanhToan, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
+                    <TextBlock Margin="0,6,0,0"
+                               Style="{StaticResource FieldLabelText}"
+                               Text="Ghi chú thanh toán" />
+                    <TextBox Text="{Binding GhiChuThanhToan, UpdateSourceTrigger=PropertyChanged}" />
 
                     <!-- Ghi chú hóa đơn -->
-                    <StackPanel Margin="0,8,0,0">
-                        <TextBlock Style="{StaticResource FieldLabelText}" Text="Ghi chú hóa đơn" />
-                        <TextBox Text="{Binding GhiChuHoaDon, UpdateSourceTrigger=PropertyChanged}" />
-                    </StackPanel>
+                    <TextBlock Margin="0,6,0,0"
+                               Style="{StaticResource FieldLabelText}"
+                               Text="Ghi chú hóa đơn" />
+                    <TextBox Text="{Binding GhiChuHoaDon, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <Button Content="Lưu hóa đơn"
+                    <!-- Nút thanh toán thường -->
+                    <Button Content="💳 Thanh toán &amp; tạo hóa đơn"
                             Margin="0,10,0,0"
-                            Style="{StaticResource ButtonPrimary}"
-                            Command="{Binding LuuHoaDonCommand}" />
-                    <Button Content="Làm mới"
-                            Style="{StaticResource ButtonSecondary}"
-                            Command="{Binding LamMoiCommand}" />
-                    <Button Content="Xóa dòng chọn"
-                            Style="{StaticResource ButtonDanger}"
-                            Command="{Binding XoaDongCommand}" />
+                            FontSize="14"
+                            MinHeight="42"
+                            Command="{Binding LuuHoaDonCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsQrPaymentSelected}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
 
-                    <TextBlock Margin="0,10,0,0"
+                    <!-- Nút tạo hóa đơn chờ QR -->
+                    <Button Content="📱 Tạo hóa đơn chờ thanh toán QR"
+                            Margin="0,10,0,0"
+                            FontSize="14"
+                            MinHeight="42"
+                            Command="{Binding LuuHoaDonCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsQrPaymentSelected}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- Nút Xác nhận thanh toán thủ công (cho QR/Chuyển khoản) -->
+                    <Button Content="✅ Xác Nhận Đã Thanh Toán"
+                            Margin="0,8,0,0"
+                            MinHeight="42"
+                            FontSize="14"
+                            FontWeight="Bold"
+                            Background="#28a745"
+                            Foreground="White"
+                            BorderBrush="#1e7e34"
+                            BorderThickness="2"
+                            Command="{Binding XacNhanThanhToanCommand}"
+                            ToolTip="Nhấn khi khách hàng đã chuyển khoản/thanh toán thành công (xác nhận thủ công)">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+                                <Setter Property="Background" Value="#28a745" />
+                                <Setter Property="Foreground" Value="White" />
+                                <Setter Property="BorderBrush" Value="#1e7e34" />
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <!-- Hiển thị khi đã tạo hóa đơn -->
+                                    <DataTrigger Binding="{Binding HoaDonBanIdDaTao, Converter={StaticResource IntToBoolConverter}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- Cảnh báo QR Payment -->
+                    <TextBlock Margin="0,6,0,0"
+                               FontSize="11"
+                               FontStyle="Italic"
+                               Foreground="{DynamicResource MutedTextBrush}"
+                               TextWrapping="Wrap">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsQrPaymentSelected}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <!-- ===== KHU VỰC QR PAYMENT ===== -->
+                    <Border Margin="0,10,0,0"
+                            Padding="12,10"
+                            Background="{DynamicResource CardMutedBackgroundBrush}"
+                            BorderBrush="{DynamicResource PrimaryBrush}"
+                            BorderThickness="2"
+                            CornerRadius="10">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <!-- Hiển thị khi chọn QR Payment hoặc đã có hóa đơn pending -->
+                                    <DataTrigger Binding="{Binding IsQrPaymentSelected}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding HoaDonBanIdDaTao, Converter={StaticResource IntToBoolConverter}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel>
+                            <TextBlock Text="📱 QR Code Thanh Toán"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       HorizontalAlignment="Center" />
+
+                            <!-- Hiển thị QR code -->
+                            <Border Margin="0,8,0,0"
+                                    Background="White"
+                                    BorderBrush="{DynamicResource CardBorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="10">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsWaitingQrPayment}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel>
+                                    <!-- QR Code Image -->
+                                    <Image Source="{Binding QrCodeImageSource}"
+                                           Width="200"
+                                           Height="200"
+                                           Stretch="Uniform"
+                                           HorizontalAlignment="Center" />
+                                    
+                                    <!-- Fallback nếu QR không hiển thị -->
+                                    <TextBlock Margin="0,4,0,0"
+                                               FontSize="10"
+                                               Foreground="{DynamicResource MutedTextBrush}"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               Text="(Nếu QR không hiển thị, dùng link bên dưới)" />
+                                    
+                                    <!-- Trạng thái -->
+                                    <TextBlock Margin="0,8,0,0"
+                                               Text="{Binding PaymentStatusDisplay, Mode=OneWay}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource PrimaryBrush}"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center" />
+
+                                    <!-- Thời gian hết hạn -->
+                                    <TextBlock Margin="0,4,0,0"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource MutedTextBrush}"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center">
+                                        <Run Text="Hết hạn lúc: " />
+                                        <Run Text="{Binding QrExpiredAt, Mode=OneWay, StringFormat=HH:mm:ss dd/MM/yyyy}" />
+                                    </TextBlock>
+
+                                    <!-- Link checkout -->
+                                    <TextBlock Margin="0,6,0,0"
+                                               FontSize="10"
+                                               FontStyle="Italic"
+                                               Foreground="{DynamicResource MutedTextBrush}"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap">
+                                        <Run Text="💡 Link thanh toán:" />
+                                        <LineBreak />
+                                        <Hyperlink NavigateUri="{Binding CheckoutUrl, Mode=OneWay}"
+                                                   RequestNavigate="Hyperlink_RequestNavigate">
+                                            <Run Text="{Binding CheckoutUrl, Mode=OneWay}" />
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Nút tạo QR -->
+                            <Button Content="📱 Tạo QR Thanh Toán"
+                                    Margin="0,8,0,0"
+                                    MinHeight="38"
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Command="{Binding TaoQrThanhToanCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsWaitingQrPayment}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsPaymentPaid}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <!-- Nút kiểm tra và hủy -->
+                            <Grid Margin="0,6,0,0">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsWaitingQrPayment}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Nút Kiểm tra và Hủy -->
+                                <Button Grid.Row="0" Grid.Column="0"
+                                        Content="🔄 Kiểm Tra"
+                                        MinHeight="36"
+                                        FontSize="12"
+                                        Style="{StaticResource ButtonSecondary}"
+                                        Command="{Binding KiemTraTrangThaiThanhToanCommand}" />
+                                
+                                <Button Grid.Row="0" Grid.Column="2"
+                                        Content="❌ Hủy QR"
+                                        MinHeight="36"
+                                        FontSize="12"
+                                        Style="{StaticResource ButtonDanger}"
+                                        Command="{Binding HuyQrThanhToanCommand}" />
+                            </Grid>
+
+                            <!-- Thông báo đã thanh toán -->
+                            <Border Margin="0,8,0,0"
+                                    Padding="10,8"
+                                    Background="{DynamicResource SuccessBrush}"
+                                    CornerRadius="6">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPaymentPaid}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="✅ Đã thanh toán thành công! Có thể in bill và chuyển pha chế."
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="White"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center" />
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Nút phụ -->
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0"
+                                Content="Làm mới"
+                                Style="{StaticResource ButtonSecondary}"
+                                Command="{Binding LamMoiCommand}" />
+                        <Button Grid.Column="2"
+                                Content="Xóa dòng chọn"
+                                Style="{StaticResource ButtonDanger}"
+                                Command="{Binding XoaDongCommand}" />
+                    </Grid>
+
+                    <!-- Thông báo lỗi / thành công -->
+                    <TextBlock Margin="0,8,0,0"
                                Foreground="{DynamicResource DangerBrush}"
                                TextWrapping="Wrap"
                                Text="{Binding ErrorMessage}" />
-                    <TextBlock Margin="0,4,0,0"
+                    <TextBlock Margin="0,3,0,0"
                                Foreground="{DynamicResource SuccessBrush}"
                                TextWrapping="Wrap"
                                Text="{Binding SuccessMessage}" />
                 </StackPanel>
-            </Border>
-        </Grid>
-
-        <Border Grid.Row="4" Style="{StaticResource CardPanel}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="8" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <TextBlock Style="{StaticResource CardTitleText}" Text="Chi tiết hóa đơn bán" />
-
-                <DataGrid Grid.Row="2"
-                          ItemsSource="{Binding ChiTietLines}"
-                          SelectedItem="{Binding SelectedDongChiTiet, Mode=TwoWay}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          >
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã món" Binding="{Binding MonId}" Width="88" />
-                        <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenMon}" Width="2*" />
-                        <DataGridTextColumn Header="Số lượng"
-                                            Binding="{Binding SoLuong}"
-                                            ElementStyle="{StaticResource RightAlignedCellText}"
-                                            Width="100" />
-                        <DataGridTextColumn Header="Đơn giá bán"
-                                            Binding="{Binding DonGiaBan, StringFormat={}{0:N0} đ}"
-                                            ElementStyle="{StaticResource RightAlignedCellText}"
-                                            Width="135" />
-                        <DataGridTextColumn Header="Thành tiền"
-                                            Binding="{Binding ThanhTien, StringFormat={}{0:N0} đ}"
-                                            ElementStyle="{StaticResource RightAlignedCellText}"
-                                            Width="140" />
-                    </DataGrid.Columns>
-                </DataGrid>
             </Grid>
         </Border>
-        </Grid>
-
-    </ScrollViewer>
+    </Grid>
 </UserControl>

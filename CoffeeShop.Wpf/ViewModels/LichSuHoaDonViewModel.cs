@@ -29,6 +29,7 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
     private string _soDienThoai = string.Empty;
     private string? _hinhThucThanhToanFilter;
     private string? _trangThaiThanhToanFilter;
+    private string? _trangThaiPhaCheFilter;
     private LichSuHoaDonDong? _selectedHoaDon;
     private string _lyDoHuy = string.Empty;
     private string _errorMessage = string.Empty;
@@ -132,6 +133,17 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
     public IReadOnlyList<string> DanhSachTrangThaiThanhToan { get; } =
         ["", "Đã thanh toán", "Chưa thanh toán", "Đã hủy"];
 
+    /// <summary>Filter theo trạng thái pha chế</summary>
+    public string? TrangThaiPhaCheFilter
+    {
+        get => _trangThaiPhaCheFilter;
+        set => SetProperty(ref _trangThaiPhaCheFilter, value);
+    }
+
+    /// <summary>Danh sách trạng thái pha chế cho ComboBox filter</summary>
+    public IReadOnlyList<string> DanhSachTrangThaiPhaChe { get; } =
+        ["", "ChoPhaChe", "DangPhaChe", "DaHoanThanh", "DaGiaoKhach", "DaHuy"];
+
     public LichSuHoaDonDong? SelectedHoaDon
     {
         get => _selectedHoaDon;
@@ -214,6 +226,7 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
         SoDienThoai = string.Empty;
         HinhThucThanhToanFilter = null;
         TrangThaiThanhToanFilter = null;
+        TrangThaiPhaCheFilter = null;
         LyDoHuy = string.Empty;
         SelectedHoaDon = null;
         ChiTietHoaDon.Clear();
@@ -259,6 +272,7 @@ public sealed class LichSuHoaDonViewModel : BaseViewModel
                 string.IsNullOrWhiteSpace(SoDienThoai) ? null : SoDienThoai.Trim(),
                 string.IsNullOrWhiteSpace(HinhThucThanhToanFilter) ? null : HinhThucThanhToanFilter,
                 string.IsNullOrWhiteSpace(TrangThaiThanhToanFilter) ? null : TrangThaiThanhToanFilter,
+                string.IsNullOrWhiteSpace(TrangThaiPhaCheFilter) ? null : TrangThaiPhaCheFilter,
                 cancellationToken);
 
             if (!result.IsSuccess || result.Data is null)

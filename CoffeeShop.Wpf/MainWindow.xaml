@@ -1,4 +1,4 @@
-﻿<Window x:Class="CoffeeShop.Wpf.MainWindow"
+<Window x:Class="CoffeeShop.Wpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -52,6 +52,12 @@
         <DataTemplate DataType="{x:Type viewModels:MonViewModel}">
             <views:MonView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:NguyenLieuViewModel}">
+            <views:NguyenLieuView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:CongThucMonViewModel}">
+            <views:CongThucMonView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:TrangThaiSanPhamViewModel}">
             <views:TrangThaiSanPhamView />
         </DataTemplate>
@@ -64,9 +70,12 @@
         <DataTemplate DataType="{x:Type viewModels:HoaDonNhapViewModel}">
             <views:HoaDonNhapView />
         </DataTemplate>
+        <!-- Module Quản lý bàn đã bị gỡ - không còn sử dụng -->
+        <!--
         <DataTemplate DataType="{x:Type viewModels:QuanLyBanViewModel}">
             <views:QuanLyBanView />
         </DataTemplate>
+        -->
         <DataTemplate DataType="{x:Type viewModels:CaLamViecViewModel}">
             <views:CaLamViecView />
         </DataTemplate>
@@ -84,6 +93,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:BaoCaoViewModel}">
             <views:BaoCaoView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:PhaCheViewModel}">
+            <views:PhaCheView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:ModulePlaceholderViewModel}">
             <views:ModulePlaceholderView />

@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Infrastructure;
+using CoffeeShop.Wpf.Infrastructure;
 using CoffeeShop.Wpf.Models;
 using Microsoft.Data.SqlClient;
 
@@ -6,22 +6,20 @@ namespace CoffeeShop.Wpf.Repositories;
 
 public sealed class KhuyenMaiRepository : IKhuyenMaiRepository
 {
+    private const string SelectColumns = @"
+KhuyenMaiId, TenKhuyenMai, LoaiKhuyenMai, GiaTri,
+TuNgay, DenNgay, IsActive, MonId, MoTa,
+ISNULL(GiaTriDonHangToiThieu, NULL) AS GiaTriDonHangToiThieu,
+ISNULL(SoTienGiamToiDa, NULL) AS SoTienGiamToiDa,
+CreatedAt";
+
     public async Task<IReadOnlyList<KhuyenMai>> GetDanhSachKhuyenMaiAsync(
         string? keyword,
         bool? isActive,
         CancellationToken cancellationToken = default)
     {
-        const string sql = @"
-SELECT KhuyenMaiId,
-       TenKhuyenMai,
-       LoaiKhuyenMai,
-       GiaTri,
-       TuNgay,
-       DenNgay,
-       IsActive,
-       MonId,
-       MoTa,
-       CreatedAt
+        string sql = $@"
+SELECT {SelectColumns}
 FROM dbo.KhuyenMai
 WHERE (@Keyword = N'' OR TenKhuyenMai LIKE N'%' + @Keyword + N'%')
   AND (@IsActive IS NULL OR IsActive = @IsActive)
@@ -50,25 +48,15 @@ ORDER BY CreatedAt DESC, KhuyenMaiId DESC;";
         const string sql = @"
 INSERT INTO dbo.KhuyenMai
 (
-    TenKhuyenMai,
-    LoaiKhuyenMai,
-    GiaTri,
-    TuNgay,
-    DenNgay,
-    IsActive,
-    MonId,
-    MoTa
+    TenKhuyenMai, LoaiKhuyenMai, GiaTri,
+    TuNgay, DenNgay, IsActive, MonId, MoTa,
+    GiaTriDonHangToiThieu, SoTienGiamToiDa
 )
 VALUES
 (
-    @TenKhuyenMai,
-    @LoaiKhuyenMai,
-    @GiaTri,
-    @TuNgay,
-    @DenNgay,
-    @IsActive,
-    @MonId,
-    @MoTa
+    @TenKhuyenMai, @LoaiKhuyenMai, @GiaTri,
+    @TuNgay, @DenNgay, @IsActive, @MonId, @MoTa,
+    @GiaTriDonHangToiThieu, @SoTienGiamToiDa
 );
 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
@@ -76,14 +64,7 @@ SELECT CAST(SCOPE_IDENTITY() AS INT);";
         await connection.OpenAsync(cancellationToken);
 
         await using var command = new SqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@TenKhuyenMai", khuyenMai.TenKhuyenMai.Trim());
-        command.Parameters.AddWithValue("@LoaiKhuyenMai", khuyenMai.LoaiKhuyenMai.Trim());
-        command.Parameters.AddWithValue("@GiaTri", khuyenMai.GiaTri);
-        command.Parameters.AddWithValue("@TuNgay", khuyenMai.TuNgay);
-        command.Parameters.AddWithValue("@DenNgay", khuyenMai.DenNgay);
-        command.Parameters.AddWithValue("@IsActive", khuyenMai.IsActive);
-        command.Parameters.AddWithValue("@MonId", (object?)khuyenMai.MonId ?? DBNull.Value);
-        command.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(khuyenMai.MoTa) ? DBNull.Value : khuyenMai.MoTa.Trim());
+        AddKhuyenMaiParams(command, khuyenMai);
 
         var scalar = await command.ExecuteScalarAsync(cancellationToken);
         return Convert.ToInt32(scalar);
@@ -100,7 +81,9 @@ SET TenKhuyenMai = @TenKhuyenMai,
     DenNgay = @DenNgay,
     IsActive = @IsActive,
     MonId = @MonId,
-    MoTa = @MoTa
+    MoTa = @MoTa,
+    GiaTriDonHangToiThieu = @GiaTriDonHangToiThieu,
+    SoTienGiamToiDa = @SoTienGiamToiDa
 WHERE KhuyenMaiId = @KhuyenMaiId;";
 
         await using var connection = new SqlConnection(DbConnectionFactory.ConnectionString);
@@ -108,14 +91,7 @@ WHERE KhuyenMaiId = @KhuyenMaiId;";
 
         await using var command = new SqlCommand(sql, connection);
         command.Parameters.AddWithValue("@KhuyenMaiId", khuyenMai.KhuyenMaiId);
-        command.Parameters.AddWithValue("@TenKhuyenMai", khuyenMai.TenKhuyenMai.Trim());
-        command.Parameters.AddWithValue("@LoaiKhuyenMai", khuyenMai.LoaiKhuyenMai.Trim());
-        command.Parameters.AddWithValue("@GiaTri", khuyenMai.GiaTri);
-        command.Parameters.AddWithValue("@TuNgay", khuyenMai.TuNgay);
-        command.Parameters.AddWithValue("@DenNgay", khuyenMai.DenNgay);
-        command.Parameters.AddWithValue("@IsActive", khuyenMai.IsActive);
-        command.Parameters.AddWithValue("@MonId", (object?)khuyenMai.MonId ?? DBNull.Value);
-        command.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(khuyenMai.MoTa) ? DBNull.Value : khuyenMai.MoTa.Trim());
+        AddKhuyenMaiParams(command, khuyenMai);
 
         return await command.ExecuteNonQueryAsync(cancellationToken) > 0;
     }
@@ -124,17 +100,8 @@ WHERE KhuyenMaiId = @KhuyenMaiId;";
         DateTime thoiDiem,
         CancellationToken cancellationToken = default)
     {
-        const string sql = @"
-SELECT KhuyenMaiId,
-       TenKhuyenMai,
-       LoaiKhuyenMai,
-       GiaTri,
-       TuNgay,
-       DenNgay,
-       IsActive,
-       MonId,
-       MoTa,
-       CreatedAt
+        string sql = $@"
+SELECT {SelectColumns}
 FROM dbo.KhuyenMai
 WHERE IsActive = 1
   AND @ThoiDiem >= TuNgay
@@ -160,17 +127,8 @@ ORDER BY CreatedAt DESC, KhuyenMaiId DESC;";
 
     public async Task<KhuyenMai?> GetByIdAsync(int khuyenMaiId, CancellationToken cancellationToken = default)
     {
-        const string sql = @"
-SELECT KhuyenMaiId,
-       TenKhuyenMai,
-       LoaiKhuyenMai,
-       GiaTri,
-       TuNgay,
-       DenNgay,
-       IsActive,
-       MonId,
-       MoTa,
-       CreatedAt
+        string sql = $@"
+SELECT {SelectColumns}
 FROM dbo.KhuyenMai
 WHERE KhuyenMaiId = @KhuyenMaiId;";
 
@@ -189,6 +147,20 @@ WHERE KhuyenMaiId = @KhuyenMaiId;";
         return MapKhuyenMai(reader);
     }
 
+    private static void AddKhuyenMaiParams(SqlCommand command, KhuyenMai km)
+    {
+        command.Parameters.AddWithValue("@TenKhuyenMai", km.TenKhuyenMai.Trim());
+        command.Parameters.AddWithValue("@LoaiKhuyenMai", km.LoaiKhuyenMai.Trim());
+        command.Parameters.AddWithValue("@GiaTri", km.GiaTri);
+        command.Parameters.AddWithValue("@TuNgay", km.TuNgay);
+        command.Parameters.AddWithValue("@DenNgay", km.DenNgay);
+        command.Parameters.AddWithValue("@IsActive", km.IsActive);
+        command.Parameters.AddWithValue("@MonId", (object?)km.MonId ?? DBNull.Value);
+        command.Parameters.AddWithValue("@MoTa", string.IsNullOrWhiteSpace(km.MoTa) ? DBNull.Value : km.MoTa.Trim());
+        command.Parameters.AddWithValue("@GiaTriDonHangToiThieu", (object?)km.GiaTriDonHangToiThieu ?? DBNull.Value);
+        command.Parameters.AddWithValue("@SoTienGiamToiDa", (object?)km.SoTienGiamToiDa ?? DBNull.Value);
+    }
+
     private static KhuyenMai MapKhuyenMai(SqlDataReader reader)
     {
         return new KhuyenMai
@@ -202,8 +174,11 @@ WHERE KhuyenMaiId = @KhuyenMaiId;";
             IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
             MonId = reader.IsDBNull(reader.GetOrdinal("MonId")) ? null : reader.GetInt32(reader.GetOrdinal("MonId")),
             MoTa = reader.IsDBNull(reader.GetOrdinal("MoTa")) ? null : reader.GetString(reader.GetOrdinal("MoTa")),
+            GiaTriDonHangToiThieu = reader.IsDBNull(reader.GetOrdinal("GiaTriDonHangToiThieu"))
+                ? null : reader.GetDecimal(reader.GetOrdinal("GiaTriDonHangToiThieu")),
+            SoTienGiamToiDa = reader.IsDBNull(reader.GetOrdinal("SoTienGiamToiDa"))
+                ? null : reader.GetDecimal(reader.GetOrdinal("SoTienGiamToiDa")),
             CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
         };
     }
 }
-

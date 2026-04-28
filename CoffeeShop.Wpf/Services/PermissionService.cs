@@ -1,4 +1,4 @@
-﻿using CoffeeShop.Wpf.Models;
+using CoffeeShop.Wpf.Models;
 
 namespace CoffeeShop.Wpf.Services;
 
@@ -15,10 +15,11 @@ public sealed class PermissionService
                 new MenuItemModel("BaoCao", "Báo cáo"),
                 new MenuItemModel("TopSanPhamBanChay", "Top sản phẩm bán chạy"),
                 new MenuItemModel("HoaDonNhap", "Hóa đơn nhập"),
-                new MenuItemModel("HoaDonBan", "Hóa đơn bán"),
+                new MenuItemModel("HoaDonBan", "Bán hàng tại quầy"),
+                new MenuItemModel("PhaChe", "Quầy pha chế"),
                 new MenuItemModel("ExportPrint", "Xuất / In"),
                 new MenuItemModel("LichSuHoaDon", "Lịch sử hóa đơn"),
-                new MenuItemModel("QuanLyBan", "Quản lý bàn"),
+                // Module "Quản lý bàn" đã bị gỡ - quán hoạt động theo mô hình order tại quầy, không quản lý bàn
                 new MenuItemModel("CaLamViec", "Ca làm việc"),
                 new MenuItemModel("TrangThaiSanPham", "Trạng thái sản phẩm"),
                 new MenuItemModel("CanhBaoTonKho", "Cảnh báo tồn kho thấp"),
@@ -26,6 +27,8 @@ public sealed class PermissionService
                 new MenuItemModel("DanhMuc", "Quản lý danh mục"),
                 new MenuItemModel("NhaCungCap", "Quản lý nhà cung cấp"),
                 new MenuItemModel("Mon", "Quản lý sản phẩm"),
+                new MenuItemModel("NguyenLieu", "Kho nguyên liệu"),
+                new MenuItemModel("CongThucMon", "Công thức món"),
                 new MenuItemModel("KhuyenMai", "Khuyến mãi"),
                 new MenuItemModel("KhachHang", "Khách hàng thân thiết"),
                 new MenuItemModel("QuanLyTaiKhoan", "Quản lý tài khoản"),
@@ -38,6 +41,8 @@ public sealed class PermissionService
                 new MenuItemModel("DanhMuc", "Quản lý danh mục"),
                 new MenuItemModel("NhaCungCap", "Quản lý nhà cung cấp"),
                 new MenuItemModel("Mon", "Quản lý sản phẩm"),
+                new MenuItemModel("NguyenLieu", "Kho nguyên liệu"),
+                new MenuItemModel("CongThucMon", "Công thức món"),
                 new MenuItemModel("TrangThaiSanPham", "Trạng thái sản phẩm"),
                 new MenuItemModel("CanhBaoTonKho", "Cảnh báo tồn kho thấp"),
                 new MenuItemModel("TimKiemSanPham", "Tìm kiếm sản phẩm"),
@@ -46,16 +51,15 @@ public sealed class PermissionService
             ],
             "ThuNgan" =>
             [
-                new MenuItemModel("ThongKe", "Thống kê doanh thu"),
-                new MenuItemModel("BaoCao", "Báo cáo"),
-                new MenuItemModel("TopSanPhamBanChay", "Top sản phẩm bán chạy"),
-                new MenuItemModel("HoaDonBan", "Hóa đơn bán"),
-                new MenuItemModel("ExportPrint", "Xuất / In"),
-                new MenuItemModel("LichSuHoaDon", "Lịch sử hóa đơn"),
-                new MenuItemModel("QuanLyBan", "Quản lý bàn"),
+                // Chỉ giữ các module trọng tâm đối với nhân viên thu ngân để dễ tập trung bảo vệ đồ án
                 new MenuItemModel("CaLamViec", "Ca làm việc"),
+                new MenuItemModel("HoaDonBan", "Bán hàng tại quầy"),
                 new MenuItemModel("KhachHang", "Khách hàng thân thiết"),
+                new MenuItemModel("LichSuHoaDon", "Lịch sử hóa đơn"),
+                new MenuItemModel("ThongKe", "Thống kê doanh thu"),
+                new MenuItemModel("ExportPrint", "Xuất / In"),
                 new MenuItemModel("DoiMatKhau", "Đổi mật khẩu")
+                // Module "Quản lý bàn" đã bị gỡ - quán hoạt động theo mô hình order tại quầy, không quản lý bàn
             ],
             _ => []
         };

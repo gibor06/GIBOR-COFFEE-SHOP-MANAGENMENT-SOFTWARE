@@ -16,6 +16,7 @@ public sealed class CaLamViecService : ICaLamViecService
 
     public async Task<ServiceResult<CaLamViec>> MoCaAsync(
         int nguoiDungId,
+        decimal tienDauCa,
         string? ghiChu,
         CancellationToken cancellationToken = default)
     {
@@ -24,13 +25,18 @@ public sealed class CaLamViecService : ICaLamViecService
             return ServiceResult<CaLamViec>.Fail("Người dùng không hợp lệ.");
         }
 
+        if (tienDauCa < 0)
+        {
+            return ServiceResult<CaLamViec>.Fail("Tiền đầu ca không được âm.");
+        }
+
         var caDangMo = await _caLamViecRepository.GetCaDangMoAsync(nguoiDungId, cancellationToken);
         if (caDangMo is not null)
         {
             return ServiceResult<CaLamViec>.Fail("Bạn đang có ca làm việc chưa đóng.");
         }
 
-        var newId = await _caLamViecRepository.MoCaAsync(nguoiDungId, ghiChu, cancellationToken);
+        var newId = await _caLamViecRepository.MoCaAsync(nguoiDungId, tienDauCa, ghiChu, cancellationToken);
         var opened = await _caLamViecRepository.GetCaDangMoAsync(nguoiDungId, cancellationToken);
         if (opened is null || opened.CaLamViecId != newId)
         {
@@ -41,7 +47,7 @@ public sealed class CaLamViecService : ICaLamViecService
             nguoiDungId,
             "Mở ca làm việc",
             "CaLamViec",
-            $"Ca #{newId} được mở.",
+            $"Ca #{newId} được mở. Tiền đầu ca: {tienDauCa:N0}.",
             cancellationToken);
 
         return ServiceResult<CaLamViec>.Success(opened, "Mở ca làm việc thành công.");
@@ -49,12 +55,19 @@ public sealed class CaLamViecService : ICaLamViecService
 
     public async Task<ServiceResult> DongCaAsync(
         int nguoiDungId,
+        decimal tienMatThucDem,
         string? ghiChu,
+        string? ghiChuDoiSoat,
         CancellationToken cancellationToken = default)
     {
         if (nguoiDungId <= 0)
         {
             return ServiceResult.Fail("Người dùng không hợp lệ.");
+        }
+
+        if (tienMatThucDem < 0)
+        {
+            return ServiceResult.Fail("Tiền mặt thực đếm không được âm.");
         }
 
         var caDangMo = await _caLamViecRepository.GetCaDangMoAsync(nguoiDungId, cancellationToken);
@@ -63,7 +76,22 @@ public sealed class CaLamViecService : ICaLamViecService
             return ServiceResult.Fail("Hiện không có ca làm việc đang mở.");
         }
 
-        var closed = await _caLamViecRepository.DongCaAsync(caDangMo.CaLamViecId, ghiChu, cancellationToken);
+        // Lấy tổng kết để tính chênh lệch
+        var tongKet = await _caLamViecRepository.GetTongKetCaAsync(caDangMo.CaLamViecId, cancellationToken);
+        var tienDauCa = tongKet?.TienDauCa ?? caDangMo.TienDauCa;
+        var tienMatHeThong = tongKet?.TienMatHeThong ?? 0;
+        var tienMatDuKien = tienDauCa + tienMatHeThong;
+        var chenhLech = tienMatThucDem - tienMatDuKien;
+
+        // Nếu có chênh lệch, bắt buộc ghi chú
+        if (chenhLech != 0 && string.IsNullOrWhiteSpace(ghiChuDoiSoat))
+        {
+            return ServiceResult.Fail(
+                $"Có chênh lệch tiền mặt ({chenhLech:N0} đ). Vui lòng nhập ghi chú đối soát.");
+        }
+
+        var closed = await _caLamViecRepository.DongCaAsync(
+            caDangMo.CaLamViecId, ghiChu, tienMatThucDem, chenhLech, ghiChuDoiSoat, cancellationToken);
         if (!closed)
         {
             return ServiceResult.Fail("Đóng ca không thành công.");
@@ -73,7 +101,7 @@ public sealed class CaLamViecService : ICaLamViecService
             nguoiDungId,
             "Đóng ca làm việc",
             "CaLamViec",
-            $"Ca #{caDangMo.CaLamViecId} đã đóng.",
+            $"Ca #{caDangMo.CaLamViecId} đã đóng. Tiền đầu ca: {tienDauCa:N0}. Tiền mặt HT: {tienMatHeThong:N0}. Dự kiến: {tienMatDuKien:N0}. Thực đếm: {tienMatThucDem:N0}. Chênh lệch: {chenhLech:N0}.",
             cancellationToken);
 
         return ServiceResult.Success("Đóng ca làm việc thành công.");

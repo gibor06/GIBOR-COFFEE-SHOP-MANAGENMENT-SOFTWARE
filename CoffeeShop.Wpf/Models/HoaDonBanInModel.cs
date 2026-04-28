@@ -34,5 +34,25 @@ public sealed class HoaDonBanInModel
     public string? GhiChuHoaDon { get; set; }
 
     public IReadOnlyList<HoaDonBanInChiTietDong> ChiTiet { get; set; } = [];
+
+    // === Số gọi món reset theo ngày ===
+    public int? SoThuTuGoiMon { get; set; }
+    public DateTime? NgaySoThuTu { get; set; }
+
+    /// <summary>Số gọi món hiển thị: ưu tiên SoThuTuGoiMon, fallback HoaDonBanId</summary>
+    public string SoGoiMonHienThi => SoThuTuGoiMon.HasValue
+        ? SoThuTuGoiMon.Value.ToString("D3")
+        : HoaDonBanId.ToString("D3");
+
+    public string MaHoaDonHienThi => $"HD{HoaDonBanId:D5}";
+
+    // === Hình thức phục vụ ===
+    public string HinhThucPhucVu { get; set; } = HinhThucPhucVuConst.UongTaiQuan;
+    public string HinhThucPhucVuHienThi => HinhThucPhucVuConst.ToDisplayName(HinhThucPhucVu);
+
+    // === Điểm tích lũy ===
+    public int DiemSuDung { get; set; }
+    public decimal SoTienGiamTuDiem { get; set; }
+    public int DiemCong { get; set; }
 }
 

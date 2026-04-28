@@ -6,12 +6,15 @@ public interface ICaLamViecService
 {
     Task<ServiceResult<CaLamViec>> MoCaAsync(
         int nguoiDungId,
+        decimal tienDauCa,
         string? ghiChu,
         CancellationToken cancellationToken = default);
 
     Task<ServiceResult> DongCaAsync(
         int nguoiDungId,
+        decimal tienMatThucDem,
         string? ghiChu,
+        string? ghiChuDoiSoat,
         CancellationToken cancellationToken = default);
 
     Task<ServiceResult<CaLamViec?>> GetCaDangMoAsync(
@@ -28,4 +31,3 @@ public interface ICaLamViecService
         int? nguoiDungId,
         CancellationToken cancellationToken = default);
 }
-

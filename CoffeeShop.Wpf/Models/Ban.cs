@@ -23,8 +23,8 @@ public sealed class Ban
     public string TrangThaiBanHienThi => TrangThaiBan switch
     {
         TrangThaiBanConst.Trong => "Trống",
-        TrangThaiBanConst.DangPhucVu => "Đang phục vụ",
-        TrangThaiBanConst.ChoThanhToan => "Chờ thanh toán",
+        TrangThaiBanConst.DangCoKhach => "Đang có khách",
+        "ChoThanhToan" => "Đang có khách",
         TrangThaiBanConst.TamKhoa => "Tạm khóa",
         _ => TrangThaiBan
     };

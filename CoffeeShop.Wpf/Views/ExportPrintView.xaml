@@ -63,12 +63,24 @@
                 </WrapPanel>
 
                 <WrapPanel Margin="0,8,0,0">
-                    <Button Width="180"
-                            Content="In hóa đơn bán"
-                            Command="{Binding InHoaDonCommand}" />
+                    <Button Width="140"
+                            Content="Xem hóa đơn"
+                            Command="{Binding PreviewHoaDonCommand}"
+                            Style="{StaticResource ButtonSecondary}" />
+                    <Button Width="140"
+                            Margin="8,0,0,0"
+                            Content="In hóa đơn khách"
+                            Command="{Binding InHoaDonCommand}"
+                            Style="{StaticResource ButtonPrimary}" />
+                    <Button Width="140"
+                            Margin="8,0,0,0"
+                            Content="In phiếu pha chế"
+                            Command="{Binding InPhieuPhaCheCommand}"
+                            Style="{StaticResource ButtonPrimary}" />
+                </WrapPanel>
 
+                <WrapPanel Margin="0,8,0,0">
                     <ComboBox Width="140"
-                              Margin="8,0,0,0"
                               SelectedValuePath="Tag"
                               SelectedValue="{Binding LoaiPreview, Mode=TwoWay}">
                         <ComboBoxItem Content="Preview đơn giản" Tag="DonGian" IsSelected="True" />

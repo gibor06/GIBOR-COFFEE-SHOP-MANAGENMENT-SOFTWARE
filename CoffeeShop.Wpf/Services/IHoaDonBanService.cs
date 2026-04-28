@@ -17,6 +17,9 @@ public interface IHoaDonBanService
         string? maGiaoDich = null,
         string? ghiChuThanhToan = null,
         string? ghiChuHoaDon = null,
+        string hinhThucPhucVu = "UongTaiQuan",
+        int diemSuDung = 0,
+        bool isQrPendingPayment = false,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<HoaDonBan>> GetByDateRangeAsync(
