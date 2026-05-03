@@ -1026,40 +1026,6 @@ public sealed class HoaDonBanViewModel : BaseViewModel
         ApplyMonFilter();
     }
 
-<<<<<<< HEAD
-    private async Task LoadBanAsync(CancellationToken cancellationToken)
-    {
-        var banResult = await _banService.GetDanhSachBanAsync(
-            null,
-            null,
-            true,
-            null,
-            cancellationToken);
-
-        if (!banResult.IsSuccess || banResult.Data is null)
-        {
-            ErrorMessage = banResult.Message;
-            return;
-        }
-
-        Bans.Clear();
-        // Chỉ hiển thị bàn Trống khi lập hóa đơn bán
-        foreach (var ban in banResult.Data
-                     .Where(x => string.Equals(x.TrangThaiBan, TrangThaiBanConst.Trong, StringComparison.OrdinalIgnoreCase))
-                     .OrderBy(x => x.TenKhuVuc)
-                     .ThenBy(x => x.TenBan))
-        {
-            Bans.Add(ban);
-        }
-
-        if (SelectedBan is null && Bans.Count > 0)
-        {
-            SelectedBan = Bans[0];
-        }
-    }
-=======
->>>>>>> 1198054 (update qr)
-
     private async Task LoadKhachHangAsync(CancellationToken cancellationToken)
     {
         var result = await _khachHangService.GetDanhSachKhachHangAsync(null, true, cancellationToken);
