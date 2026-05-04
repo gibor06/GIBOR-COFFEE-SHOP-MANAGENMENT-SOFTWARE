@@ -105,6 +105,9 @@
                                 <TextBlock FontWeight="SemiBold"
                                            Foreground="{DynamicResource PrimaryBrush}"
                                            Text="{Binding TongKetCa.TienMatDuKienCuoiCa, StringFormat=Tiền mặt dự kiến cuối ca: {0:N0} đ, FallbackValue='---'}" />
+                                <TextBlock Text="{Binding TongKetCa.TienMatThucDem, StringFormat=Tiền mặt thực đếm: {0:N0} đ, TargetNullValue='Tiền mặt thực đếm: ---'}" />
+                                <TextBlock Text="{Binding TongKetCa.ChenhLechTienMat, StringFormat=Chênh lệch: {0:N0} đ, TargetNullValue='Chênh lệch: ---'}" />
+                                <TextBlock Text="{Binding TongKetCa.GhiChuDoiSoat, StringFormat=Ghi chú đối soát: {0}, TargetNullValue='Ghi chú đối soát: ---'}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -182,6 +185,7 @@
                     </WrapPanel>
 
                     <DataGrid ItemsSource="{Binding LichSuCa}"
+                              SelectedItem="{Binding SelectedCaLamViec, Mode=TwoWay}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True"
                               CanUserAddRows="False"
