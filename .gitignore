@@ -92,8 +92,6 @@ desktop.ini
 
 # Keep source and required project assets
 !.gitignore
-<<<<<<< HEAD
 
 =======
->>>>>>> 1198054 (update qr)
 .agents
