@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="62a7100aecf640a8afdb05307e10399f" Name="Diagram1" ZoomLevel="23">
+      <Diagram DiagramId="62a7100aecf640a8afdb05307e10399f" Name="Diagram1" ZoomLevel="69">
         <EntityTypeShape EntityType="CoffeeShopDbModel.AuditLog" Width="1.5" PointX="12.75" PointY="8" IsExpanded="true" />
         <EntityTypeShape EntityType="CoffeeShopDbModel.Ban" Width="1.5" PointX="12.75" PointY="4" IsExpanded="true" />
         <EntityTypeShape EntityType="CoffeeShopDbModel.CaLamViec" Width="1.5" PointX="12.75" PointY="11.375" IsExpanded="true" />
@@ -15,9 +15,9 @@
         <EntityTypeShape EntityType="CoffeeShopDbModel.DanhMuc" Width="1.5" PointX="15.5" PointY="19.25" IsExpanded="true" />
         <EntityTypeShape EntityType="CoffeeShopDbModel.HoaDonBan" Width="1.5" PointX="15.125" PointY="7.5" IsExpanded="true" />
         <EntityTypeShape EntityType="CoffeeShopDbModel.HoaDonNhap" Width="1.5" PointX="17.75" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="CoffeeShopDbModel.KhachHang" Width="1.5" PointX="12.75" PointY="16.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeeShopDbModel.KhachHang" Width="1.5" PointX="11.875" PointY="15.5" IsExpanded="true" />
         <EntityTypeShape EntityType="CoffeeShopDbModel.KhuVuc" Width="1.5" PointX="10.5" PointY="4.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="CoffeeShopDbModel.KhuyenMai" Width="1.5" PointX="12.75" PointY="19.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeeShopDbModel.KhuyenMai" Width="1.5" PointX="12.875" PointY="19.5" IsExpanded="true" />
         <EntityTypeShape EntityType="CoffeeShopDbModel.LichSuNguyenLieu" Width="1.5" PointX="23" PointY="10.125" IsExpanded="true" />
         <EntityTypeShape EntityType="CoffeeShopDbModel.LichSuTonKho" Width="1.5" PointX="20" PointY="5.125" IsExpanded="true" />
         <EntityTypeShape EntityType="CoffeeShopDbModel.Mon" Width="1.5" PointX="17.75" PointY="18.375" IsExpanded="true" />
@@ -38,7 +38,11 @@
         <AssociationConnector Association="CoffeeShopDbModel.FK_ChiTietHoaDonNhap_Mon" ManuallyRouted="false" />
         <AssociationConnector Association="CoffeeShopDbModel.FK_Mon_DanhMuc" ManuallyRouted="false" />
         <AssociationConnector Association="CoffeeShopDbModel.FK_HoaDonBan_KhachHang" ManuallyRouted="false" />
-        <AssociationConnector Association="CoffeeShopDbModel.FK_HoaDonBan_KhuyenMai" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeeShopDbModel.FK_HoaDonBan_KhuyenMai" ManuallyRouted="true" >
+          <ConnectorPoint PointX="14.34375" PointY="19.5" />
+          <ConnectorPoint PointX="14.34375" PointY="15.100698242187502" />
+          <ConnectorPoint PointX="15.125" PointY="15.100698242187502" />
+        </AssociationConnector>
         <AssociationConnector Association="CoffeeShopDbModel.FK_HoaDonBan_NguoiDung" ManuallyRouted="false" />
         <AssociationConnector Association="CoffeeShopDbModel.FK_LichSuNguyenLieu_HoaDonBan" ManuallyRouted="false" />
         <AssociationConnector Association="CoffeeShopDbModel.FK_LichSuTonKho_HoaDonBan" ManuallyRouted="false" />

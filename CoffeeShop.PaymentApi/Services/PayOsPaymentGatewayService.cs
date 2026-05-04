@@ -558,13 +558,15 @@ public class PayOsPaymentGatewayService : IPaymentGatewayService
         return qrUrl;
     }
 
-    private async Task CallPayOsCancelPaymentAsync(string paymentLinkId, CancellationToken cancellationToken)
+    private Task CallPayOsCancelPaymentAsync(string paymentLinkId, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         // Mock mode
         if (string.IsNullOrEmpty(_apiKey))
         {
             _logger.LogInformation("Using mock payOS cancel payment for PaymentLinkId {PaymentLinkId}", paymentLinkId);
-            return;
+            return Task.CompletedTask;
         }
 
         // TODO: call payOS cancel API here when production credentials are available
@@ -583,6 +585,7 @@ public class PayOsPaymentGatewayService : IPaymentGatewayService
         //     null,
         //     cancellationToken);
         // response.EnsureSuccessStatusCode();
+        return Task.CompletedTask;
     }
 
     private static long GenerateOrderCode(int hoaDonBanId)

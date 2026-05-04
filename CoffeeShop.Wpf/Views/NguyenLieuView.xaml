@@ -22,7 +22,7 @@
 
             <Border Grid.Column="0" Style="{StaticResource CardPanel}">
                 <StackPanel>
-                    <TextBlock Style="{StaticResource SectionHeader}" Text="Quản lý nguyên liệu" />
+                    <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding FormTitle}" />
                     <TextBlock Margin="0,6,0,0"
                                Foreground="{DynamicResource MutedTextBrush}"
                                Text="Tạo nhanh nguyên liệu mới và quản lý tồn kho nguyên liệu thô (cà phê, sữa, đường...)." />
@@ -83,7 +83,7 @@
 
                     <WrapPanel Margin="0,14,0,0">
                         <Button Width="120"
-                                Content="Tạo mới"
+                                Content="{Binding SubmitButtonText}"
                                 Style="{StaticResource ButtonPrimary}"
                                 Command="{Binding TaoMoiCommand}" />
                         <Button Width="100"
@@ -91,6 +91,12 @@
                                 Content="Làm mới"
                                 Style="{StaticResource ButtonSecondary}"
                                 Command="{Binding LamMoiCommand}" />
+                        <Button Width="120"
+                                Margin="8,0,0,0"
+                                Content="Hủy chỉnh sửa"
+                                Style="{StaticResource ButtonSecondary}"
+                                Command="{Binding HuyChinhSuaCommand}"
+                                Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}" />
                     </WrapPanel>
 
                     <TextBlock Margin="0,8,0,0"
@@ -139,11 +145,19 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBlock FontSize="18"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="350" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           FontSize="18"
                            FontWeight="SemiBold"
                            Text="Danh sách nguyên liệu" />
 
                 <DataGrid Grid.Row="2"
+                          Grid.Column="0"
                           ItemsSource="{Binding NguyenLieus}"
                           ScrollViewer.HorizontalScrollBarVisibility="Auto"
                           ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -176,8 +190,133 @@
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Đơn giá nhập" Binding="{Binding DonGiaNhap, StringFormat=N0}" Width="120" />
                         <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedAt, StringFormat=dd/MM/yyyy HH:mm}" Width="160" />
+                        <DataGridTemplateColumn Header="Hành động" Width="240">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Sửa"
+                                                Width="60"
+                                                Margin="2"
+                                                Style="{StaticResource ButtonPrimary}"
+                                                Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
+                                        <Button Content="Xóa"
+                                                Width="60"
+                                                Margin="2"
+                                                Style="{StaticResource ButtonDanger}"
+                                                Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
+                                        <Button Content="Chi tiết"
+                                                Width="70"
+                                                Margin="2"
+                                                Style="{StaticResource ButtonSecondary}"
+                                                Command="{Binding DataContext.ViewDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+
+                <Border Grid.Row="0"
+                        Grid.RowSpan="3"
+                        Grid.Column="2"
+                        Style="{StaticResource CardPanel}"
+                        Visibility="{Binding IsDetailVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Text="Chi tiết nguyên liệu" />
+
+                            <Separator Margin="0,8,0,8" />
+
+                            <TextBlock FontWeight="SemiBold" Text="Mã nguyên liệu" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       Text="{Binding SelectedNguyenLieu.NguyenLieuId}" />
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Tên nguyên liệu" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       TextWrapping="Wrap"
+                                       Text="{Binding SelectedNguyenLieu.TenNguyenLieu}" />
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Đơn vị tính" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       Text="{Binding SelectedNguyenLieu.DonViTinh}" />
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Tồn kho hiện tại" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       Text="{Binding SelectedNguyenLieu.TonKhoHienThi}" />
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Tồn kho tối thiểu" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       Text="{Binding SelectedNguyenLieu.TonKhoToiThieu, StringFormat=N2}" />
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Trạng thái tồn kho" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding SelectedNguyenLieu.TrangThaiTonKhoHienThi}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedNguyenLieu.TrangThaiTonKhoHienThi}" Value="Hết hàng">
+                                                <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SelectedNguyenLieu.TrangThaiTonKhoHienThi}" Value="Sắp hết">
+                                                <Setter Property="Foreground" Value="#FF9800" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Đơn giá nhập" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       Text="{Binding SelectedNguyenLieu.DonGiaNhapHienThi}" />
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Trạng thái hoạt động" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding SelectedNguyenLieu.TrangThaiHoatDongHienThi}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedNguyenLieu.IsActive}" Value="False">
+                                                <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Ngày tạo" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       Text="{Binding SelectedNguyenLieu.CreatedAt, StringFormat=dd/MM/yyyy HH:mm:ss}" />
+
+                            <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Ngày cập nhật" />
+                            <TextBlock Margin="0,4,0,0"
+                                       FontSize="14"
+                                       Text="{Binding SelectedNguyenLieu.UpdatedAt, StringFormat=dd/MM/yyyy HH:mm:ss, TargetNullValue='Chưa cập nhật'}" />
+
+                            <Button Margin="0,16,0,0"
+                                    Content="Đóng"
+                                    Style="{StaticResource ButtonSecondary}"
+                                    Click="CloseDetailButton_Click" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
             </Grid>
         </Border>
     </Grid>
